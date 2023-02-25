@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/create_profile.dart';
+import 'package:iw_app/widgets/scaffold/create-user-scaffold.dart';
 
 class CreateUser extends StatefulWidget {
   const CreateUser({super.key});
@@ -9,7 +11,7 @@ class CreateUser extends StatefulWidget {
 }
 
 class _CreateUser extends State<CreateUser> {
-  String value = '';
+  User user = User('', '');
   bool isButtonDisabled = true;
 
   // fetch from backend if user already exists and change state
@@ -26,7 +28,7 @@ class _CreateUser extends State<CreateUser> {
 
   onNickNameChanged(value) {
     setState(() {
-      this.value = value;
+      user.setNickname = value;
       isButtonDisabled = value.isEmpty;
     });
   }
@@ -35,74 +37,57 @@ class _CreateUser extends State<CreateUser> {
     if (formGlobalKey.currentState!.validate()) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const CreateProfile()),
+        MaterialPageRoute(builder: (context) => CreateProfile(user: user)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Create nickname'),
-          leading: GestureDetector(
-            child: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              size: 18,
-              color: Colors.black,
-            ),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
-          child: SafeArea(
-              bottom: true,
-              child: Column(children: <Widget>[
-                Form(
-                    key: formGlobalKey,
-                    child: TextFormField(
-                      validator: validateFormField,
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: '@nickname',
-                      ),
-                      onChanged: onNickNameChanged,
-                    )),
-                Expanded(
-                    child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: const <Widget>[
-                              Flexible(
-                                  child: Text(
-                                'Your nickname it’s your ID. It can’t be changed. Make sure to create appropriate nickname to use it forever.',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  color: Color(0xff87899B),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14,
-                                ),
-                                softWrap: true,
-                              ))
-                            ]))),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ElevatedButton(
-                        onPressed: isButtonDisabled ? null : handleNext,
-                        child: const Text('Next'),
-                      ),
-                    ],
-                  ),
+    return CreateUserScaffold(
+        title: 'Create nickname',
+        child: Column(children: <Widget>[
+          Form(
+              key: formGlobalKey,
+              child: TextFormField(
+                validator: validateFormField,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: '@nickname',
                 ),
-              ])),
-        ));
+                onChanged: onNickNameChanged,
+              )),
+          Expanded(
+              child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: const <Widget>[
+                        Flexible(
+                            child: Text(
+                          'Your nickname it’s your ID. It can’t be changed. Make sure to create appropriate nickname to use it forever.',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            color: Color(0xff87899B),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                          ),
+                          softWrap: true,
+                        ))
+                      ]))),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ElevatedButton(
+                  onPressed: isButtonDisabled ? null : handleNext,
+                  child: const Text('Next'),
+                ),
+              ],
+            ),
+          ),
+        ]));
   }
 }
