@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/screens/create_user.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/scaffold/app_scaffold.dart';
 
@@ -80,11 +81,17 @@ class LoginScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             ElevatedButton(
-                              onPressed: () {},
                               child: Text(
                                 AppLocalizations.of(context)!
                                     .loginScreen_primaryBtnTitle,
                               ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const CreateUser()),
+                                );
+                              },
                             ),
                             const SizedBox(height: 10),
                             SecondaryButton(
