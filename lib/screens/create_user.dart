@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iw_app/screens/create_profile.dart';
 
 class CreateUser extends StatefulWidget {
   const CreateUser({super.key});
@@ -32,8 +33,10 @@ class _CreateUser extends State<CreateUser> {
 
   handleNext() {
     if (formGlobalKey.currentState!.validate()) {
-      // TODO: create user, save to local storage and navigate to Profile creation
-      print('User created with nickname: $value');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const CreateProfile()),
+      );
     }
   }
 
@@ -93,7 +96,7 @@ class _CreateUser extends State<CreateUser> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       ElevatedButton(
-                        onPressed: isButtonDisabled ? null : handleNext(),
+                        onPressed: isButtonDisabled ? null : handleNext,
                         child: const Text('Next'),
                       ),
                     ],
