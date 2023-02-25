@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:iw_app/screens/create_user.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/scaffold/app_scaffold.dart';
 
@@ -78,7 +79,13 @@ class LoginScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const CreateUser()),
+                                );
+                              },
                               child: const Text('Create account'),
                             ),
                             const SizedBox(height: 10),
