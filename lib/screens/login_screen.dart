@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/scaffold/app_scaffold.dart';
 
@@ -32,12 +33,12 @@ class LoginScreen extends StatelessWidget {
                         width: MediaQuery.of(context).size.width * 0.5,
                       ),
                     ),
-                    const SizedBox(
+                    SizedBox(
                       width: 180,
                       child: Text(
-                        'Turn your contribution into equity',
+                        AppLocalizations.of(context)!.loginScreen_slogan,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontFamily: 'Gilroy',
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
@@ -62,9 +63,10 @@ class LoginScreen extends StatelessWidget {
                           icon: SvgPicture.asset(
                             'assets/icons/question_circle.svg',
                           ),
-                          label: const Text(
-                            'What about blockchain',
-                            style: TextStyle(
+                          label: Text(
+                            AppLocalizations.of(context)!
+                                .loginScreen_textBtnTitle,
+                            style: const TextStyle(
                               fontSize: 12,
                               fontFamily: 'Gilroy',
                               letterSpacing: -0.3,
@@ -79,12 +81,18 @@ class LoginScreen extends StatelessWidget {
                           children: [
                             ElevatedButton(
                               onPressed: () {},
-                              child: const Text('Create account'),
+                              child: Text(
+                                AppLocalizations.of(context)!
+                                    .loginScreen_primaryBtnTitle,
+                              ),
                             ),
                             const SizedBox(height: 10),
                             SecondaryButton(
                               onPressed: () {},
-                              child: const Text('Restore account from iCloud'),
+                              child: Text(
+                                AppLocalizations.of(context)!
+                                    .loginScreen_secondaryBtnTitle,
+                              ),
                             ),
                           ],
                         ),
