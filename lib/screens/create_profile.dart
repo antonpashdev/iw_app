@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/models/user_model.dart';
-import 'package:iw_app/widgets/scaffold/create-user-scaffold.dart';
+import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class CreateProfile extends StatelessWidget {
   final User user;
@@ -13,7 +13,7 @@ class CreateProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CreateUserScaffold(
+    return ScreenScaffold(
         title: 'Profile',
         child: Column(
           children: <Widget>[

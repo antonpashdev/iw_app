@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/create_profile.dart';
-import 'package:iw_app/widgets/scaffold/create-user-scaffold.dart';
+import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class CreateUser extends StatefulWidget {
   const CreateUser({super.key});
@@ -44,7 +44,7 @@ class _CreateUser extends State<CreateUser> {
 
   @override
   Widget build(BuildContext context) {
-    return CreateUserScaffold(
+    return ScreenScaffold(
         title: 'Create nickname',
         child: Column(children: <Widget>[
           Form(
