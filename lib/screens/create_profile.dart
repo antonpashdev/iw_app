@@ -1,14 +1,44 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:convert';
 
-class CreateProfile extends StatelessWidget {
+class CreateProfile extends StatefulWidget {
   final User user;
 
   const CreateProfile({Key? key, required this.user}) : super(key: key);
 
+  @override
+  State<CreateProfile> createState() => _CreateProfile();
+}
+
+class _CreateProfile extends State<CreateProfile> {
+  Uint8List? imageBuffer;
+  String name = '';
+
+  User get user => widget.user;
+
   createUser() {
     print('create user');
+  }
+
+  selectUserImage() async {
+    var pickedImage = await FilePicker.platform
+        .pickFiles(type: FileType.image, allowMultiple: false);
+
+    if (pickedImage != null) {
+      String base64Image =
+          base64Encode(pickedImage.files.first.bytes as List<int>);
+
+      user.setImage = base64Image;
+
+      setState(() {
+        imageBuffer = pickedImage.files.first.bytes!;
+      });
+    }
   }
 
   @override
@@ -22,9 +52,7 @@ class CreateProfile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 InkWell(
-                  onTap: () {
-                    print('add image');
-                  },
+                  onTap: selectUserImage,
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
                       decoration: BoxDecoration(
@@ -32,10 +60,19 @@ class CreateProfile extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20)),
                       width: 70,
                       height: 70,
-                      child: const Center(
-                          child: Image(
-                              image:
-                                  AssetImage('assets/icons/add_image.png')))),
+                      clipBehavior: Clip.antiAlias,
+                      child: imageBuffer == null
+                          ? const Center(
+                              child: Image(
+                                  image:
+                                      AssetImage('assets/icons/add_image.png')))
+                          : FittedBox(
+                              clipBehavior: Clip.hardEdge,
+                              fit: BoxFit.cover,
+                              child: Image.memory(
+                                imageBuffer!,
+                              ),
+                            )),
                 ),
                 const SizedBox(width: 20),
                 Expanded(
@@ -44,7 +81,11 @@ class CreateProfile extends StatelessWidget {
                     border: UnderlineInputBorder(),
                     labelText: 'Your name',
                   ),
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    setState(() {
+                      name = value;
+                    });
+                  },
                 ))
               ],
             ),
@@ -54,8 +95,8 @@ class CreateProfile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 ElevatedButton(
-                  onPressed: user.name == '' ? null : createUser,
-                  child: const Text('Create'),
+                  onPressed: name == '' ? null : createUser,
+                  child: const Text('Next'),
                 ),
               ],
             )),
