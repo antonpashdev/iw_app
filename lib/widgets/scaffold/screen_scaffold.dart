@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
-class CreateUserScaffold extends StatelessWidget {
+class ScreenScaffold extends StatelessWidget {
   final Widget child;
   final String title;
 
-  const CreateUserScaffold(
-      {super.key, required this.child, required this.title});
+  const ScreenScaffold({super.key, required this.child, required this.title});
 
   @override
   Widget build(BuildContext context) {
