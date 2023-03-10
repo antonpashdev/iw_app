@@ -18,10 +18,13 @@ class CreateProfile extends StatefulWidget {
 class _CreateProfile extends State<CreateProfile> {
   Uint8List? imageBuffer;
   String name = '';
-
   User get user => widget.user;
+  var _isLoading = false;
 
   createUser() {
+    setState(() {
+      _isLoading = true;
+    });
     print('create user');
   }
 
@@ -94,10 +97,23 @@ class _CreateProfile extends State<CreateProfile> {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ElevatedButton(
-                  onPressed: name == '' ? null : createUser,
-                  child: const Text('Next'),
-                ),
+                _isLoading
+                    ? ElevatedButton.icon(
+                        onPressed: name == '' || _isLoading ? null : createUser,
+                        icon: Container(
+                          width: 24,
+                          height: 24,
+                          padding: const EdgeInsets.all(2.0),
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 3,
+                          ),
+                        ),
+                        label: const Text('Next'),
+                      )
+                    : ElevatedButton(
+                        onPressed: name == '' ? null : createUser,
+                        child: const Text('Next')),
               ],
             )),
           ],
