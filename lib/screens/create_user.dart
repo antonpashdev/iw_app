@@ -14,12 +14,24 @@ class _CreateUser extends State<CreateUser> {
   User user = User();
   bool isButtonDisabled = true;
 
-  // fetch from backend if user already exists and change state
+  // TODO: fetch from backend if user already exists and change state
   bool userAlreadyExists = false;
 
   final formGlobalKey = GlobalKey<FormState>();
 
   String? validateFormField(String? value) {
+    final startsWithAt = value!.startsWith(RegExp(r'^@'));
+    final containsAtOnly = value == '@';
+    final isNotEmpty = value.isNotEmpty;
+
+    if (isNotEmpty && containsAtOnly) {
+      return 'Nickname should not be empty';
+    }
+
+    if (isNotEmpty && !startsWithAt) {
+      return 'Nickname should starts with @';
+    }
+
     if (userAlreadyExists) {
       return 'A user with that nickname already exists';
     }
