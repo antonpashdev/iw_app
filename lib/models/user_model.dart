@@ -5,5 +5,5 @@ class User {
   String name = '';
   Uint8List? image;
 
-  User(this.nickname, this.name);
+  User({this.nickname = '', this.name = '', this.image});
 }
