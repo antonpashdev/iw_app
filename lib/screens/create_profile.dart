@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:file_picker/file_picker.dart';
-import 'dart:convert';
 
 class CreateProfile extends StatefulWidget {
   final User user;
@@ -16,30 +16,40 @@ class CreateProfile extends StatefulWidget {
 }
 
 class _CreateProfile extends State<CreateProfile> {
-  Uint8List? imageBuffer;
-  String name = '';
   User get user => widget.user;
-  var _isLoading = false;
+  String name = '';
 
-  createUser() {
-    setState(() {
-      _isLoading = true;
-    });
-    print('create user');
-  }
+  var _isLoading = false;
+  Uint8List? _imageBuffer;
 
   selectUserImage() async {
     var pickedImage = await FilePicker.platform
         .pickFiles(type: FileType.image, allowMultiple: false);
 
     if (pickedImage != null) {
-      String base64Image =
-          base64Encode(pickedImage.files.first.bytes as List<int>);
-
-      user.setImage = base64Image;
+      user.image = pickedImage.files.first.bytes!;
 
       setState(() {
-        imageBuffer = pickedImage.files.first.bytes!;
+        _imageBuffer = pickedImage.files.first.bytes!;
+      });
+    }
+  }
+
+  createUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      var data =
+          await usersApi.createUser(user.name, user.nickname, user.image);
+      // TODO: store token somewhere on device
+    } catch (e) {
+      // TODO: handle error (show error message to user)
+      print(e.toString());
+    } finally {
+      setState(() {
+        _isLoading = false;
       });
     }
   }
@@ -64,7 +74,7 @@ class _CreateProfile extends State<CreateProfile> {
                       width: 70,
                       height: 70,
                       clipBehavior: Clip.antiAlias,
-                      child: imageBuffer == null
+                      child: _imageBuffer == null
                           ? const Center(
                               child: Image(
                                   image:
@@ -73,7 +83,7 @@ class _CreateProfile extends State<CreateProfile> {
                               clipBehavior: Clip.hardEdge,
                               fit: BoxFit.cover,
                               child: Image.memory(
-                                imageBuffer!,
+                                _imageBuffer!,
                               ),
                             )),
                 ),
@@ -85,6 +95,7 @@ class _CreateProfile extends State<CreateProfile> {
                     labelText: 'Your name',
                   ),
                   onChanged: (value) {
+                    user.name = value;
                     setState(() {
                       name = value;
                     });
