@@ -11,7 +11,7 @@ class CreateUser extends StatefulWidget {
 }
 
 class _CreateUser extends State<CreateUser> {
-  User user = User('', '');
+  User user = User();
   bool isButtonDisabled = true;
 
   // fetch from backend if user already exists and change state
@@ -28,7 +28,7 @@ class _CreateUser extends State<CreateUser> {
 
   onNickNameChanged(value) {
     setState(() {
-      user.setNickname = value;
+      user.nickname = value;
       isButtonDisabled = value.isEmpty;
     });
   }
