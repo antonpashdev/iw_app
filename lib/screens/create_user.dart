@@ -20,9 +20,10 @@ class _CreateUser extends State<CreateUser> {
   final formGlobalKey = GlobalKey<FormState>();
 
   String? validateFormField(String? value) {
-    final startsWithAt = value!.startsWith(RegExp(r'^@'));
-    final containsAtOnly = value == '@';
-    final isNotEmpty = value.isNotEmpty;
+    final trimmedValue = value!.trim();
+    final startsWithAt = trimmedValue!.startsWith(RegExp(r'^@'));
+    final containsAtOnly = trimmedValue == '@';
+    final isNotEmpty = trimmedValue.isNotEmpty;
 
     if (isNotEmpty && containsAtOnly) {
       return 'Nickname should not be empty';
