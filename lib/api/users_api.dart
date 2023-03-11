@@ -5,14 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:iw_app/api/base_api.dart';
 
 class CreateUserResponse {
-  CreateUserResponse(String body) {
-    final data = jsonDecode(body);
-    secretLink = data['secretLink'];
-    token = data['token'];
-  }
+  final String secretLink;
+  final String token;
 
-  late String secretLink;
-  late String token;
+  const CreateUserResponse({
+    required this.secretLink,
+    required this.token,
+  });
+
+  factory CreateUserResponse.fromJson(Map<String, dynamic> json) {
+    return CreateUserResponse(
+      secretLink: json['secretLink'],
+      token: json['token'],
+    );
+  }
 }
 
 class _UsersApi extends BaseApi {
@@ -35,7 +41,7 @@ class _UsersApi extends BaseApi {
       options: Options(contentType: 'multipart/form-data'),
     );
 
-    final userResponse = CreateUserResponse(jsonDecode(response.data));
+    final userResponse = CreateUserResponse.fromJson(response.data);
     return userResponse;
   }
 }
