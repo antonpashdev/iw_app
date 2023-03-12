@@ -2,5 +2,12 @@
   "loginScreen_slogan": "Turn your contribution into equity",
   "loginScreen_textBtnTitle": "What about blockchain",
   "loginScreen_primaryBtnTitle": "Create account",
-  "loginScreen_secondaryBtnTitle": "Restore account from iCloud"
+  "loginScreen_secondaryBtnTitle": "Restore account from iCloud",
+  "homeScreen_organizationsTitle": "Organizations",
+  "homeScreen_assetsTitle": "Assets",
+  "homeScreen_createNewOrgTitle": "Create a new Organization",
+  "homeScreen_createNewOrgDesc": "Start cooperating with people in a new way",
+  "homeScreen_assetsExampleTitle": "Organization Name",
+  "homeScreen_assetsExampleEquity": "Equity",
+  "homeScreen_assetsExampleDesc": "When you start contributing you will see your Asset here"
 }
