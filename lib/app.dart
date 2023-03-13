@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
-import 'package:iw_app/screens/login_screen.dart';
+import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/storybook/app_storybook.dart';
 import 'package:iw_app/theme/app_theme.dart';
 
@@ -16,7 +16,7 @@ class App extends StatelessWidget {
       theme: getAppTheme(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const LoginScreen(),
+      home: const HomeScreen(),
       routes: {
         AppStorybook.routeName: (context) => const AppStorybook(),
       },

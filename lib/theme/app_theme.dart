@@ -42,6 +42,7 @@ ThemeData getAppTheme() {
         fontWeight: FontWeight.bold,
         fontFamily: 'SF Pro Display',
         fontSize: 18,
+        color: COLOR_ALMOST_BLACK,
       ),
     ),
     textTheme: const TextTheme(

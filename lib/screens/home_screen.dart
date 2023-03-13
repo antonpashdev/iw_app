@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
-import 'package:iw_app/screens/create_org_screen.dart';
+import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/list/assets_list_tile.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
@@ -136,6 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
             fontFamily: 'SF Pro Display',
             fontWeight: FontWeight.w500,
             fontSize: 16,
+            color: COLOR_ALMOST_BLACK,
           ),
         ),
         body: ListView(

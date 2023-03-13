@@ -1,4 +1,5 @@
 {
+  "next": "Next",
   "loginScreen_slogan": "Turn your contribution into equity",
   "loginScreen_textBtnTitle": "What about blockchain",
   "loginScreen_primaryBtnTitle": "Create account",
@@ -9,5 +10,11 @@
   "homeScreen_createNewOrgDesc": "Start cooperating with people in a new way",
   "homeScreen_assetsExampleTitle": "Organization Name",
   "homeScreen_assetsExampleEquity": "Equity",
-  "homeScreen_assetsExampleDesc": "When you start contributing you will see your Asset here"
+  "homeScreen_assetsExampleDesc": "When you start contributing you will see your Asset here",
+  "createOrgScreen_usernameHelperText": "This username is ID of your organization. It can’t be changed. Make sure to create appropriate username to use it forever.",
+  "createOrgScreen_title": "Organization Account",
+  "createOrgNameScreen_title": "Organization Name",
+  "createOrgNameScreen_nameLabel": "Organization Name",
+  "createOrgNameScreen_linkLabel": "Link (optional)",
+  "createOrgNameScreen_descriptionLabel": "Description (optional)"
 }
