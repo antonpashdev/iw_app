@@ -37,6 +37,12 @@ ThemeData getAppTheme() {
       foregroundColor: COLOR_ALMOST_BLACK,
       backgroundColor: COLOR_WHITE,
       elevation: 0,
+      titleSpacing: 20,
+      titleTextStyle: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontFamily: 'SF Pro Display',
+        fontSize: 18,
+      ),
     ),
     textTheme: const TextTheme(
       headlineLarge: TextStyle(

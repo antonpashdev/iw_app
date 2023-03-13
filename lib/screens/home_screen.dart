@@ -109,11 +109,33 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           );
 
-    return Scaffold(
-      backgroundColor: COLOR_WHITE,
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 20),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: COLOR_WHITE,
+        appBar: AppBar(
+          title: Row(
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: COLOR_GRAY,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Text('@my_account'),
+            ],
+          ),
+          centerTitle: false,
+          titleTextStyle: const TextStyle(
+            fontFamily: 'SF Pro Display',
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          ),
+        ),
+        body: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 10),
           children: [
             AppPadding(
               child: Text(
@@ -145,18 +167,22 @@ class _HomeScreenState extends State<HomeScreen> {
               child: buildAssetExample(),
             ),
             if (organizations.isEmpty)
-              Column(
-                children: [
-                  const SizedBox(height: 15),
-                  SvgPicture.asset('assets/icons/arrow_up_big.svg'),
-                  const SizedBox(height: 15),
-                  Text(
-                    AppLocalizations.of(context)!.homeScreen_assetsExampleDesc,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
+              AppPadding(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 15),
+                    SvgPicture.asset('assets/icons/arrow_up_big.svg'),
+                    const SizedBox(height: 15),
+                    Text(
+                      AppLocalizations.of(context)!
+                          .homeScreen_assetsExampleDesc,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
           ],
         ),
