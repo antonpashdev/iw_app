@@ -61,6 +61,10 @@ ThemeData getAppTheme() {
         fontWeight: FontWeight.bold,
         color: COLOR_ALMOST_BLACK,
       ),
+      bodyLarge: TextStyle(
+        fontSize: 18,
+        color: COLOR_ALMOST_BLACK,
+      ),
       bodyMedium: TextStyle(
         fontSize: 16,
         color: COLOR_ALMOST_BLACK,
@@ -69,6 +73,32 @@ ThemeData getAppTheme() {
         fontSize: 14,
         color: COLOR_ALMOST_BLACK,
       ),
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+      labelStyle: TextStyle(
+        color: COLOR_GRAY2,
+        fontWeight: FontWeight.w500,
+      ),
+      floatingLabelStyle: TextStyle(
+        color: COLOR_BLACK,
+        fontWeight: FontWeight.w400,
+      ),
+      prefixStyle: TextStyle(
+        color: COLOR_BLACK,
+        fontSize: 18,
+        fontWeight: FontWeight.w500,
+      ),
+      helperStyle: TextStyle(color: COLOR_GRAY),
+      enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: COLOR_LIGHT_GRAY,
+        ),
+      ),
+      focusedBorder: UnderlineInputBorder(
+        borderSide: BorderSide(width: 1),
+      ),
+      contentPadding: EdgeInsets.only(bottom: 10),
+      isDense: true,
     ),
   );
 }
@@ -79,6 +109,7 @@ const Color COLOR_ALMOST_BLACK = Color(0xff222222);
 const Color COLOR_LIGHT_GRAY = Color(0xffEEF0F3);
 const Color COLOR_LIGHT_GRAY2 = Color(0xffC4C4C4);
 const Color COLOR_GRAY = Color(0xff87899B);
+const Color COLOR_GRAY2 = Color(0xffB8BFCA);
 const Color COLOR_GREEN = Color(0xff0E9E17);
 
 const Color APP_BODY_BG = COLOR_WHITE;
