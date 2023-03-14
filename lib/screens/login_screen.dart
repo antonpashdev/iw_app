@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/screens/nickname_screen.dart';
+import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
-import 'package:iw_app/widgets/scaffold/app_scaffold.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      child: SafeArea(
+    return Scaffold(
+      backgroundColor: APP_BODY_BG,
+      body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: Column(
@@ -80,11 +82,18 @@ class LoginScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             ElevatedButton(
-                              onPressed: () {},
                               child: Text(
                                 AppLocalizations.of(context)!
                                     .loginScreen_primaryBtnTitle,
                               ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const NicknameScreen()),
+                                );
+                              },
                             ),
                             const SizedBox(height: 10),
                             SecondaryButton(
