@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/models/user_model.dart';
-import 'package:iw_app/screens/create_profile.dart';
+import 'package:iw_app/screens/profile_name_screen.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
-class CreateUser extends StatefulWidget {
-  const CreateUser({super.key});
+class NicknameScreen extends StatefulWidget {
+  const NicknameScreen({super.key});
 
   @override
-  State<CreateUser> createState() => _CreateUser();
+  State<NicknameScreen> createState() => _NicknameScreen();
 }
 
-class _CreateUser extends State<CreateUser> {
+class _NicknameScreen extends State<NicknameScreen> {
   User user = User();
   bool isButtonDisabled = true;
 
@@ -21,7 +21,8 @@ class _CreateUser extends State<CreateUser> {
 
   String? validateFormField(String? value) {
     final trimmedValue = value!.trim();
-    final startsWithAt = trimmedValue!.startsWith(RegExp(r'^@'));
+    print(trimmedValue);
+    final startsWithAt = trimmedValue.startsWith(RegExp(r'^@'));
     final containsAtOnly = trimmedValue == '@';
     final isNotEmpty = trimmedValue.isNotEmpty;
 
