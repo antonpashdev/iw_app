@@ -100,25 +100,25 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.createOrgNameScreen_title),
         ),
-        body: Stack(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            KeyboardDismissableListView(
-              padding: const EdgeInsets.all(30),
-              children: [
-                buildForm(),
-              ],
-            ),
-            Positioned(
-              bottom: 15,
-              width: MediaQuery.of(context).size.width,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
-                child: ElevatedButton(
-                  onPressed: isBtnDisabled ? null : handleNextPressed,
-                  child: Text(AppLocalizations.of(context)!.next),
-                ),
+            Expanded(
+              child: KeyboardDismissableListView(
+                padding: const EdgeInsets.all(30),
+                children: [
+                  buildForm(),
+                ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 50),
+              child: ElevatedButton(
+                onPressed: isBtnDisabled ? null : handleNextPressed,
+                child: Text(AppLocalizations.of(context)!.next),
+              ),
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
