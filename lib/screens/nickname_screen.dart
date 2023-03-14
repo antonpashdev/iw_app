@@ -21,7 +21,6 @@ class _NicknameScreen extends State<NicknameScreen> {
 
   String? validateFormField(String? value) {
     final trimmedValue = value!.trim();
-    print(trimmedValue);
     final startsWithAt = trimmedValue.startsWith(RegExp(r'^@'));
     final containsAtOnly = trimmedValue == '@';
     final isNotEmpty = trimmedValue.isNotEmpty;
