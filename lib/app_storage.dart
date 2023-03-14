@@ -39,12 +39,11 @@ class _AppStorage {
 
   write(String key, dynamic value) async {
     try {
-      final value = await getValue(key);
-      if (value != null) {
+      final storedValue = await getValue(key);
+      if (storedValue != null) {
         throw Exception('value already exists for $key, deleting it first');
       }
       await _storage.write(key: key, value: value.toString());
-      print('written key: $key, value: $value');
     } catch (error) {
       print(error.toString());
     }
