@@ -1,5 +1,6 @@
 {
   "next": "Next",
+  "required": "is required",
   "loginScreen_slogan": "Turn your contribution into equity",
   "loginScreen_textBtnTitle": "What about blockchain",
   "loginScreen_primaryBtnTitle": "Create account",
@@ -14,6 +15,7 @@
   "createOrgScreen_usernameHelperText": "This username is ID of your organization. It can’t be changed. Make sure to create appropriate username to use it forever.",
   "createOrgScreen_title": "Organization Account",
   "createOrgNameScreen_title": "Organization Name",
+  "createOrgNameScreen_logoLabel": "Organization Logo",
   "createOrgNameScreen_nameLabel": "Organization Name",
   "createOrgNameScreen_linkLabel": "Link (optional)",
   "createOrgNameScreen_descriptionLabel": "Description (optional)"

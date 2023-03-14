@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_model.dart';
@@ -25,6 +26,24 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
     }
   }
 
+  selectLogo() async {
+    var pickedImage = await FilePicker.platform
+        .pickFiles(type: FileType.image, allowMultiple: false);
+
+    if (pickedImage != null) {
+      setState(() {
+        widget.organization.logo = pickedImage.files.first.bytes!;
+      });
+    }
+  }
+
+  String? requiredLogoValidator(String? value) {
+    if (widget.organization.logo == null) {
+      return '${AppLocalizations.of(context)!.createOrgNameScreen_logoLabel} ${AppLocalizations.of(context)!.required}';
+    }
+    return null;
+  }
+
   buildForm() {
     return InputForm(
       formKey: formKey,
@@ -33,11 +52,27 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
           Row(
             children: [
               Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE2E2E8),
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 width: 70,
                 height: 70,
-                decoration: BoxDecoration(
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: selectLogo,
                   borderRadius: BorderRadius.circular(20),
-                  color: COLOR_LIGHT_GRAY,
+                  child: widget.organization.logo == null
+                      ? const Center(
+                          child: Image(
+                            image: AssetImage('assets/icons/add_image.png'),
+                          ),
+                        )
+                      : FittedBox(
+                          clipBehavior: Clip.hardEdge,
+                          fit: BoxFit.cover,
+                          child: Image.memory(widget.organization.logo!),
+                        ),
                 ),
               ),
               const SizedBox(width: 20),
@@ -46,7 +81,13 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
                   labelText: AppLocalizations.of(context)!
                       .createOrgNameScreen_nameLabel,
                   textInputAction: TextInputAction.next,
-                  validator: requiredField,
+                  validator: multiValidate([
+                    requiredField(
+                      AppLocalizations.of(context)!
+                          .createOrgNameScreen_nameLabel,
+                    ),
+                    requiredLogoValidator,
+                  ]),
                   onChanged: (value) {
                     setState(() {
                       widget.organization.name = value;

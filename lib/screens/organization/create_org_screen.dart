@@ -35,7 +35,7 @@ class _CreateOrgScreenState extends State<CreateOrgScreen> {
             organization.username = value;
           });
         },
-        validator: requiredField,
+        validator: requiredField('organization_username'),
         textInputAction: TextInputAction.done,
         onFieldSubmitted: (value) {
           setState(() {
