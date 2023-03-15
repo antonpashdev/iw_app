@@ -6,6 +6,7 @@ import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:iw_app/l10n/generated/app_localizations.dart';
 
 class CreateProfile extends StatefulWidget {
   final User user;
@@ -57,8 +58,10 @@ class _CreateProfile extends State<CreateProfile> {
 
   @override
   Widget build(BuildContext context) {
+    String? nextButtonText = AppLocalizations.of(context)!.common_next;
+
     return ScreenScaffold(
-        title: 'Profile',
+        title: AppLocalizations.of(context)!.profileScreen_title,
         child: Column(
           children: <Widget>[
             Row(
@@ -91,9 +94,10 @@ class _CreateProfile extends State<CreateProfile> {
                 const SizedBox(width: 20),
                 Expanded(
                     child: TextFormField(
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: 'Your name',
+                  decoration: InputDecoration(
+                    border: const UnderlineInputBorder(),
+                    labelText:
+                        AppLocalizations.of(context)!.profileScreen_name_label,
                   ),
                   onChanged: (value) {
                     user.name = value;
@@ -121,11 +125,11 @@ class _CreateProfile extends State<CreateProfile> {
                             strokeWidth: 3,
                           ),
                         ),
-                        label: const Text('Next'),
+                        label: Text(nextButtonText),
                       )
                     : ElevatedButton(
                         onPressed: name == '' ? null : createUser,
-                        child: const Text('Next')),
+                        child: Text(nextButtonText)),
               ],
             )),
           ],

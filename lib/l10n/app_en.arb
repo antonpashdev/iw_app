@@ -9,5 +9,7 @@
   "nicknameScreen_title": "Create nickname",
   "nicknameScreen_input_label": "@nickname",
   "nicknameScreen_input_description": "Your nickname it’s your ID. It can’t be changed. Make sure to create appropriate nickname to use it forever.",
+  "profileScreen_title": "Profile",
+  "profileScreen_name_label": "Your name",
   "common_next": "Next"
 }
