@@ -9,9 +9,9 @@ class LoginLinkScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print(link);
-    return const ScreenScaffold(
+    return ScreenScaffold(
       title: 'Link is Your Login',
-      child: Text('Link is your login'),
+      child: Text('Link is your login: $link'),
     );
   }
 }
