@@ -2,5 +2,12 @@
   "loginScreen_slogan": "Turn your contribution into equity",
   "loginScreen_textBtnTitle": "What about blockchain",
   "loginScreen_primaryBtnTitle": "Create account",
-  "loginScreen_secondaryBtnTitle": "Restore account from iCloud"
+  "loginScreen_secondaryBtnTitle": "Restore account from iCloud",
+  "nickname_error_empty": "Nickname should not be empty",
+  "nickname_error_should_starts_with_at": "Nickname should starts with @",
+  "nickname_error_already_exists": "A user with that nickname already exists",
+  "nicknameScreen_title": "Create nickname",
+  "nicknameScreen_input_label": "@nickname",
+  "nicknameScreen_input_description": "Your nickname it’s your ID. It can’t be changed. Make sure to create appropriate nickname to use it forever.",
+  "common_next": "Next"
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/profile_name_screen.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/l10n/generated/app_localizations.dart';
 
 class NicknameScreen extends StatefulWidget {
   const NicknameScreen({super.key});
@@ -26,15 +27,15 @@ class _NicknameScreen extends State<NicknameScreen> {
     final isNotEmpty = trimmedValue.isNotEmpty;
 
     if (isNotEmpty && containsAtOnly) {
-      return 'Nickname should not be empty';
+      return AppLocalizations.of(context)?.nickname_error_empty;
     }
 
     if (isNotEmpty && !startsWithAt) {
-      return 'Nickname should starts with @';
+      return AppLocalizations.of(context)?.nickname_error_should_starts_with_at;
     }
 
     if (userAlreadyExists) {
-      return 'A user with that nickname already exists';
+      return AppLocalizations.of(context)?.nickname_error_already_exists;
     }
     return null;
   }
@@ -57,16 +58,21 @@ class _NicknameScreen extends State<NicknameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String? inputDescription =
+        AppLocalizations.of(context)!.nicknameScreen_input_description;
+    String? labelText =
+        AppLocalizations.of(context)!.nicknameScreen_input_label;
+
     return ScreenScaffold(
-        title: 'Create nickname',
+        title: AppLocalizations.of(context)!.nicknameScreen_title,
         child: Column(children: <Widget>[
           Form(
               key: formGlobalKey,
               child: TextFormField(
                 validator: validateFormField,
-                decoration: const InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: '@nickname',
+                decoration: InputDecoration(
+                  border: const UnderlineInputBorder(),
+                  labelText: labelText,
                 ),
                 onChanged: onNickNameChanged,
               )),
@@ -76,12 +82,12 @@ class _NicknameScreen extends State<NicknameScreen> {
                   child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
-                      children: const <Widget>[
+                      children: <Widget>[
                         Flexible(
                             child: Text(
-                          'Your nickname it’s your ID. It can’t be changed. Make sure to create appropriate nickname to use it forever.',
+                          inputDescription,
                           textAlign: TextAlign.left,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color(0xff87899B),
                             fontWeight: FontWeight.w400,
                             fontSize: 14,
@@ -96,7 +102,7 @@ class _NicknameScreen extends State<NicknameScreen> {
               children: [
                 ElevatedButton(
                   onPressed: isButtonDisabled ? null : handleNext,
-                  child: const Text('Next'),
+                  child: Text(AppLocalizations.of(context)!.common_next),
                 ),
               ],
             ),
