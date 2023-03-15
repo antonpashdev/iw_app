@@ -38,6 +38,17 @@ class _UsersApi extends BaseApi {
     final userResponse = CreateUserResponse.fromJson(response.data);
     return userResponse;
   }
+
+  Future<bool> isUserExists(String nickName) async {
+    try {
+      await client.post('/users/exists', data: {
+        'nickname': nickName,
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
 
 final usersApi = _UsersApi();
