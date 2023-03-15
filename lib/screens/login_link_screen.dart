@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
@@ -7,6 +8,24 @@ class LoginLinkScreen extends StatelessWidget {
   final String link;
 
   const LoginLinkScreen({Key? key, required this.link}) : super(key: key);
+
+  callSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 70,
+          left: 20,
+          right: 20,
+        ),
+        content: Text(AppLocalizations.of(context)!.common_link_copied,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white)),
+        duration: const Duration(seconds: 2),
+        backgroundColor: Colors.black.withOpacity(0.7),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        )));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +100,10 @@ class LoginLinkScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
                             SecondaryButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Clipboard.setData(ClipboardData(text: link));
+                                callSnackBar(context);
+                              },
                               child: Text(AppLocalizations.of(context)!
                                   .common_copy_the_link),
                             ),

@@ -17,5 +17,6 @@
   "linkIsYourLoginScreen_description_2_2": "copy the link and save it the safe place ",
   "linkIsYourLoginScreen_description_2_3": "to be able to log in to your account.",
   "common_next": "Next",
-  "common_copy_the_link": "Copy the Link"
+  "common_copy_the_link": "Copy the Link",
+  "common_link_copied": "Link copied"
 }
