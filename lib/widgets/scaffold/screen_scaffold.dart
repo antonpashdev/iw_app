@@ -11,16 +11,6 @@ class ScreenScaffold extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        leading: GestureDetector(
-          child: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 18,
-            color: Colors.black,
-          ),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
