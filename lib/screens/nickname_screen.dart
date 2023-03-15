@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/profile_name_screen.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -15,7 +16,6 @@ class _NicknameScreen extends State<NicknameScreen> {
   User user = User();
   bool isButtonDisabled = true;
 
-  // TODO: fetch from backend if user already exists and change state
   bool userAlreadyExists = false;
 
   final formGlobalKey = GlobalKey<FormState>();
@@ -47,8 +47,18 @@ class _NicknameScreen extends State<NicknameScreen> {
     });
   }
 
-  handleNext() {
-    if (formGlobalKey.currentState!.validate()) {
+  handleNext() async {
+    bool isNickNameExists = await usersApi.isUserExists(user.nickname);
+
+    setState(() {
+      userAlreadyExists = isNickNameExists;
+    });
+
+    navigateTo(formGlobalKey.currentState!.validate() && !isNickNameExists);
+  }
+
+  navigateTo(bool isNavigationAllowed) {
+    if (isNavigationAllowed) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => CreateProfile(user: user)),
