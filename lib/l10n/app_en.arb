@@ -11,5 +11,11 @@
   "nicknameScreen_input_description": "Your nickname it’s your ID. It can’t be changed. Make sure to create appropriate nickname to use it forever.",
   "profileScreen_title": "Profile",
   "profileScreen_name_label": "Your name",
-  "common_next": "Next"
+  "linkIsYourLoginScreen_title": "Link is your login",
+  "linkIsYourLoginScreen_description1": "This unique link is a login to your account.",
+  "linkIsYourLoginScreen_description_2_1": "Please, ",
+  "linkIsYourLoginScreen_description_2_2": "copy the link and save it the safe place ",
+  "linkIsYourLoginScreen_description_2_3": "to be able to log in to your account.",
+  "common_next": "Next",
+  "common_copy_the_link": "Copy the Link"
 }
