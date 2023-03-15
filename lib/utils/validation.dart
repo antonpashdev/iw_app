@@ -9,6 +9,17 @@ AppLocalizations? _appLocalizations = lookupAppLocalizations(
   ),
 );
 
+String? Function(String?) numberField(String fieldName) {
+  return (value) {
+    if (value != null &&
+        value.trim().isNotEmpty &&
+        int.tryParse(value) == null) {
+      return '$fieldName must be a number';
+    }
+    return null;
+  };
+}
+
 String? Function(String?) requiredField(String fieldName) {
   return (value) {
     if (value == null || value.trim().isEmpty) {

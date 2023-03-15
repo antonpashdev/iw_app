@@ -164,3 +164,78 @@ class AppTextFormField extends StatelessWidget {
     );
   }
 }
+
+class AppTextFormFieldBorderedSm extends StatelessWidget {
+  final TextAlign textAlign;
+  final Widget? label;
+  final Widget? suffix;
+  final Function(String value)? onChanged;
+  final Function(String? value)? onSaved;
+  final Function(String value)? onFieldSubmitted;
+  final String? Function(String?)? validator;
+  final TextInputType? inputType;
+  final TextStyle? errorStyle;
+
+  const AppTextFormFieldBorderedSm({
+    Key? key,
+    this.textAlign = TextAlign.start,
+    this.label,
+    this.suffix,
+    this.onChanged,
+    this.onSaved,
+    this.onFieldSubmitted,
+    this.validator,
+    this.inputType,
+    this.errorStyle,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      keyboardType: inputType,
+      textAlign: textAlign,
+      onChanged: onChanged,
+      onSaved: onSaved,
+      onFieldSubmitted: onFieldSubmitted,
+      validator: validator,
+      decoration: InputDecoration(
+        errorStyle: errorStyle,
+        floatingLabelBehavior: FloatingLabelBehavior.never,
+        label: label,
+        suffix: suffix,
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 10,
+          horizontal: 15,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            width: 1,
+            color: COLOR_LIGHT_GRAY,
+          ),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            width: 1,
+            color: COLOR_ALMOST_BLACK,
+          ),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            width: 1,
+            color: Colors.red,
+          ),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            width: 1,
+            color: Colors.red,
+          ),
+          borderRadius: BorderRadius.circular(6),
+        ),
+      ),
+    );
+  }
+}

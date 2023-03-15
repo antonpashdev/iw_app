@@ -6,7 +6,7 @@ class Organization {
   String? link;
   String? description;
   Uint8List? logo;
-  OrganizationSettings? settings;
+  OrganizationSettings settings = OrganizationSettings();
 
   Organization({
     this.username,
@@ -14,7 +14,6 @@ class Organization {
     this.link,
     this.description,
     this.logo,
-    this.settings,
   });
 
   @override
@@ -25,8 +24,22 @@ username: $username
 name: $name
 link: $link
 description: $description
+settings:
+$settings
 ''';
   }
 }
 
-class OrganizationSettings {}
+class OrganizationSettings {
+  int treasury = 0;
+
+  OrganizationSettings({this.treasury = 0});
+
+  @override
+  String toString() {
+    return '''
+  ${super.toString()}
+  treasury: $treasury
+''';
+  }
+}
