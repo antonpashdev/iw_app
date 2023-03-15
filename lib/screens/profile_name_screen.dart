@@ -59,10 +59,10 @@ class _CreateProfile extends State<CreateProfile> {
   }
 
   handleNext(String link) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoginLinkScreen(link: link)),
-    );
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => LoginLinkScreen(link: link)),
+        (Route<dynamic> route) => false);
   }
 
   @override
