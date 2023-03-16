@@ -18,5 +18,15 @@
   "createOrgNameScreen_logoLabel": "Organization Logo",
   "createOrgNameScreen_nameLabel": "Organization Name",
   "createOrgNameScreen_linkLabel": "Link (optional)",
-  "createOrgNameScreen_descriptionLabel": "Description (optional)"
+  "createOrgNameScreen_descriptionLabel": "Description (optional)",
+  "createOrgSettingsScreen_title": "Treasury",
+  "createOrgSettingsScreen_description": "Set percentage of income that will be automatically reserved for organization needs.",
+  "createOrgSettingsScreen_treasuryLabel": "Treasury",
+  "createOrgMemberScreen_title": "The First Member",
+  "createOrgMemberScreen_description": "Set conditions for yourself",
+  "createOrgMemberScreen_occupationLabel": "Enter Your Occupation",
+  "createOrgMemberScreen_occupationErrorLabel": "Occupation",
+  "createOrgMemberScreen_impactRatioLabel": "Impact Ratio",
+  "createOrgMemberScreen_monthlyCompensationLabel": "Monthly Compensation",
+  "createOrgMemberScreen_autoContributionLabel": "Auto Contribution"
 }

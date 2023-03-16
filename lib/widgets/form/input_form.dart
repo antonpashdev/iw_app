@@ -90,6 +90,7 @@ class AppTextFormField extends StatelessWidget {
   final int maxLines;
   final TextInputAction? textInputAction;
   final String? initialValue;
+  final FloatingLabelBehavior? floatingLabelBehavior;
 
   const AppTextFormField({
     Key? key,
@@ -112,6 +113,7 @@ class AppTextFormField extends StatelessWidget {
     this.maxLines = 1,
     this.textInputAction,
     this.initialValue,
+    this.floatingLabelBehavior,
   }) : super(key: key);
 
   @override
@@ -152,6 +154,7 @@ class AppTextFormField extends StatelessWidget {
       style:
           Theme.of(context).textTheme.bodyLarge!.copyWith(color: COLOR_BLACK),
       decoration: InputDecoration(
+        floatingLabelBehavior: floatingLabelBehavior,
         errorText: errorText,
         counter: const SizedBox(height: 0),
         hintText: hintText,
@@ -165,9 +168,16 @@ class AppTextFormField extends StatelessWidget {
   }
 }
 
-class AppTextFormFieldBorderedSm extends StatelessWidget {
+enum AppTextFormSize {
+  small,
+  medium,
+  large,
+}
+
+class AppTextFormFieldBordered extends StatelessWidget {
   final TextAlign textAlign;
   final Widget? label;
+  final Widget? prefix;
   final Widget? suffix;
   final Function(String value)? onChanged;
   final Function(String? value)? onSaved;
@@ -175,11 +185,16 @@ class AppTextFormFieldBorderedSm extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextInputType? inputType;
   final TextStyle? errorStyle;
+  final AppTextFormSize size;
+  final bool? enabled;
+  final String? initialValue;
+  final TextEditingController? controller;
 
-  const AppTextFormFieldBorderedSm({
+  const AppTextFormFieldBordered({
     Key? key,
     this.textAlign = TextAlign.start,
     this.label,
+    this.prefix,
     this.suffix,
     this.onChanged,
     this.onSaved,
@@ -187,53 +202,75 @@ class AppTextFormFieldBorderedSm extends StatelessWidget {
     this.validator,
     this.inputType,
     this.errorStyle,
+    this.size = AppTextFormSize.medium,
+    this.enabled = true,
+    this.initialValue,
+    this.controller,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final contentPadding = EdgeInsets.symmetric(
+      vertical: size == AppTextFormSize.small ? 10 : 18,
+      horizontal: 15,
+    );
+    final borderRadius = BorderRadius.circular(
+      size == AppTextFormSize.small ? 6 : 12,
+    );
+
     return TextFormField(
+      enabled: enabled,
+      controller: controller,
       keyboardType: inputType,
       textAlign: textAlign,
       onChanged: onChanged,
       onSaved: onSaved,
       onFieldSubmitted: onFieldSubmitted,
       validator: validator,
+      initialValue: initialValue,
       decoration: InputDecoration(
         errorStyle: errorStyle,
         floatingLabelBehavior: FloatingLabelBehavior.never,
         label: label,
+        prefix: prefix,
         suffix: suffix,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 10,
-          horizontal: 15,
-        ),
+        contentPadding: contentPadding,
+        filled: enabled != null && !enabled!,
+        fillColor: COLOR_LIGHT_GRAY,
         enabledBorder: OutlineInputBorder(
           borderSide: const BorderSide(
             width: 1,
             color: COLOR_LIGHT_GRAY,
           ),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: borderRadius,
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(
             width: 1,
             color: COLOR_ALMOST_BLACK,
           ),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: borderRadius,
         ),
         errorBorder: OutlineInputBorder(
           borderSide: const BorderSide(
             width: 1,
             color: Colors.red,
           ),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: borderRadius,
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderSide: const BorderSide(
             width: 1,
             color: Colors.red,
           ),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: borderRadius,
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            width: 1,
+            color: COLOR_LIGHT_GRAY,
+          ),
+          borderRadius: borderRadius,
         ),
       ),
     );

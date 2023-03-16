@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/screens/organization/create_org_settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
@@ -22,7 +23,13 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
 
   handleNextPressed() {
     if (formKey.currentState!.validate()) {
-      print(widget.organization);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => CreateOrgSettingsScreen(
+            organization: widget.organization,
+          ),
+        ),
+      );
     }
   }
 

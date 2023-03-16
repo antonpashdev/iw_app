@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/screens/organization/create_org_member_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
@@ -22,35 +23,40 @@ class _CreateOrgSettingsScreenState extends State<CreateOrgSettingsScreen> {
     return InputForm(
       formKey: formKey,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 10),
-          const Text(
-            'Set percentage of income that will be automatically reserved for organization needs.',
-            style: TextStyle(color: COLOR_GRAY),
+          Text(
+            AppLocalizations.of(context)!.createOrgSettingsScreen_description,
+            style: const TextStyle(color: COLOR_GRAY),
           ),
           const SizedBox(height: 40),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Flexible(
-                flex: 4,
+              Flexible(
+                flex: 3,
                 child: Text(
-                  'Treasury',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  AppLocalizations.of(context)!
+                      .createOrgSettingsScreen_treasuryLabel,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               Flexible(
                 flex: 1,
-                child: AppTextFormFieldBorderedSm(
+                child: AppTextFormFieldBordered(
                   textAlign: TextAlign.center,
                   label: const Text('%'),
                   suffix: const Text('%'),
                   inputType: TextInputType.number,
                   validator: numberField('Treasury'),
                   errorStyle: const TextStyle(height: 0.01),
+                  size: AppTextFormSize.small,
                   onChanged: (value) {
-                    widget.organization.settings.treasury =
-                        int.tryParse(value) ?? 0;
+                    setState(() {
+                      widget.organization.settings.treasury =
+                          int.tryParse(value) ?? 0;
+                    });
                   },
                 ),
               ),
@@ -61,22 +67,30 @@ class _CreateOrgSettingsScreenState extends State<CreateOrgSettingsScreen> {
     );
   }
 
-  handleNextPressed() {
+  handleNextPressed(BuildContext context) {
     if (formKey.currentState!.validate()) {
-      print(widget.organization);
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => CreateOrgMemberScreen(
+            organization: widget.organization,
+          ),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final isBtnDisabled =
-        formKey.currentState != null && formKey.currentState!.validate();
+        formKey.currentState != null && !formKey.currentState!.validate();
 
     return SafeArea(
       child: Scaffold(
         backgroundColor: COLOR_WHITE,
         appBar: AppBar(
-          title: const Text('Treasury'),
+          title: Text(
+            AppLocalizations.of(context)!.createOrgSettingsScreen_title,
+          ),
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -87,9 +101,10 @@ class _CreateOrgSettingsScreenState extends State<CreateOrgSettingsScreen> {
                 child: buildForm(),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ElevatedButton(
-                  onPressed: isBtnDisabled ? null : handleNextPressed,
+                  onPressed:
+                      isBtnDisabled ? null : () => handleNextPressed(context),
                   child: Text(AppLocalizations.of(context)!.next),
                 ),
               ),
