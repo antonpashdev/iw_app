@@ -16,17 +16,12 @@ class _OrgsApi extends BaseApi {
 
   Future<Response> createOrg(Organization organization) {
     final orgMap = organization.toMap();
+    orgMap['logo'] = MultipartFile.fromBytes(
+      organization.logo!,
+      filename: 'logo',
+    );
 
     final body = FormData.fromMap(orgMap);
-    body.files.add(
-      MapEntry(
-        'logo',
-        MultipartFile.fromBytes(
-          organization.logo!,
-          filename: 'logo',
-        ),
-      ),
-    );
 
     return client.post('/orgs', data: body);
   }

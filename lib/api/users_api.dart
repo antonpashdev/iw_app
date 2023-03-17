@@ -22,12 +22,20 @@ class CreateUserResponse {
 class _UsersApi extends BaseApi {
   // POST create user
   Future<CreateUserResponse> createUser(
-      String name, String nickName, Uint8List? avatar) async {
-    FormData payload = FormData.fromMap({
+    String name,
+    String nickName,
+    Uint8List? avatar,
+  ) async {
+    final Map<String, dynamic> userMap = {
       'name': name,
       'nickname': nickName,
-      'avatar': avatar != null ? MultipartFile.fromBytes(avatar) : null,
-    });
+    };
+
+    if (avatar != null) {
+      userMap['avatar'] = MultipartFile.fromBytes(avatar, filename: 'avatar');
+    }
+
+    FormData payload = FormData.fromMap(userMap);
 
     final response = await client.post(
       '/users',
