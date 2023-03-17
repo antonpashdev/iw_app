@@ -26,7 +26,6 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
   final compensationCtrl = TextEditingController();
 
   OrganizationMember member = OrganizationMember(
-    userId: authApi.userId,
     role: MemberRole.CoOwner,
   );
   bool isLoading = false;
@@ -160,6 +159,7 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
       try {
         final response = await orgsApi.createOrg(widget.organization);
         final orgId = response.data['_id'];
+        member.userId = await authApi.userId;
         await orgsApi.addMemberToOrg(orgId, member);
 
         if (context.mounted) {

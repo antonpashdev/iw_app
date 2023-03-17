@@ -8,7 +8,7 @@ class BaseApi {
   ));
 
   BaseApi() {
-    _dioClient.interceptors.add(TokenInterceptor());
+    _dioClient.interceptors.add(tokenInterceptor);
   }
 
   @protected
@@ -17,10 +17,12 @@ class BaseApi {
   }
 }
 
-class TokenInterceptor extends Interceptor {
-  @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    super.onRequest(options, handler);
-    options.headers.addAll({'Authorization': 'Bearer ${authApi.token}'});
-  }
-}
+final tokenInterceptor = InterceptorsWrapper(
+  onRequest: (options, handler) async {
+    final token = await authApi.token;
+    if (token != null) {
+      options.headers.addAll({'Authorization': 'Bearer $token'});
+    }
+    handler.next(options);
+  },
+);
