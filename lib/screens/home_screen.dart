@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/list/assets_list_tile.dart';
@@ -16,6 +18,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<int> organizations = [];
+  late Future<User> futureUser;
+
+  @override
+  void initState() {
+    super.initState();
+    futureUser =
+        authApi.getMe().then((response) => User.fromJson(response.data));
+  }
 
   Widget buildCallToCreateCard(BuildContext context) {
     return Row(
@@ -117,19 +127,36 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         backgroundColor: COLOR_WHITE,
         appBar: AppBar(
-          title: Row(
-            children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: COLOR_GRAY,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              const SizedBox(width: 10),
-              const Text('@my_account'),
-            ],
+          title: FutureBuilder(
+            future: futureUser,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Container();
+              }
+              final user = snapshot.data;
+
+              return Row(
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: COLOR_GRAY,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: Image.memory(
+                        user!.image!,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(user.nickname),
+                ],
+              );
+            },
           ),
           centerTitle: false,
           titleTextStyle: const TextStyle(
