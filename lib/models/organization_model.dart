@@ -28,6 +28,16 @@ settings:
 $settings
 ''';
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'username': username,
+      'name': name,
+      'link': link,
+      'description': description,
+      'settings[treasury]': settings.treasury,
+    };
+  }
 }
 
 class OrganizationSettings {

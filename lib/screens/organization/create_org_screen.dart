@@ -93,6 +93,7 @@ class _CreateOrgScreenState extends State<CreateOrgScreen> {
         prefix: '@',
         suffix: buildSuffix(),
         onChanged: (value) {
+          organization.username = value;
           searchSubject.add(value);
         },
         validator: multiValidate([

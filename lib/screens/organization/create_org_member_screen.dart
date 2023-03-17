@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iw_app/api/auth_api.dart';
+import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
@@ -22,7 +25,11 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
   final formKey = GlobalKey<FormState>();
   final compensationCtrl = TextEditingController();
 
-  OrganizationMember member = OrganizationMember();
+  OrganizationMember member = OrganizationMember(
+    userId: authApi.userId,
+    role: MemberRole.CoOwner,
+  );
+  bool isLoading = false;
 
   buildForm() {
     return InputForm(
@@ -145,9 +152,29 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
     );
   }
 
-  handleNextPressed() {
+  handleNextPressed() async {
     if (formKey.currentState!.validate()) {
-      print(member);
+      setState(() {
+        isLoading = true;
+      });
+      try {
+        final response = await orgsApi.createOrg(widget.organization);
+        final orgId = response.data['_id'];
+        await orgsApi.addMemberToOrg(orgId, member);
+
+        if (context.mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
+            (route) => false,
+          );
+        }
+      } catch (err) {
+        print(err);
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -175,8 +202,10 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50),
               child: ElevatedButton(
-                onPressed: handleNextPressed,
-                child: Text(AppLocalizations.of(context)!.next),
+                onPressed: isLoading ? null : handleNextPressed,
+                child: isLoading
+                    ? const CircularProgressIndicator(color: COLOR_GRAY)
+                    : Text(AppLocalizations.of(context)!.next),
               ),
             ),
             const SizedBox(height: 20),
