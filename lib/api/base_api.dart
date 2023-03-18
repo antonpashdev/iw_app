@@ -4,7 +4,8 @@ import 'package:iw_app/api/auth_api.dart';
 
 class BaseApi {
   final _dioClient = Dio(BaseOptions(
-    baseUrl: 'http://localhost:9898',
+    // baseUrl: 'http://localhost:9898',
+    baseUrl: 'https://impact-wallet.herokuapp.com',
   ));
 
   BaseApi() {

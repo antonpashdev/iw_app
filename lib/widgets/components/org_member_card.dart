@@ -47,14 +47,20 @@ class OrgMemberCard extends StatelessWidget {
     );
   }
 
-  buildOrgUsername() {
+  buildOrgUsername(BuildContext context) {
     if (member == null) {
       return Container();
     }
     return Column(
       children: [
         const SizedBox(height: 5),
-        Text('@${member?.org?.username}'),
+        Text(
+          '@${member?.org?.username}',
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(color: COLOR_GRAY),
+        ),
       ],
     );
   }
@@ -163,7 +169,7 @@ class OrgMemberCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 buildOrgName(context),
-                buildOrgUsername(),
+                buildOrgUsername(context),
                 Expanded(
                   child: buildMainSection(context),
                 ),

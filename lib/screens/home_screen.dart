@@ -7,6 +7,7 @@ import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
+import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/org_member_card.dart';
 import 'package:iw_app/widgets/list/assets_list_tile.dart';
@@ -85,6 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
         OrgMemberCard(
           member: member,
           futureOtherMembers: futureOtherMembers,
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => OrgDetailsScreen(orgId: member.org.id),
+              ),
+            );
+          },
         ),
         if (isLast) const SizedBox(width: 20),
       ],
