@@ -74,6 +74,10 @@ ThemeData getAppTheme() {
         fontSize: 14,
         color: COLOR_ALMOST_BLACK,
       ),
+      labelMedium: TextStyle(
+        fontSize: 12,
+        color: COLOR_ALMOST_BLACK,
+      ),
     ),
     inputDecorationTheme: const InputDecorationTheme(
       labelStyle: TextStyle(

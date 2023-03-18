@@ -46,6 +46,10 @@ class _UsersApi extends BaseApi {
     final userResponse = CreateUserResponse.fromJson(response.data);
     return userResponse;
   }
+
+  Future<Response> getUserMemberships(String userId) {
+    return client.get('/users/$userId/memberships');
+  }
 }
 
 final usersApi = _UsersApi();

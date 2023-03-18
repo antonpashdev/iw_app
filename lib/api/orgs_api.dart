@@ -30,6 +30,10 @@ class _OrgsApi extends BaseApi {
     final body = member.toJson();
     return client.post('/orgs/$orgId/members', data: body);
   }
+
+  Future<Response> getOrgMembers(String orgId) {
+    return client.get('/orgs/$orgId/members');
+  }
 }
 
 final orgsApi = _OrgsApi();

@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 class Organization {
+  String? id;
   String? username;
   String? name;
   String? link;
@@ -15,6 +17,15 @@ class Organization {
     this.description,
     this.logo,
   });
+
+  Organization.fromJson(Map<String, dynamic> json) {
+    id = json['_id'];
+    username = json['username'];
+    name = json['name'];
+    link = json['link'];
+    description = json['description'];
+    logo = base64Decode(json['logo']);
+  }
 
   @override
   String toString() {

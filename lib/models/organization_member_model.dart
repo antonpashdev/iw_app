@@ -1,3 +1,7 @@
+import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/models/user_model.dart';
+import 'package:iw_app/utils/common.dart';
+
 enum MemberRole {
   Member,
   Admin,
@@ -7,12 +11,13 @@ enum MemberRole {
 class OrganizationMember {
   String? occupation;
   MemberRole? role;
-  double impactRatio;
-  bool isMonthlyCompensated;
+  double? impactRatio;
+  bool? isMonthlyCompensated;
   double? monthlyCompensation;
-  bool autoContribution;
-  String? userId;
-  String? orgId;
+  bool? autoContribution;
+  dynamic user;
+  dynamic org;
+  int? contributed;
 
   OrganizationMember({
     this.occupation,
@@ -21,9 +26,22 @@ class OrganizationMember {
     this.isMonthlyCompensated = false,
     this.monthlyCompensation,
     this.autoContribution = true,
-    this.userId,
-    this.orgId,
+    this.user,
+    this.org,
+    this.contributed = 0,
   });
+
+  OrganizationMember.fromJson(Map<String, dynamic> json) {
+    occupation = json['occupation'];
+    role = CommonUtils.stringToEnum(json['role'], MemberRole.values);
+    impactRatio = json['impactRatio'];
+    isMonthlyCompensated = json['isMonthlyCompensated'];
+    monthlyCompensation = json['monthlyCompensation'];
+    autoContribution = json['autoContribution'];
+    user = json['user'] is Map ? User.fromJson(json['user']) : json['user'];
+    org = json['org'] is Map ? Organization.fromJson(json['org']) : json['org'];
+    contributed = json['contributed'];
+  }
 
   @override
   String toString() {
@@ -45,8 +63,20 @@ autoContribution: $autoContribution
       'isMonthlyCompensated': isMonthlyCompensated,
       'monthlyCompensation': monthlyCompensation,
       'autoContribution': autoContribution,
-      'userId': userId,
-      'orgId': orgId,
+      'user': user,
+      'org': org,
     };
   }
+}
+
+class OrganizationMemberWithOtherMembers {
+  OrganizationMember? member;
+  List<OrganizationMember>? otherMembers;
+  Future<List<OrganizationMember>>? futureOtherMembers;
+
+  OrganizationMemberWithOtherMembers({
+    this.member,
+    this.futureOtherMembers,
+    this.otherMembers,
+  });
 }

@@ -92,7 +92,7 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               CupertinoSwitch(
-                value: member.isMonthlyCompensated,
+                value: member.isMonthlyCompensated!,
                 activeColor: COLOR_GREEN,
                 onChanged: (bool? value) {
                   compensationCtrl.clear();
@@ -108,7 +108,7 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
             controller: compensationCtrl,
             enabled: member.isMonthlyCompensated,
             prefix: const Text('\$'),
-            validator: member.isMonthlyCompensated
+            validator: member.isMonthlyCompensated!
                 ? multiValidate([
                     requiredField(
                       AppLocalizations.of(context)!
@@ -136,7 +136,7 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               CupertinoSwitch(
-                value: member.autoContribution,
+                value: member.autoContribution!,
                 activeColor: COLOR_GREEN,
                 onChanged: (bool? value) {
                   setState(() {
@@ -159,7 +159,7 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
       try {
         final response = await orgsApi.createOrg(widget.organization);
         final orgId = response.data['_id'];
-        member.userId = await authApi.userId;
+        member.user = await authApi.userId;
         await orgsApi.addMemberToOrg(orgId, member);
 
         if (context.mounted) {
