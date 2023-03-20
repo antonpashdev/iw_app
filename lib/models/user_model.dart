@@ -11,6 +11,6 @@ class User {
   User.fromJson(Map<String, dynamic> json) {
     nickname = json['nickname'];
     name = json['name'];
-    image = base64Decode(json['avatar']);
+    image = json['avatar'] != null ? base64Decode(json['avatar']) : null;
   }
 }
