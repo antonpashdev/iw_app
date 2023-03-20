@@ -19,6 +19,7 @@ ThemeData getAppTheme() {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
+        visualDensity: const VisualDensity(vertical: 0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
