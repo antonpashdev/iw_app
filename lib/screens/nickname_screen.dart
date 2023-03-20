@@ -22,16 +22,10 @@ class _NicknameScreen extends State<NicknameScreen> {
 
   String? validateFormField(String? value) {
     final trimmedValue = value!.trim();
-    final startsWithAt = trimmedValue.startsWith(RegExp(r'^@'));
-    final containsAtOnly = trimmedValue == '@';
     final isNotEmpty = trimmedValue.isNotEmpty;
 
-    if (isNotEmpty && containsAtOnly) {
+    if (!isNotEmpty) {
       return AppLocalizations.of(context)?.nickname_error_empty;
-    }
-
-    if (isNotEmpty && !startsWithAt) {
-      return AppLocalizations.of(context)?.nickname_error_should_starts_with_at;
     }
 
     if (userAlreadyExists) {
@@ -81,6 +75,7 @@ class _NicknameScreen extends State<NicknameScreen> {
               child: TextFormField(
                 validator: validateFormField,
                 decoration: InputDecoration(
+                  prefix: const Text('@'),
                   border: const UnderlineInputBorder(),
                   labelText: labelText,
                 ),
