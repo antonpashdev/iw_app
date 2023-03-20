@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/screens/onboarding/check_login_link_screen.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class DontShowTheLinkScreen extends StatelessWidget {
@@ -7,7 +8,13 @@ class DontShowTheLinkScreen extends StatelessWidget {
 
   const DontShowTheLinkScreen({Key? key, required this.link}) : super(key: key);
 
-  handleNext() {}
+  handleNext(BuildContext context) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return CheckLoginLinkScreen(
+        link: link,
+      );
+    }));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +52,7 @@ class DontShowTheLinkScreen extends StatelessWidget {
                   child: SizedBox(
                       width: 270,
                       child: ElevatedButton(
-                          onPressed: handleNext,
+                          onPressed: () => handleNext(context),
                           child: Text(AppLocalizations.of(context)!
                               .dontShowTheLinkScreen_gotIt__button_text)))),
             ]));

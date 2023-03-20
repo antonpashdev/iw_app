@@ -18,9 +18,9 @@ class _CheckLoginLinkScreen extends State<CheckLoginLinkScreen> {
   bool? linksMatch;
 
   handleNext() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
       return const HomeScreen(isOnboarding: true);
-    }));
+    }), (route) => false);
   }
 
   getValidationStatusText() {
