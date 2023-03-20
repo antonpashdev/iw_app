@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/models/user_model.dart';
-import 'package:iw_app/screens/login_link_screen.dart';
+import 'package:iw_app/screens/onboarding/login_link_screen.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
