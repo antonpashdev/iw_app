@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iw_app/screens/onboarding/dont_show_the_link_screen.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
@@ -14,10 +15,16 @@ class LoginLinkScreen extends StatefulWidget {
 }
 
 class _LoginLinkScreen extends State<LoginLinkScreen> {
-  get link => widget.link;
+  String get link => widget.link;
   bool _copied = false;
 
-  handleNext() {}
+  handleNext() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return DontShowTheLinkScreen(
+        link: link,
+      );
+    }));
+  }
 
   callSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -30,7 +37,7 @@ class _LoginLinkScreen extends State<LoginLinkScreen> {
         content: Text(AppLocalizations.of(context)!.common_link_copied,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white)),
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 1),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
