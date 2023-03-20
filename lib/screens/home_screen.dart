@@ -169,13 +169,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     clipBehavior: Clip.antiAlias,
                     child: FittedBox(
                       fit: BoxFit.cover,
-                      child: Image.memory(
-                        user!.image!,
-                      ),
+                      child: user?.image != null
+                          ? Image.memory(
+                              user!.image!,
+                            )
+                          : const Icon(Icons.person, color: Color(0xFFBDBDBD)),
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Text(user.nickname),
+                  Text(user?.nickname ?? ''),
                 ],
               );
             },
