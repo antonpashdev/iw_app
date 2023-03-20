@@ -14,7 +14,8 @@ import 'package:iw_app/widgets/list/assets_list_tile.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final bool? isOnboarding;
+  const HomeScreen({Key? key, this.isOnboarding}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
