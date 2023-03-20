@@ -14,6 +14,8 @@ class InputForm extends StatelessWidget {
   final bool enableInteractiveSelection;
   final bool autofocus;
   final bool enabled;
+  final int maxLines;
+  final int minLines;
   final bool fieldRequired;
   final GlobalKey? formKey;
   final TextEditingController? controller;
@@ -36,6 +38,8 @@ class InputForm extends StatelessWidget {
     this.enabled = true,
     this.fieldRequired = true,
     this.onFieldSubmitted,
+    this.maxLines = 1,
+    this.minLines = 1,
     this.child,
   }) : super(key: key);
 
@@ -58,6 +62,8 @@ class InputForm extends StatelessWidget {
       labelText: labelText,
       fieldRequired: fieldRequired,
       onFieldSubmitted: onFieldSubmitted,
+      maxLines: maxLines,
+      minLines: minLines,
     );
   }
 
@@ -88,6 +94,7 @@ class AppTextFormField extends StatelessWidget {
   final String? errorText;
   final String? helperText;
   final int maxLines;
+  final int minLines;
   final TextInputAction? textInputAction;
   final String? initialValue;
   final FloatingLabelBehavior? floatingLabelBehavior;
@@ -111,6 +118,7 @@ class AppTextFormField extends StatelessWidget {
     this.fieldRequired = true,
     this.onFieldSubmitted,
     this.maxLines = 1,
+    this.minLines = 1,
     this.textInputAction,
     this.initialValue,
     this.floatingLabelBehavior,
@@ -151,6 +159,7 @@ class AppTextFormField extends StatelessWidget {
       validator: validator,
       enableInteractiveSelection: enableInteractiveSelection,
       keyboardType: inputType,
+      minLines: minLines,
       style:
           Theme.of(context).textTheme.bodyLarge!.copyWith(color: COLOR_BLACK),
       decoration: InputDecoration(
@@ -189,6 +198,9 @@ class AppTextFormFieldBordered extends StatelessWidget {
   final bool? enabled;
   final String? initialValue;
   final TextEditingController? controller;
+  final int minLines;
+  final int maxLines;
+  final bool autofocus;
 
   const AppTextFormFieldBordered({
     Key? key,
@@ -206,6 +218,9 @@ class AppTextFormFieldBordered extends StatelessWidget {
     this.enabled = true,
     this.initialValue,
     this.controller,
+    this.minLines = 1,
+    this.maxLines = 1,
+    this.autofocus = false,
   }) : super(key: key);
 
   @override
@@ -228,6 +243,9 @@ class AppTextFormFieldBordered extends StatelessWidget {
       onFieldSubmitted: onFieldSubmitted,
       validator: validator,
       initialValue: initialValue,
+      minLines: minLines,
+      maxLines: maxLines,
+      autofocus: autofocus,
       decoration: InputDecoration(
         errorStyle: errorStyle,
         floatingLabelBehavior: FloatingLabelBehavior.never,
