@@ -21,4 +21,8 @@ Localization files are located under lib/l10n folder. When any of them are edite
 
 ## Storybook
 
-To access app storybook, run the web version of the app and go to *#/storybook* url.
+To access app storybook, run the web version of the app and go to **#/storybook** url.
+
+## App launcher icons and favicon
+
+**flutter_launcher_icons** package is used to configure and generate icons and favicon. For configuration use **flutter_launcher_icons.yaml** file and then run `flutter pub run flutter_launcher_icons` command from the root folder.

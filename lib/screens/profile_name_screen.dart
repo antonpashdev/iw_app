@@ -44,8 +44,11 @@ class _CreateProfile extends State<CreateProfile> {
     });
 
     try {
-      var data =
-          await usersApi.createUser(user.name, user.nickname, user.image);
+      final data = await usersApi.createUser(
+        user.name,
+        user.nickname,
+        user.image,
+      );
       await appStorage.write('jwt_token', data.token);
       handleNext(data.secretLink);
     } catch (e) {
