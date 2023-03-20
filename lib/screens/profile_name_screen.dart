@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/models/user_model.dart';
+import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -42,9 +43,18 @@ class _CreateProfile extends State<CreateProfile> {
     });
 
     try {
-      var data =
-          await usersApi.createUser(user.name, user.nickname, user.image);
+      final data = await usersApi.createUser(
+        user.name,
+        user.nickname,
+        user.image,
+      );
       await appStorage.write('jwt_token', data.token);
+      if (context.mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          (route) => false,
+        );
+      }
     } catch (e) {
       // TODO: handle error (show error message to user)
       print(e.toString());

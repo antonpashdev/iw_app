@@ -3,12 +3,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class _AppStorage {
   final _storage = const FlutterSecureStorage();
 
-  getValue(String key) async {
+  Future<String?> getValue(String key) async {
     try {
       return await _storage.read(key: key);
     } catch (error) {
       print(error.toString());
     }
+    return null;
   }
 
   getAll() async {
