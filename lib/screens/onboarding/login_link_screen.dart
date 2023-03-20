@@ -37,7 +37,7 @@ class _LoginLinkScreen extends State<LoginLinkScreen> {
         content: Text(AppLocalizations.of(context)!.common_link_copied,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white)),
-        duration: const Duration(seconds: 1),
+        duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
