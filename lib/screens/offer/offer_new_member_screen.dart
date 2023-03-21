@@ -25,7 +25,7 @@ class _OfferNewMemberScreen extends State<OfferNewMemberScreen> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => RoleSelection(
+              builder: (context) => RoleSelectionScreen(
                     member: member,
                   )));
     }

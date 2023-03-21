@@ -5,16 +5,16 @@ import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
-class RoleSelection extends StatefulWidget {
+class RoleSelectionScreen extends StatefulWidget {
   final OrganizationMember member;
 
-  const RoleSelection({Key? key, required this.member}) : super(key: key);
+  const RoleSelectionScreen({Key? key, required this.member}) : super(key: key);
 
   @override
-  State<RoleSelection> createState() => _RoleSelectionState();
+  State<RoleSelectionScreen> createState() => _RoleSelectionState();
 }
 
-class _RoleSelectionState extends State<RoleSelection> {
+class _RoleSelectionState extends State<RoleSelectionScreen> {
   OrganizationMember get member => widget.member;
   late MemberRole _role;
 
