@@ -322,7 +322,11 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
       if (context.mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
-              builder: (_) => ContributionScreen(contribution: contribution)),
+            builder: (_) => ContributionScreen(
+              contribution: contribution,
+              showSnackBar: true,
+            ),
+          ),
           (route) => false,
         );
       }

@@ -61,6 +61,18 @@ class _UsersApi extends BaseApi {
   Future<Response> getUserMemberships(String userId) {
     return client.get('/users/$userId/memberships');
   }
+
+  Future<Response> getUserContributions(String userId,
+      {bool? isStopped, String? orgId}) {
+    final Map<String, dynamic> params = {};
+    if (isStopped != null) {
+      params['isStopped'] = isStopped;
+    }
+    if (orgId != null) {
+      params['orgId'] = orgId;
+    }
+    return client.get('/users/$userId/contributions', queryParameters: params);
+  }
 }
 
 final usersApi = _UsersApi();

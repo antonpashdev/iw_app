@@ -4,9 +4,13 @@ import 'package:iw_app/theme/app_theme.dart';
 
 class ContributionScreen extends StatefulWidget {
   final Contribution contribution;
+  final bool showSnackBar;
 
-  const ContributionScreen({Key? key, required this.contribution})
-      : super(key: key);
+  const ContributionScreen({
+    Key? key,
+    required this.contribution,
+    this.showSnackBar = false,
+  }) : super(key: key);
 
   @override
   State<ContributionScreen> createState() => _ContributionScreenState();
@@ -16,7 +20,10 @@ class _ContributionScreenState extends State<ContributionScreen> {
   @override
   initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => callSnackBar(context));
+    if (widget.showSnackBar) {
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => callSnackBar(context));
+    }
   }
 
   callSnackBar(BuildContext context) {
