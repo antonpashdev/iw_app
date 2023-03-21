@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/contribution_model.dart';
+import 'package:iw_app/screens/contribution/contribution_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 
 class ContributionScreen extends StatefulWidget {
@@ -17,6 +19,8 @@ class ContributionScreen extends StatefulWidget {
 }
 
 class _ContributionScreenState extends State<ContributionScreen> {
+  bool isLoading = false;
+
   @override
   initState() {
     super.initState();
@@ -121,6 +125,33 @@ class _ContributionScreenState extends State<ContributionScreen> {
     );
   }
 
+  handleStopContributionPressed(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final response = await orgsApi.stopContribution(
+        widget.contribution.org.id,
+        widget.contribution.id!,
+      );
+      final stoppedContribution = Contribution.fromJson(response.data);
+      if (context.mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (_) =>
+                  ContributionDetailsScreen(contribution: stoppedContribution),
+            ),
+            (route) => false);
+      }
+    } catch (error) {
+      print(error);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -142,9 +173,22 @@ class _ContributionScreenState extends State<ContributionScreen> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: isLoading
+                    ? null
+                    : () => handleStopContributionPressed(context),
                 style: ElevatedButton.styleFrom(backgroundColor: COLOR_RED),
-                child: const Text('Stop Contributing'),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (isLoading)
+                      const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator.adaptive(),
+                      ),
+                    const Text('Stop Contributing'),
+                  ],
+                ),
               ),
               const SizedBox(height: 60),
             ],

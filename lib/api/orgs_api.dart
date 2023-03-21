@@ -45,6 +45,10 @@ class _OrgsApi extends BaseApi {
     };
     return client.post('/orgs/$orgId/contributions', data: body);
   }
+
+  Future<Response> stopContribution(String orgId, String contributionId) {
+    return client.delete('/orgs/$orgId/contributions/$contributionId');
+  }
 }
 
 final orgsApi = _OrgsApi();

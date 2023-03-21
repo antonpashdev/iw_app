@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/contribution_model.dart';
+import 'package:iw_app/screens/contribution/contribution_details_screen.dart';
 import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/screens/login_screen.dart';
@@ -58,7 +59,9 @@ class _AppHomeState extends State<AppHome> {
         if (snapshot.data![0] == null) {
           return const LoginScreen();
         }
-        final Contribution? contribution = (snapshot.data![1] as List).first;
+        final contributions = (snapshot.data![1] as List<Contribution>);
+        final Contribution? contribution =
+            contributions.isNotEmpty ? contributions.first : null;
         if (contribution != null) {
           return ContributionScreen(contribution: contribution);
         }

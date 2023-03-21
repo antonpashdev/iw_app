@@ -63,6 +63,16 @@ ThemeData getAppTheme() {
         fontWeight: FontWeight.bold,
         color: COLOR_ALMOST_BLACK,
       ),
+      displayLarge: TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.w300,
+        color: COLOR_ALMOST_BLACK,
+      ),
+      displayMedium: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w300,
+        color: COLOR_ALMOST_BLACK,
+      ),
       bodyLarge: TextStyle(
         fontSize: 18,
         color: COLOR_ALMOST_BLACK,
