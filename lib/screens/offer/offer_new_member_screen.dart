@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
+import 'package:iw_app/screens/offer/role_selection_screen.dart';
 import 'package:iw_app/widgets/components/new_member_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
@@ -13,13 +14,21 @@ class OfferNewMemberScreen extends StatefulWidget {
 
 class _OfferNewMemberScreen extends State<OfferNewMemberScreen> {
   final formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   OrganizationMember member = OrganizationMember(
-    role: MemberRole.CoOwner,
+    role: MemberRole.Member,
   );
 
   handleNext() {
-    print(member.toJson());
+    if (formKey.currentState!.validate()) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RoleSelection(
+                    member: member,
+                  )));
+    }
   }
 
   @override
