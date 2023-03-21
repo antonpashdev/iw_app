@@ -90,7 +90,10 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => OrgDetailsScreen(orgId: member.org.id),
+                builder: (_) => OrgDetailsScreen(
+                  orgId: member.org.id,
+                  memberId: member.id!,
+                ),
               ),
             );
           },

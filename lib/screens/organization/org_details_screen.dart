@@ -2,15 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/orgs_api.dart';
+import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 class OrgDetailsScreen extends StatefulWidget {
   final String orgId;
+  final String memberId;
 
-  const OrgDetailsScreen({Key? key, required this.orgId}) : super(key: key);
+  const OrgDetailsScreen({
+    Key? key,
+    required this.orgId,
+    required this.memberId,
+  }) : super(key: key);
 
   @override
   State<OrgDetailsScreen> createState() => _OrgDetailsScreenState();
@@ -19,6 +26,8 @@ class OrgDetailsScreen extends StatefulWidget {
 class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   late Future<Organization> futureOrg;
   late Future<List<OrganizationMember>> futureMembers;
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -302,6 +311,30 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     );
   }
 
+  handleStartContributingPressed() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final response =
+          await orgsApi.startContribution(widget.orgId, widget.memberId);
+      final contribution = Contribution.fromJson(response.data);
+      if (context.mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (_) => ContributionScreen(contribution: contribution)),
+          (route) => false,
+        );
+      }
+    } catch (error) {
+      print(error);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -311,7 +344,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
             futureMembers,
           ]),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+            if (!snapshot.hasData) {
               return const Scaffold(
                 backgroundColor: COLOR_WHITE,
                 body: Center(child: CircularProgressIndicator()),
@@ -344,8 +377,20 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
-                      onPressed: () {},
-                      child: const Text('Start Contributing'),
+                      onPressed:
+                          isLoading ? null : handleStartContributingPressed,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (isLoading)
+                            const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator.adaptive(),
+                            ),
+                          const Text('Start Contributing'),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 30),
                   ],

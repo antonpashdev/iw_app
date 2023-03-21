@@ -38,6 +38,13 @@ class _OrgsApi extends BaseApi {
   Future<Response> getOrgById(String orgId) {
     return client.get('/orgs/$orgId');
   }
+
+  Future<Response> startContribution(String orgId, String memberId) {
+    final body = {
+      'memberId': memberId,
+    };
+    return client.post('/orgs/$orgId/contributions', data: body);
+  }
 }
 
 final orgsApi = _OrgsApi();

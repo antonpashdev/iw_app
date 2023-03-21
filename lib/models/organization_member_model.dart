@@ -9,6 +9,7 @@ enum MemberRole {
 }
 
 class OrganizationMember {
+  String? id;
   String? occupation;
   MemberRole? role;
   double? impactRatio;
@@ -32,6 +33,7 @@ class OrganizationMember {
   });
 
   OrganizationMember.fromJson(Map<String, dynamic> json) {
+    id = json['_id'];
     occupation = json['occupation'];
     role = CommonUtils.stringToEnum(json['role'], MemberRole.values);
     impactRatio = json['impactRatio'];
