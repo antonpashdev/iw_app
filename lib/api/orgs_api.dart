@@ -35,6 +35,10 @@ class _OrgsApi extends BaseApi {
     return client.get('/orgs/$orgId/members');
   }
 
+  Future<Response> getMemberEquity(String orgId, String memberId) {
+    return client.get('/orgs/$orgId/members/$memberId/equity');
+  }
+
   Future<Response> getOrgById(String orgId) {
     return client.get('/orgs/$orgId');
   }

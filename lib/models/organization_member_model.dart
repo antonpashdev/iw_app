@@ -71,14 +71,28 @@ autoContribution: $autoContribution
   }
 }
 
+class MemberEquity {
+  int? lamportsEarned;
+  double? equity;
+
+  MemberEquity.fromJson(Map<String, dynamic> json) {
+    lamportsEarned = json['lamportsEarned'];
+    equity = json['equity'];
+  }
+}
+
 class OrganizationMemberWithOtherMembers {
   OrganizationMember? member;
   List<OrganizationMember>? otherMembers;
   Future<List<OrganizationMember>>? futureOtherMembers;
+  MemberEquity? equity;
+  Future<MemberEquity>? futureEquity;
 
   OrganizationMemberWithOtherMembers({
     this.member,
     this.futureOtherMembers,
     this.otherMembers,
+    this.equity,
+    this.futureEquity,
   });
 }

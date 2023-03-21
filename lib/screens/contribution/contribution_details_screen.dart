@@ -4,7 +4,7 @@ import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
-RegExp regex = RegExp(r'([.]*0+)(?!.*\d)');
+RegExp trimZeroesRegExp = RegExp(r'([.]*0+)(?!.*\d)');
 
 class ContributionDetailsScreen extends StatelessWidget {
   final Contribution contribution;
@@ -65,10 +65,10 @@ class ContributionDetailsScreen extends StatelessWidget {
   buildSharesResult(BuildContext context) {
     final h = (diffDuration.inMilliseconds / 1000 / 60 / 60)
         .toStringAsFixed(4)
-        .replaceAll(regex, '');
+        .replaceAll(trimZeroesRegExp, '');
     final tokensAmount = (contribution.lamportsEarned! / LAMPORTS_IN_SOL)
         .toStringAsFixed(4)
-        .replaceAll(regex, '');
+        .replaceAll(trimZeroesRegExp, '');
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
