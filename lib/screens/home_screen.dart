@@ -14,7 +14,8 @@ import 'package:iw_app/widgets/list/assets_list_tile.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final bool? isOnboarding;
+  const HomeScreen({Key? key, this.isOnboarding}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -168,13 +169,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     clipBehavior: Clip.antiAlias,
                     child: FittedBox(
                       fit: BoxFit.cover,
-                      child: Image.memory(
-                        user!.image!,
-                      ),
+                      child: user?.image != null
+                          ? Image.memory(
+                              user!.image!,
+                            )
+                          : const Icon(Icons.person, color: Color(0xFFBDBDBD)),
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Text(user.nickname),
+                  Text(user?.nickname ?? ''),
                 ],
               );
             },

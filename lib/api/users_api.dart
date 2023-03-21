@@ -47,6 +47,17 @@ class _UsersApi extends BaseApi {
     return userResponse;
   }
 
+  Future<bool> isUserExists(String nickName) async {
+    try {
+      await client.post('/users/exists', data: {
+        'nickname': nickName,
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<Response> getUserMemberships(String userId) {
     return client.get('/users/$userId/memberships');
   }

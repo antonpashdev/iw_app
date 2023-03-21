@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/profile_name_screen.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/l10n/generated/app_localizations.dart';
 
 class NicknameScreen extends StatefulWidget {
   const NicknameScreen({super.key});
@@ -14,27 +16,20 @@ class _NicknameScreen extends State<NicknameScreen> {
   User user = User();
   bool isButtonDisabled = true;
 
-  // TODO: fetch from backend if user already exists and change state
   bool userAlreadyExists = false;
 
   final formGlobalKey = GlobalKey<FormState>();
 
   String? validateFormField(String? value) {
     final trimmedValue = value!.trim();
-    final startsWithAt = trimmedValue.startsWith(RegExp(r'^@'));
-    final containsAtOnly = trimmedValue == '@';
     final isNotEmpty = trimmedValue.isNotEmpty;
 
-    if (isNotEmpty && containsAtOnly) {
-      return 'Nickname should not be empty';
-    }
-
-    if (isNotEmpty && !startsWithAt) {
-      return 'Nickname should starts with @';
+    if (!isNotEmpty) {
+      return AppLocalizations.of(context)?.nickname_error_empty;
     }
 
     if (userAlreadyExists) {
-      return 'A user with that nickname already exists';
+      return AppLocalizations.of(context)?.nickname_error_already_exists;
     }
     return null;
   }
@@ -46,8 +41,18 @@ class _NicknameScreen extends State<NicknameScreen> {
     });
   }
 
-  handleNext() {
-    if (formGlobalKey.currentState!.validate()) {
+  handleNext() async {
+    bool isNickNameExists = await usersApi.isUserExists(user.nickname);
+
+    setState(() {
+      userAlreadyExists = isNickNameExists;
+    });
+
+    navigateTo(formGlobalKey.currentState!.validate() && !isNickNameExists);
+  }
+
+  navigateTo(bool isNavigationAllowed) {
+    if (isNavigationAllowed) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => CreateProfile(user: user)),
@@ -57,16 +62,22 @@ class _NicknameScreen extends State<NicknameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String? inputDescription =
+        AppLocalizations.of(context)!.nicknameScreen_input_description;
+    String? labelText =
+        AppLocalizations.of(context)!.nicknameScreen_input_label;
+
     return ScreenScaffold(
-        title: 'Create nickname',
+        title: AppLocalizations.of(context)!.nicknameScreen_title,
         child: Column(children: <Widget>[
           Form(
               key: formGlobalKey,
               child: TextFormField(
                 validator: validateFormField,
-                decoration: const InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: '@nickname',
+                decoration: InputDecoration(
+                  prefix: const Text('@'),
+                  border: const UnderlineInputBorder(),
+                  labelText: labelText,
                 ),
                 onChanged: onNickNameChanged,
               )),
@@ -76,12 +87,12 @@ class _NicknameScreen extends State<NicknameScreen> {
                   child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
-                      children: const <Widget>[
+                      children: <Widget>[
                         Flexible(
                             child: Text(
-                          'Your nickname it’s your ID. It can’t be changed. Make sure to create appropriate nickname to use it forever.',
+                          inputDescription,
                           textAlign: TextAlign.left,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color(0xff87899B),
                             fontWeight: FontWeight.w400,
                             fontSize: 14,
@@ -96,7 +107,7 @@ class _NicknameScreen extends State<NicknameScreen> {
               children: [
                 ElevatedButton(
                   onPressed: isButtonDisabled ? null : handleNext,
-                  child: const Text('Next'),
+                  child: Text(AppLocalizations.of(context)!.common_next),
                 ),
               ],
             ),
