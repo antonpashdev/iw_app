@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
@@ -218,8 +219,17 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                     color: const Color(0xffe2e2e8),
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  child: const InkWell(
-                    child: Icon(
+                  child: InkWell(
+                    customBorder: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    onTap: () => {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const OfferNewMemberScreen()))
+                    },
+                    child: const Icon(
                       CupertinoIcons.add,
                       size: 35,
                     ),
