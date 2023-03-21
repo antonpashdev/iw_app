@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/contribution_model.dart';
@@ -37,6 +38,11 @@ class _AppHomeState extends State<AppHome> {
       return (response.data as List)
           .map((contribution) => Contribution.fromJson(contribution))
           .toList();
+    } on DioError catch (err) {
+      print(err);
+      if (err.response!.statusCode == 401) {
+        rethrow;
+      }
     } catch (err) {
       print(err);
     }
@@ -51,6 +57,11 @@ class _AppHomeState extends State<AppHome> {
         futureContributions,
       ]),
       builder: (context, snapshot) {
+        if (snapshot.hasError &&
+            snapshot.error is DioError &&
+            (snapshot.error as DioError).response!.statusCode == 401) {
+          return const LoginScreen();
+        }
         if (!snapshot.hasData) {
           return const Center(
             child: CircularProgressIndicator(),
