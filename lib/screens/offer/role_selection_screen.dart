@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
+import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class RoleSelectionScreen extends StatefulWidget {
   final OrganizationMember member;
+  final Organization organization;
 
-  const RoleSelectionScreen({Key? key, required this.member}) : super(key: key);
+  const RoleSelectionScreen(
+      {Key? key, required this.member, required this.organization})
+      : super(key: key);
 
   @override
   State<RoleSelectionScreen> createState() => _RoleSelectionState();
@@ -16,6 +20,7 @@ class RoleSelectionScreen extends StatefulWidget {
 
 class _RoleSelectionState extends State<RoleSelectionScreen> {
   OrganizationMember get member => widget.member;
+  Organization get organization => widget.organization;
   late MemberRole _role;
 
   @override
@@ -24,7 +29,9 @@ class _RoleSelectionState extends State<RoleSelectionScreen> {
     _role = member.role!;
   }
 
-  handleNext() {}
+  handleNext() {
+    print(organization.toString());
+  }
 
   @override
   Widget build(BuildContext context) {

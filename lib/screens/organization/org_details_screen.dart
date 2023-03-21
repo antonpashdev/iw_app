@@ -227,7 +227,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => const OfferNewMemberScreen()))
+                              builder: (_) => OfferNewMemberScreen(
+                                    organization: org,
+                                  )))
                     },
                     child: const Icon(
                       CupertinoIcons.add,

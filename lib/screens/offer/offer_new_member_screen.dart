@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
+import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/offer/role_selection_screen.dart';
 import 'package:iw_app/widgets/components/new_member_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class OfferNewMemberScreen extends StatefulWidget {
-  const OfferNewMemberScreen({Key? key}) : super(key: key);
+  final Organization organization;
+  const OfferNewMemberScreen({Key? key, required this.organization})
+      : super(key: key);
 
   @override
   State<OfferNewMemberScreen> createState() => _OfferNewMemberScreen();
 }
 
 class _OfferNewMemberScreen extends State<OfferNewMemberScreen> {
+  Organization get organization => widget.organization;
   final formKey = GlobalKey<FormState>();
   bool isLoading = false;
 
@@ -27,6 +31,7 @@ class _OfferNewMemberScreen extends State<OfferNewMemberScreen> {
           MaterialPageRoute(
               builder: (context) => RoleSelectionScreen(
                     member: member,
+                    organization: organization,
                   )));
     }
   }
