@@ -17,7 +17,7 @@ class OrganizationMember {
   bool? autoContribution;
   dynamic user;
   dynamic org;
-  int? contributed;
+  double? contributed;
 
   OrganizationMember({
     this.occupation,
