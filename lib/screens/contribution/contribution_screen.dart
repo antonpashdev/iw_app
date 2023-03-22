@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/contribution_model.dart';
@@ -125,6 +128,17 @@ class _ContributionScreenState extends State<ContributionScreen> {
     );
   }
 
+  navigateToDetails(Contribution contribution) {
+    if (context.mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) => ContributionDetailsScreen(contribution: contribution),
+        ),
+        (route) => false,
+      );
+    }
+  }
+
   handleStopContributionPressed(BuildContext context) async {
     setState(() {
       isLoading = true;
@@ -135,13 +149,13 @@ class _ContributionScreenState extends State<ContributionScreen> {
         widget.contribution.id!,
       );
       final stoppedContribution = Contribution.fromJson(response.data);
-      if (context.mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (_) =>
-                  ContributionDetailsScreen(contribution: stoppedContribution),
-            ),
-            (route) => false);
+      navigateToDetails(stoppedContribution);
+    } on DioError catch (error) {
+      print(error);
+      if (error.response!.statusCode == HttpStatus.forbidden) {
+        final stoppedContribution =
+            Contribution.fromJson(error.response!.data['contribution']);
+        navigateToDetails(stoppedContribution);
       }
     } catch (error) {
       print(error);
