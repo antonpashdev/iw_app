@@ -25,7 +25,7 @@ class OrgDetailsScreen extends StatefulWidget {
 
 class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   late Future<Organization> futureOrg;
-  late Future<List<OrganizationMember>> futureMembers;
+  late Future<List<OrganizationMemberWithEquity>> futureMembers;
 
   bool isLoading = false;
 
@@ -41,11 +41,20 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     return Organization.fromJson(response.data);
   }
 
-  Future<List<OrganizationMember>> fetchMembers() async {
+  Future<List<OrganizationMemberWithEquity>> fetchMembers() async {
     final response = await orgsApi.getOrgMembers(widget.orgId);
-    return (response.data as List)
-        .map((member) => OrganizationMember.fromJson(member))
-        .toList();
+    return (response.data as List).map((memberJson) {
+      final member = OrganizationMember.fromJson(memberJson);
+      return OrganizationMemberWithEquity(
+        member: member,
+        futureEquity: fetchMemberEquity(member),
+      );
+    }).toList();
+  }
+
+  Future<MemberEquity> fetchMemberEquity(OrganizationMember member) async {
+    final response = await orgsApi.getMemberEquity(member.org, member.id!);
+    return MemberEquity.fromJson(response.data);
   }
 
   buildHeader(BuildContext context, Organization org) {
@@ -147,7 +156,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     );
   }
 
-  buildMember(OrganizationMember member) {
+  buildMember(OrganizationMemberWithEquity data) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -163,12 +172,12 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
               clipBehavior: Clip.antiAlias,
               child: FittedBox(
                 fit: BoxFit.cover,
-                child: Image.memory(member.user.image),
+                child: Image.memory(data.member!.user.image),
               ),
             ),
             const SizedBox(height: 5),
             Text(
-              member.user.nickname,
+              data.member!.user.nickname,
               style: Theme.of(context)
                   .textTheme
                   .labelMedium
@@ -176,25 +185,33 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
             ),
           ],
         ),
-        Positioned(
-          top: -5,
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 5,
-              vertical: 3,
-            ),
-            decoration: BoxDecoration(
-              color: COLOR_ALMOST_BLACK,
-              borderRadius: BorderRadius.circular(7),
-            ),
-            child: Text(
-              '0%',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium
-                  ?.copyWith(color: COLOR_WHITE),
-            ),
-          ),
+        FutureBuilder(
+          future: data.futureEquity,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Container();
+            }
+            return Positioned(
+              top: -5,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  color: COLOR_ALMOST_BLACK,
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Text(
+                  '${(snapshot.data!.equity! * 100).toStringAsFixed(1)}%',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium
+                      ?.copyWith(color: COLOR_WHITE),
+                ),
+              ),
+            );
+          },
         ),
       ],
     );
@@ -203,7 +220,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   buildMembers(
     BuildContext context,
     Organization org,
-    List<OrganizationMember> members,
+    List<OrganizationMemberWithEquity> members,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

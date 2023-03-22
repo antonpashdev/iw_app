@@ -81,18 +81,31 @@ class MemberEquity {
   }
 }
 
-class OrganizationMemberWithOtherMembers {
+class OrganizationMemberWithEquity {
   OrganizationMember? member;
-  List<OrganizationMember>? otherMembers;
-  Future<List<OrganizationMember>>? futureOtherMembers;
   MemberEquity? equity;
   Future<MemberEquity>? futureEquity;
 
-  OrganizationMemberWithOtherMembers({
+  OrganizationMemberWithEquity({
     this.member,
-    this.futureOtherMembers,
-    this.otherMembers,
     this.equity,
     this.futureEquity,
   });
+}
+
+class OrganizationMemberWithOtherMembers extends OrganizationMemberWithEquity {
+  List<OrganizationMember>? otherMembers;
+  Future<List<OrganizationMember>>? futureOtherMembers;
+
+  OrganizationMemberWithOtherMembers({
+    OrganizationMember? member,
+    this.futureOtherMembers,
+    this.otherMembers,
+    MemberEquity? equity,
+    Future<MemberEquity>? futureEquity,
+  }) : super(
+          member: member,
+          equity: equity,
+          futureEquity: futureEquity,
+        );
 }

@@ -6,8 +6,8 @@ const TIMEOUT = Duration(days: 1);
 
 class BaseApi {
   final _dioClient = Dio(BaseOptions(
-    baseUrl: 'http://localhost:9898',
-    // baseUrl: 'https://impact-wallet.herokuapp.com',
+    // baseUrl: 'http://localhost:9898',
+    baseUrl: 'https://impact-wallet.herokuapp.com',
     connectTimeout: TIMEOUT,
     sendTimeout: TIMEOUT,
     receiveTimeout: TIMEOUT,
