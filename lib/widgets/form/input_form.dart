@@ -201,6 +201,7 @@ class AppTextFormFieldBordered extends StatelessWidget {
   final int minLines;
   final int maxLines;
   final bool autofocus;
+  final bool readOnly;
 
   const AppTextFormFieldBordered({
     Key? key,
@@ -221,6 +222,7 @@ class AppTextFormFieldBordered extends StatelessWidget {
     this.minLines = 1,
     this.maxLines = 1,
     this.autofocus = false,
+    this.readOnly = false,
   }) : super(key: key);
 
   @override
@@ -246,6 +248,7 @@ class AppTextFormFieldBordered extends StatelessWidget {
       minLines: minLines,
       maxLines: maxLines,
       autofocus: autofocus,
+      readOnly: readOnly,
       decoration: InputDecoration(
         errorStyle: errorStyle,
         floatingLabelBehavior: FloatingLabelBehavior.never,

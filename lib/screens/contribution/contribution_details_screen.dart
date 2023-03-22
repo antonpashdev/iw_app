@@ -70,103 +70,106 @@ class ContributionDetailsScreen extends StatelessWidget {
         .toStringAsFixed(4)
         .replaceAll(trimZeroesRegExp, '');
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 5,
+    return FittedBox(
+      fit: BoxFit.fitWidth,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 5,
+                ),
+                child: Text(
+                  '${h}h',
+                  style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
               ),
-              child: Text(
-                '${h}h',
-                style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                      fontWeight: FontWeight.w500,
+              const SizedBox(height: 5),
+              Text(
+                'Contribution',
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      fontWeight: FontWeight.w300,
+                      color: COLOR_GRAY,
                     ),
               ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              'Contribution',
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                    fontWeight: FontWeight.w300,
-                    color: COLOR_GRAY,
-                  ),
-            ),
-          ],
-        ),
-        Text(
-          '×',
-          style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                height: 1.4,
-                fontWeight: FontWeight.w500,
+            ],
+          ),
+          Text(
+            '×',
+            style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                  height: 1.4,
+                  fontWeight: FontWeight.w500,
+                ),
+          ),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 5,
+                ),
+                child: Text(
+                  contribution.impactRatio.toString(),
+                  style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
               ),
-        ),
-        Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 5,
-              ),
-              child: Text(
-                contribution.impactRatio.toString(),
-                style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                      fontWeight: FontWeight.w500,
+              const SizedBox(height: 5),
+              Text(
+                'Ratio',
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      fontWeight: FontWeight.w300,
+                      color: COLOR_GRAY,
                     ),
               ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              'Ratio',
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                    fontWeight: FontWeight.w300,
-                    color: COLOR_GRAY,
-                  ),
-            ),
-          ],
-        ),
-        Text(
-          '=',
-          style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                fontWeight: FontWeight.w500,
-                height: 1.4,
+            ],
+          ),
+          Text(
+            '=',
+            style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                  fontWeight: FontWeight.w500,
+                  height: 1.4,
+                ),
+          ),
+          const SizedBox(width: 10),
+          Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: COLOR_ALMOST_BLACK,
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                child: Text(
+                  tokensAmount,
+                  style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: COLOR_WHITE,
+                      ),
+                ),
               ),
-        ),
-        const SizedBox(width: 10),
-        Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 5,
-              ),
-              decoration: BoxDecoration(
-                color: COLOR_ALMOST_BLACK,
-                borderRadius: BorderRadius.circular(13),
-              ),
-              child: Text(
-                tokensAmount,
-                style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: COLOR_WHITE,
+              const SizedBox(height: 5),
+              Text(
+                'Impact Shares',
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      fontWeight: FontWeight.w300,
+                      color: COLOR_GRAY,
                     ),
               ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              'Impact Shares',
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                    fontWeight: FontWeight.w300,
-                    color: COLOR_GRAY,
-                  ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 

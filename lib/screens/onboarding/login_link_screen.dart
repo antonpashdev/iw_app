@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iw_app/screens/onboarding/dont_show_the_link_screen.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
+import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 
@@ -84,24 +85,12 @@ class _LoginLinkScreen extends State<LoginLinkScreen> {
                                 .linkIsYourLoginScreen_description_2_3),
                       ])),
               const SizedBox(height: 20),
-              TextField(
+              AppTextFormFieldBordered(
                 enabled: false,
                 readOnly: true,
                 minLines: 8,
                 maxLines: 8,
-                style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF87899B),
-                    fontWeight: FontWeight.w700),
                 controller: TextEditingController(text: link),
-                decoration: const InputDecoration(
-                  disabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: Color(0xFF87899B),
-                    ),
-                  ),
-                ),
               ),
               const SizedBox(height: 40),
               Column(
