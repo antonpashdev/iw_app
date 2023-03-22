@@ -157,10 +157,8 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
         isLoading = true;
       });
       try {
-        final response = await orgsApi.createOrg(widget.organization);
-        final orgId = response.data['_id'];
         member.user = await authApi.userId;
-        await orgsApi.addMemberToOrg(orgId, member);
+        await orgsApi.createOrg(widget.organization, member);
 
         if (context.mounted) {
           Navigator.of(context).pushAndRemoveUntil(

@@ -57,7 +57,7 @@ autoContribution: $autoContribution
 ''';
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'occupation': occupation,
       'role': role?.name,

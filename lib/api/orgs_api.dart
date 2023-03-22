@@ -14,8 +14,11 @@ class _OrgsApi extends BaseApi {
     );
   }
 
-  Future<Response> createOrg(Organization organization) {
-    final orgMap = organization.toMap();
+  Future<Response> createOrg(
+    Organization organization,
+    OrganizationMember member,
+  ) {
+    final orgMap = organization.toMap(member);
     orgMap['logo'] = MultipartFile.fromBytes(
       organization.logo!,
       filename: 'logo',
@@ -27,7 +30,7 @@ class _OrgsApi extends BaseApi {
   }
 
   Future<Response> addMemberToOrg(String orgId, OrganizationMember member) {
-    final body = member.toJson();
+    final body = member.toMap();
     return client.post('/orgs/$orgId/members', data: body);
   }
 
