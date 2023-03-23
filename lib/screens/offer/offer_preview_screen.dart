@@ -40,10 +40,10 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
             borderRadius: BorderRadius.circular(20),
           ),
           clipBehavior: Clip.antiAlias,
-          // child: FittedBox(
-          //   fit: BoxFit.cover,
-          //   child: Image.memory(organization.logo!),
-          // ),
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: Image.memory(widget.organization.logo!),
+          ),
         ),
         const SizedBox(width: 15),
         Column(
@@ -90,7 +90,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                     ),
               ),
               Text(
-                'Admin',
+                '${widget.member.role?.name}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
@@ -103,31 +103,50 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
           const SizedBox(height: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text(
+            children: [
+              const Text(
                 'Occupation',
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
               Text(
-                'CMO',
-                style: TextStyle(fontWeight: FontWeight.w700),
+                '${widget.member.occupation}',
+                style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ],
           ),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text(
+            children: [
+              const Text(
                 'Impact Ratio',
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
               Text(
-                '1x',
-                style: TextStyle(fontWeight: FontWeight.w700),
+                '${widget.member.impactRatio}x',
+                style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ],
           ),
+          if (widget.member.isMonthlyCompensated!)
+            Column(
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Monthly Compensation',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      '\$${widget.member.monthlyCompensation}',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+              ],
+            ),
         ],
       ),
     );
@@ -179,7 +198,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
   handleCopyPressed() async {
     Clipboard.setData(ClipboardData(
         text:
-            'app.impactwallet.xyz/#/offer?i=${offer!.id}&oi=${widget.organization.id}'));
+            'app.impactwallet.xyz/offer?i=${offer!.id}&oi=${widget.organization.id}'));
     callSnackBar(context);
 
     await Future.delayed(const Duration(seconds: 2));
@@ -197,72 +216,86 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
     return ScreenScaffold(
       title: 'Offer Preview',
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          buildOrganizationSection(context),
-          const SizedBox(height: 20),
-          const Divider(
-            color: COLOR_LIGHT_GRAY2,
-            height: 1,
-          ),
-          const SizedBox(height: 20),
-          TextButton.icon(
-            onPressed: () {},
-            icon: SvgPicture.asset(
-              'assets/icons/terms_icon.svg',
-              width: 20,
-              height: 20,
-            ),
-            label: const Text('View Terms', style: TextStyle(fontSize: 16)),
-            style: TextButton.styleFrom(
-              iconColor: COLOR_BLUE,
-              foregroundColor: COLOR_BLUE,
-            ),
-          ),
-          const SizedBox(height: 17),
-          const Text(
-            'You are invited to join this Impact Organization under the  following conditions.',
-            style: TextStyle(color: COLOR_GRAY),
-          ),
-          const SizedBox(height: 25),
-          buildMemberDetails(context),
-          const Spacer(),
-          if (offer != null)
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'This Offer is available by the link below. Send it to the person you want to invite to the organization.',
-                    style: TextStyle(
-                      color: COLOR_CORAL,
-                      fontWeight: FontWeight.w500,
+          Expanded(
+            child: ListView(
+              children: [
+                buildOrganizationSection(context),
+                const SizedBox(height: 20),
+                const Divider(
+                  color: COLOR_LIGHT_GRAY2,
+                  height: 1,
+                ),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: () {},
+                    icon: SvgPicture.asset(
+                      'assets/icons/terms_icon.svg',
+                      width: 20,
+                      height: 20,
+                    ),
+                    label: const Text('View Terms',
+                        style: TextStyle(fontSize: 16)),
+                    style: TextButton.styleFrom(
+                      iconColor: COLOR_BLUE,
+                      foregroundColor: COLOR_BLUE,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'app.impactwallet.xyz/#/offer?i=${offer!.id}&oi=${widget.organization.id}',
-                    style: const TextStyle(color: COLOR_GRAY),
+                ),
+                const SizedBox(height: 17),
+                const Text(
+                  'You are invited to join this Impact Organization under the  following conditions.',
+                  style: TextStyle(color: COLOR_GRAY),
+                ),
+                const SizedBox(height: 25),
+                buildMemberDetails(context),
+                if (offer != null)
+                  Column(
+                    children: [
+                      const SizedBox(height: 30),
+                      const Text(
+                        'This Offer is available by the link below. Send it to the person you want to invite to the organization.',
+                        style: TextStyle(
+                          color: COLOR_CORAL,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'app.impactwallet.xyz/offer?i=${offer!.id}&oi=${widget.organization.id}',
+                        style: const TextStyle(color: COLOR_GRAY),
+                      ),
+                      const SizedBox(height: 25),
+                      SizedBox(
+                        width: 290,
+                        child: ElevatedButton(
+                          onPressed: handleCopyPressed,
+                          child: const Text('Copy Link to this Offer'),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+              ],
+            ),
+          ),
+          if (offer == null)
+            Align(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: SizedBox(
+                  width: 290,
+                  child: ElevatedButton(
+                    onPressed: isLoading ? null : handleCreatePressed,
+                    child: isLoading
+                        ? const CircularProgressIndicator.adaptive()
+                        : const Text('Create Offer'),
+                  ),
+                ),
               ),
             ),
-          Align(
-            child: SizedBox(
-              width: 290,
-              child: offer == null
-                  ? ElevatedButton(
-                      onPressed: isLoading ? null : handleCreatePressed,
-                      child: isLoading
-                          ? const CircularProgressIndicator.adaptive()
-                          : const Text('Create Offer'),
-                    )
-                  : ElevatedButton(
-                      onPressed: handleCopyPressed,
-                      child: const Text('Copy Link to this Offer'),
-                    ),
-            ),
-          ),
         ],
       ),
     );

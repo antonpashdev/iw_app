@@ -7,6 +7,13 @@ class Offer {
   OrganizationMember? memberProspect;
   dynamic org;
 
+  Offer({
+    this.id,
+    this.status,
+    this.memberProspect,
+    this.org,
+  });
+
   Offer.fromJson(Map<String, dynamic> json) {
     id = json['_id'];
     status = json['status'];
