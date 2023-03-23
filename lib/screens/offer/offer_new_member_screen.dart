@@ -27,36 +27,39 @@ class _OfferNewMemberScreen extends State<OfferNewMemberScreen> {
   handleNext() {
     if (formKey.currentState!.validate()) {
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => RoleSelectionScreen(
-                    member: member,
-                    organization: organization,
-                  )));
+        context,
+        MaterialPageRoute(
+          builder: (context) => RoleSelectionScreen(
+            member: member,
+            organization: organization,
+          ),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-        title: 'Offer to a New Member',
-        child: Column(
-          children: <Widget>[
-            NewMemberForm(
-              title:
-                  'Set the terms upon which a new member is invited to join organization',
-              formKey: formKey,
-              member: member,
+      title: 'Offer to a New Member',
+      child: Column(
+        children: <Widget>[
+          NewMemberForm(
+            title:
+                'Set the terms upon which a new member is invited to join organization',
+            formKey: formKey,
+            member: member,
+          ),
+          const Spacer(),
+          SizedBox(
+            width: 290,
+            child: ElevatedButton(
+              onPressed: handleNext,
+              child: Text(AppLocalizations.of(context)!.common_next),
             ),
-            const Spacer(),
-            SizedBox(
-              width: 290,
-              child: ElevatedButton(
-                onPressed: handleNext,
-                child: Text(AppLocalizations.of(context)!.common_next),
-              ),
-            )
-          ],
-        ));
+          )
+        ],
+      ),
+    );
   }
 }

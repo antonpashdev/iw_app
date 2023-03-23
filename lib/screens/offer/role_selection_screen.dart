@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
@@ -33,10 +32,14 @@ class _RoleSelectionState extends State<RoleSelectionScreen> {
   handleNext() {
     member.role = _role;
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                OfferPreviewScreen(organization: organization)));
+      context,
+      MaterialPageRoute(
+        builder: (context) => OfferPreviewScreen(
+          organization: organization,
+          member: member,
+        ),
+      ),
+    );
   }
 
   @override

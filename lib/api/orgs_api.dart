@@ -56,6 +56,35 @@ class _OrgsApi extends BaseApi {
   Future<Response> stopContribution(String orgId, String contributionId) {
     return client.delete('/orgs/$orgId/contributions/$contributionId');
   }
+
+  Future<Response> createOffer(
+    String orgId,
+    OrganizationMember member,
+  ) {
+    final body = {
+      'memberProspect': member.toMap(),
+    };
+
+    return client.post('/orgs/$orgId/offers', data: body);
+  }
+
+  Future<Response> acceptDeclineOffer(
+    String orgId,
+    String offerId,
+    String userId,
+    String status,
+  ) {
+    final body = {
+      'status': status,
+      'userId': userId,
+    };
+
+    return client.patch('/orgs/$orgId/offers/$offerId', data: body);
+  }
+
+  Future<Response> getOfferById(String orgId, String offerId) {
+    return client.get('/orgs/$orgId/offers/$offerId');
+  }
 }
 
 final orgsApi = _OrgsApi();
