@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:iw_app/api/auth_api.dart';
+import 'package:iw_app/app_home.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/screens/home_screen.dart';
-import 'package:iw_app/screens/login_screen.dart';
+import 'package:iw_app/screens/offer/offer_screen.dart';
 import 'package:iw_app/storybook/app_storybook.dart';
 import 'package:iw_app/theme/app_theme.dart';
 
@@ -21,20 +21,23 @@ class App extends StatelessWidget {
       routes: {
         AppStorybook.routeName: (context) => const AppStorybook(),
       },
-      home: FutureBuilder(
-        future: authApi.token,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (snapshot.data == null) {
-            return const LoginScreen();
-          }
-          return const HomeScreen();
-        },
-      ),
+      onGenerateRoute: (settings) {
+        if (settings.name!.contains(OfferScreen.routeName)) {
+          // final orgId = settings.name!.split('=')[1];
+          // final offerId = settings.name!.split('=')[1];
+          final settingsUri = Uri.parse(settings.name!);
+          String? offerId = settingsUri.queryParameters['i'];
+          String? orgId = settingsUri.queryParameters['oi'];
+          return MaterialPageRoute(
+            builder: (_) => OfferScreen(
+              orgId: orgId!,
+              offerId: offerId!,
+            ),
+          );
+        }
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
+      },
+      home: const AppHome(),
     );
   }
 }

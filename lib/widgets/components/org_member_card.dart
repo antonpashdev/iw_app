@@ -85,7 +85,8 @@ class OrgMemberCard extends StatelessWidget {
           dense: true,
           title: Text('You Contributed', style: textStyle),
           contentPadding: const EdgeInsets.all(0),
-          trailing: Text('${member!.contributed}', style: textStyle),
+          trailing: Text('${member!.contributed!.toStringAsFixed(2)}h',
+              style: textStyle),
           visualDensity:
               const VisualDensity(vertical: VisualDensity.minimumDensity),
         ),

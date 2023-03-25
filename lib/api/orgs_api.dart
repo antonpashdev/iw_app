@@ -14,8 +14,11 @@ class _OrgsApi extends BaseApi {
     );
   }
 
-  Future<Response> createOrg(Organization organization) {
-    final orgMap = organization.toMap();
+  Future<Response> createOrg(
+    Organization organization,
+    OrganizationMember member,
+  ) {
+    final orgMap = organization.toMap(member);
     orgMap['logo'] = MultipartFile.fromBytes(
       organization.logo!,
       filename: 'logo',
@@ -27,7 +30,7 @@ class _OrgsApi extends BaseApi {
   }
 
   Future<Response> addMemberToOrg(String orgId, OrganizationMember member) {
-    final body = member.toJson();
+    final body = member.toMap();
     return client.post('/orgs/$orgId/members', data: body);
   }
 
@@ -35,8 +38,52 @@ class _OrgsApi extends BaseApi {
     return client.get('/orgs/$orgId/members');
   }
 
+  Future<Response> getMemberEquity(String orgId, String memberId) {
+    return client.get('/orgs/$orgId/members/$memberId/equity');
+  }
+
   Future<Response> getOrgById(String orgId) {
     return client.get('/orgs/$orgId');
+  }
+
+  Future<Response> startContribution(String orgId, String memberId) {
+    final body = {
+      'memberId': memberId,
+    };
+    return client.post('/orgs/$orgId/contributions', data: body);
+  }
+
+  Future<Response> stopContribution(String orgId, String contributionId) {
+    return client.delete('/orgs/$orgId/contributions/$contributionId');
+  }
+
+  Future<Response> createOffer(
+    String orgId,
+    OrganizationMember member,
+  ) {
+    final body = {
+      'memberProspect': member.toMap(),
+    };
+
+    return client.post('/orgs/$orgId/offers', data: body);
+  }
+
+  Future<Response> acceptDeclineOffer(
+    String orgId,
+    String offerId,
+    String userId,
+    String status,
+  ) {
+    final body = {
+      'status': status,
+      'userId': userId,
+    };
+
+    return client.patch('/orgs/$orgId/offers/$offerId', data: body);
+  }
+
+  Future<Response> getOfferById(String orgId, String offerId) {
+    return client.get('/orgs/$orgId/offers/$offerId');
   }
 }
 

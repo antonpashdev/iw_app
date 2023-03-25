@@ -63,6 +63,16 @@ ThemeData getAppTheme() {
         fontWeight: FontWeight.bold,
         color: COLOR_ALMOST_BLACK,
       ),
+      displayLarge: TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.w300,
+        color: COLOR_ALMOST_BLACK,
+      ),
+      displayMedium: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w300,
+        color: COLOR_ALMOST_BLACK,
+      ),
       bodyLarge: TextStyle(
         fontSize: 18,
         color: COLOR_ALMOST_BLACK,
@@ -118,6 +128,8 @@ const Color COLOR_GRAY = Color(0xff87899B);
 const Color COLOR_GRAY2 = Color(0xffB8BFCA);
 const Color COLOR_GREEN = Color(0xff0E9E17);
 const Color COLOR_BLUE = Color(0xff1D55E4);
+const Color COLOR_RED = Color(0xffD02626);
+const Color COLOR_CORAL = Color(0xff3EA592);
 
 const Color APP_BODY_BG = COLOR_WHITE;
 const Color BTN_BLUE_BG = COLOR_BLUE;

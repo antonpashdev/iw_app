@@ -9,6 +9,7 @@ enum MemberRole {
 }
 
 class OrganizationMember {
+  String? id;
   String? occupation;
   MemberRole? role;
   double? impactRatio;
@@ -17,21 +18,22 @@ class OrganizationMember {
   bool? autoContribution;
   dynamic user;
   dynamic org;
-  int? contributed;
+  double? contributed;
 
   OrganizationMember({
     this.occupation,
     this.role,
     this.impactRatio = 1,
-    this.isMonthlyCompensated = false,
+    this.isMonthlyCompensated = true,
     this.monthlyCompensation,
-    this.autoContribution = true,
+    this.autoContribution = false,
     this.user,
     this.org,
     this.contributed = 0,
   });
 
   OrganizationMember.fromJson(Map<String, dynamic> json) {
+    id = json['_id'];
     occupation = json['occupation'];
     role = CommonUtils.stringToEnum(json['role'], MemberRole.values);
     impactRatio = json['impactRatio'];
@@ -55,7 +57,7 @@ autoContribution: $autoContribution
 ''';
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toMap() {
     return {
       'occupation': occupation,
       'role': role?.name,
@@ -69,14 +71,41 @@ autoContribution: $autoContribution
   }
 }
 
-class OrganizationMemberWithOtherMembers {
+class MemberEquity {
+  int? lamportsEarned;
+  double? equity;
+
+  MemberEquity.fromJson(Map<String, dynamic> json) {
+    lamportsEarned = json['lamportsEarned'];
+    equity = json['equity'];
+  }
+}
+
+class OrganizationMemberWithEquity {
   OrganizationMember? member;
+  MemberEquity? equity;
+  Future<MemberEquity>? futureEquity;
+
+  OrganizationMemberWithEquity({
+    this.member,
+    this.equity,
+    this.futureEquity,
+  });
+}
+
+class OrganizationMemberWithOtherMembers extends OrganizationMemberWithEquity {
   List<OrganizationMember>? otherMembers;
   Future<List<OrganizationMember>>? futureOtherMembers;
 
   OrganizationMemberWithOtherMembers({
-    this.member,
+    OrganizationMember? member,
     this.futureOtherMembers,
     this.otherMembers,
-  });
+    MemberEquity? equity,
+    Future<MemberEquity>? futureEquity,
+  }) : super(
+          member: member,
+          equity: equity,
+          futureEquity: futureEquity,
+        );
 }

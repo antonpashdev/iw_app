@@ -1,13 +1,15 @@
 {
-    "name": "iw_app",
-    "short_name": "iw_app",
-    "start_url": ".",
+    "name": "Impact Wallet",
+    "short_name": "Impact Wallet",
+    "start_url": "https://app.impactwallet.xyz/",
     "display": "standalone",
     "background_color": "#ffffff",
-    "theme_color": "#222222",
-    "description": "A new Flutter project.",
+    "theme_color": "#ffffff",
+    "description": "Turn your contribution into equity.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "screenshots": [],
+    "categories": ["productivity", "business", "finance"],
     "icons": [
         {
             "src": "icons/Icon-192.png",

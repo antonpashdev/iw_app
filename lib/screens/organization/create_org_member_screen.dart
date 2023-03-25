@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/auth_api.dart';
@@ -151,22 +154,29 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
     );
   }
 
+  navigateToHome() {
+    if (context.mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        (route) => false,
+      );
+    }
+  }
+
   handleNextPressed() async {
     if (formKey.currentState!.validate()) {
       setState(() {
         isLoading = true;
       });
       try {
-        final response = await orgsApi.createOrg(widget.organization);
-        final orgId = response.data['_id'];
         member.user = await authApi.userId;
-        await orgsApi.addMemberToOrg(orgId, member);
+        await orgsApi.createOrg(widget.organization, member);
 
-        if (context.mounted) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
-            (route) => false,
-          );
+        navigateToHome();
+      } on DioError catch (err) {
+        print(err);
+        if (err.response!.statusCode == HttpStatus.conflict) {
+          navigateToHome();
         }
       } catch (err) {
         print(err);

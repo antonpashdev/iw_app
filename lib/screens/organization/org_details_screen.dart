@@ -2,15 +2,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/orgs_api.dart';
+import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/screens/contribution/contribution_screen.dart';
+import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 class OrgDetailsScreen extends StatefulWidget {
   final String orgId;
+  final String memberId;
 
-  const OrgDetailsScreen({Key? key, required this.orgId}) : super(key: key);
+  const OrgDetailsScreen({
+    Key? key,
+    required this.orgId,
+    required this.memberId,
+  }) : super(key: key);
 
   @override
   State<OrgDetailsScreen> createState() => _OrgDetailsScreenState();
@@ -18,7 +26,9 @@ class OrgDetailsScreen extends StatefulWidget {
 
 class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   late Future<Organization> futureOrg;
-  late Future<List<OrganizationMember>> futureMembers;
+  late Future<List<OrganizationMemberWithEquity>> futureMembers;
+
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -32,11 +42,20 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     return Organization.fromJson(response.data);
   }
 
-  Future<List<OrganizationMember>> fetchMembers() async {
+  Future<List<OrganizationMemberWithEquity>> fetchMembers() async {
     final response = await orgsApi.getOrgMembers(widget.orgId);
-    return (response.data as List)
-        .map((member) => OrganizationMember.fromJson(member))
-        .toList();
+    return (response.data as List).map((memberJson) {
+      final member = OrganizationMember.fromJson(memberJson);
+      return OrganizationMemberWithEquity(
+        member: member,
+        futureEquity: fetchMemberEquity(member),
+      );
+    }).toList();
+  }
+
+  Future<MemberEquity> fetchMemberEquity(OrganizationMember member) async {
+    final response = await orgsApi.getMemberEquity(member.org, member.id!);
+    return MemberEquity.fromJson(response.data);
   }
 
   buildHeader(BuildContext context, Organization org) {
@@ -138,7 +157,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     );
   }
 
-  buildMember(OrganizationMember member) {
+  buildMember(OrganizationMemberWithEquity data) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -154,12 +173,12 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
               clipBehavior: Clip.antiAlias,
               child: FittedBox(
                 fit: BoxFit.cover,
-                child: Image.memory(member.user.image),
+                child: Image.memory(data.member!.user.image),
               ),
             ),
             const SizedBox(height: 5),
             Text(
-              member.user.nickname,
+              data.member!.user.nickname,
               style: Theme.of(context)
                   .textTheme
                   .labelMedium
@@ -167,25 +186,33 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
             ),
           ],
         ),
-        Positioned(
-          top: -5,
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 5,
-              vertical: 3,
-            ),
-            decoration: BoxDecoration(
-              color: COLOR_ALMOST_BLACK,
-              borderRadius: BorderRadius.circular(7),
-            ),
-            child: Text(
-              '0%',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium
-                  ?.copyWith(color: COLOR_WHITE),
-            ),
-          ),
+        FutureBuilder(
+          future: data.futureEquity,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Container();
+            }
+            return Positioned(
+              top: -5,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  color: COLOR_ALMOST_BLACK,
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Text(
+                  '${(snapshot.data!.equity! * 100).toStringAsFixed(1)}%',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium
+                      ?.copyWith(color: COLOR_WHITE),
+                ),
+              ),
+            );
+          },
         ),
       ],
     );
@@ -194,7 +221,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   buildMembers(
     BuildContext context,
     Organization org,
-    List<OrganizationMember> members,
+    List<OrganizationMemberWithEquity> members,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,8 +245,19 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                     color: const Color(0xffe2e2e8),
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  child: const InkWell(
-                    child: Icon(
+                  child: InkWell(
+                    customBorder: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    onTap: () => {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => OfferNewMemberScreen(
+                                    organization: org,
+                                  )))
+                    },
+                    child: const Icon(
                       CupertinoIcons.add,
                       size: 35,
                     ),
@@ -302,6 +340,34 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     );
   }
 
+  handleStartContributingPressed() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final response =
+          await orgsApi.startContribution(widget.orgId, widget.memberId);
+      final contribution = Contribution.fromJson(response.data);
+      if (context.mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => ContributionScreen(
+              contribution: contribution,
+              showSnackBar: true,
+            ),
+          ),
+          (route) => false,
+        );
+      }
+    } catch (error) {
+      print(error);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -311,7 +377,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
             futureMembers,
           ]),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+            if (!snapshot.hasData) {
               return const Scaffold(
                 backgroundColor: COLOR_WHITE,
                 body: Center(child: CircularProgressIndicator()),
@@ -344,8 +410,20 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
-                      onPressed: () {},
-                      child: const Text('Start Contributing'),
+                      onPressed:
+                          isLoading ? null : handleStartContributingPressed,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (isLoading)
+                            const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator.adaptive(),
+                            ),
+                          const Text('Start Contributing'),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 30),
                   ],

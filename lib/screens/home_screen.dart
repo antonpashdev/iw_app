@@ -13,6 +13,9 @@ import 'package:iw_app/widgets/components/org_member_card.dart';
 import 'package:iw_app/widgets/list/assets_list_tile.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
+const LAMPORTS_IN_SOL = 1000000000;
+RegExp trimZeroesRegExp = RegExp(r'([.]*0+)(?!.*\d)');
+
 class HomeScreen extends StatefulWidget {
   final bool? isOnboarding;
   const HomeScreen({Key? key, this.isOnboarding}) : super(key: key);
@@ -43,9 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final members = (response.data as List).map((member) {
       final m = OrganizationMember.fromJson(member);
       final futureOtherMembers = fetchOtherMembers(m.org.id);
+      final futureEquity = fetchMemberEquity(m.org.id, m.id!);
       final memberWithOther = OrganizationMemberWithOtherMembers(
         member: m,
         futureOtherMembers: futureOtherMembers,
+        futureEquity: futureEquity,
       );
       return memberWithOther;
     }).toList();
@@ -58,6 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return (response.data as List)
         .map((member) => OrganizationMember.fromJson(member))
         .toList();
+  }
+
+  Future<MemberEquity> fetchMemberEquity(String orgId, String memberId) async {
+    final response = await orgsApi.getMemberEquity(orgId, memberId);
+    return MemberEquity.fromJson(response.data);
   }
 
   Widget buildCallToCreateCard(BuildContext context) {
@@ -90,7 +100,10 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => OrgDetailsScreen(orgId: member.org.id),
+                builder: (_) => OrgDetailsScreen(
+                  orgId: member.org.id,
+                  memberId: member.id!,
+                ),
               ),
             );
           },
@@ -117,6 +130,40 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  buildAsset(OrganizationMemberWithOtherMembers omm) {
+    return FutureBuilder(
+        future: omm.futureEquity,
+        builder: (_, snapshot) {
+          if (!snapshot.hasData) {
+            return Container();
+          }
+          final tokensAmount =
+              (snapshot.data!.lamportsEarned! / LAMPORTS_IN_SOL)
+                  .toStringAsFixed(4)
+                  .replaceAll(trimZeroesRegExp, '');
+          final equity = (snapshot.data!.equity! * 100).toStringAsFixed(1);
+          return AssetsListTile(
+            leading: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: COLOR_LIGHT_GRAY2,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: Image.memory(omm.member!.org.logo),
+              ),
+            ),
+            name: omm.member!.org.name,
+            account: '@${omm.member!.org.username}',
+            tokensAmount: tokensAmount,
+            equity: '$equity%',
+          );
+        });
+  }
+
   buildOrgsMembers(List<OrganizationMemberWithOtherMembers> members) {
     return members.isEmpty
         ? buildCallToCreateCard(context)
@@ -141,6 +188,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   .toList()
             ],
           );
+  }
+
+  buildAssets(List<OrganizationMemberWithOtherMembers> members) {
+    return Column(
+      children: [
+        ...members.map((m) => buildAsset(m)).toList(),
+      ],
+    );
   }
 
   @override
@@ -244,9 +299,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 15),
                   AppPadding(
-                    child: buildAssetExample(),
+                    child: snapshot.data!.isEmpty
+                        ? buildAssetExample()
+                        : buildAssets(snapshot.data!),
                   ),
-                  if (assets.isEmpty)
+                  if (snapshot.data!.isEmpty)
                     AppPadding(
                       child: Column(
                         children: [

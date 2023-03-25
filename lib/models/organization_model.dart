@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:iw_app/models/organization_member_model.dart';
+
 class Organization {
   String? id;
   String? username;
@@ -40,14 +42,24 @@ $settings
 ''';
   }
 
-  Map<String, dynamic> toMap() {
-    return {
+  Map<String, dynamic> toMap(OrganizationMember? member) {
+    final orgMap = {
       'username': username,
       'name': name,
       'link': link,
       'description': description,
       'settings[treasury]': settings.treasury,
     };
+    if (member != null) {
+      orgMap['member[occupation]'] = member.occupation;
+      orgMap['member[role]'] = member.role?.name;
+      orgMap['member[impactRatio]'] = member.impactRatio;
+      orgMap['member[isMonthlyCompensated]'] = member.isMonthlyCompensated;
+      orgMap['member[monthlyCompensation]'] = member.monthlyCompensation;
+      orgMap['member[autoContribution]'] = member.autoContribution;
+      orgMap['member[user]'] = member.user;
+    }
+    return orgMap;
   }
 }
 
