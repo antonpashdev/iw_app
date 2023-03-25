@@ -79,8 +79,9 @@ class _NicknameScreen extends State<NicknameScreen> {
         AppLocalizations.of(context)!.nicknameScreen_input_label;
 
     return ScreenScaffold(
-        title: AppLocalizations.of(context)!.nicknameScreen_title,
-        child: Column(children: <Widget>[
+      title: AppLocalizations.of(context)!.nicknameScreen_title,
+      child: Column(
+        children: <Widget>[
           Form(
               key: formGlobalKey,
               child: TextFormField(
@@ -111,20 +112,22 @@ class _NicknameScreen extends State<NicknameScreen> {
                           softWrap: true,
                         ))
                       ]))),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (isLoading) const CircularProgressIndicator.adaptive(),
-                if (!isLoading)
-                  ElevatedButton(
-                    onPressed: isButtonDisabled ? null : handleNext,
-                    child: Text(AppLocalizations.of(context)!.common_next),
-                  ),
-              ],
+          SizedBox(
+            width: 290,
+            child: ElevatedButton(
+              onPressed: isButtonDisabled || isLoading ? null : handleNext,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (isLoading) const CircularProgressIndicator.adaptive(),
+                  if (!isLoading)
+                    Text(AppLocalizations.of(context)!.common_next),
+                ],
+              ),
             ),
           ),
-        ]));
+        ],
+      ),
+    );
   }
 }
