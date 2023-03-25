@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
             name: omm.member!.org.name,
             account: '@${omm.member!.org.username}',
             tokensAmount: tokensAmount,
-            equity: equity,
+            equity: '$equity%',
           );
         });
   }

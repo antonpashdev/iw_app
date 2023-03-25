@@ -15,7 +15,7 @@ class NicknameScreen extends StatefulWidget {
 class _NicknameScreen extends State<NicknameScreen> {
   User user = User();
   bool isButtonDisabled = true;
-
+  bool isLoading = false;
   bool userAlreadyExists = false;
 
   final formGlobalKey = GlobalKey<FormState>();
@@ -42,13 +42,24 @@ class _NicknameScreen extends State<NicknameScreen> {
   }
 
   handleNext() async {
-    bool isNickNameExists = await usersApi.isUserExists(user.nickname);
-
     setState(() {
-      userAlreadyExists = isNickNameExists;
+      isLoading = true;
     });
+    try {
+      bool isNickNameExists = await usersApi.isUserExists(user.nickname);
 
-    navigateTo(formGlobalKey.currentState!.validate() && !isNickNameExists);
+      setState(() {
+        userAlreadyExists = isNickNameExists;
+      });
+
+      navigateTo(formGlobalKey.currentState!.validate() && !isNickNameExists);
+    } catch (err) {
+      print(err);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   navigateTo(bool isNavigationAllowed) {
@@ -105,10 +116,12 @@ class _NicknameScreen extends State<NicknameScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ElevatedButton(
-                  onPressed: isButtonDisabled ? null : handleNext,
-                  child: Text(AppLocalizations.of(context)!.common_next),
-                ),
+                if (isLoading) const CircularProgressIndicator.adaptive(),
+                if (!isLoading)
+                  ElevatedButton(
+                    onPressed: isButtonDisabled ? null : handleNext,
+                    child: Text(AppLocalizations.of(context)!.common_next),
+                  ),
               ],
             ),
           ),
