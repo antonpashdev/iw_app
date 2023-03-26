@@ -112,7 +112,11 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                 const SizedBox(width: 5),
                 ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ReceiveMoneyScreen()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ReceiveMoneyScreen(organization: org)));
                   },
                   icon: SvgPicture.asset('assets/icons/arrow_down_box.svg'),
                   label: const Text('Receive'),

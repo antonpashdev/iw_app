@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/screens/organization/receive_money_generate_link_screen.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:iw_app/utils/validation.dart';
 
 class ReceiveMoneyScreen extends StatefulWidget {
-  const ReceiveMoneyScreen({super.key});
+  final Organization organization;
+
+  const ReceiveMoneyScreen({super.key, required this.organization});
 
   @override
   State<ReceiveMoneyScreen> createState() => _ReceiveMoneyScreenState();
@@ -15,6 +19,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
   final _formKey = GlobalKey<FormState>();
   late String _item = '';
   late String _price = '';
+  get organization => widget.organization;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +67,13 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                               ? null
                               : () {
                                   if (_formKey.currentState!.validate()) {
-                                    print('$_item, $_price');
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                ReceiveMoneyGenerateLinkScreen(
+                                                    organization:
+                                                        organization)));
                                   }
                                 },
                           child: Text(AppLocalizations.of(context)!

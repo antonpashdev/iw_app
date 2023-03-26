@@ -9,6 +9,7 @@ class Organization {
   String? link;
   String? description;
   String? logo;
+  String? wallet;
   Uint8List? logoToSet;
   OrganizationSettings settings = OrganizationSettings();
 
@@ -18,6 +19,7 @@ class Organization {
     this.link,
     this.description,
     this.logo,
+    this.wallet,
   });
 
   Organization.fromJson(Map<String, dynamic> json) {
@@ -27,6 +29,7 @@ class Organization {
     link = json['link'];
     description = json['description'];
     logo = json['logo'];
+    wallet = json['wallet'];
   }
 
   @override
@@ -36,6 +39,7 @@ ${super.toString()}
 username: $username
 name: $name
 link: $link
+wallet: $wallet
 description: $description
 settings:
 $settings
