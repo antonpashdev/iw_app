@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:iw_app/models/organization_member_model.dart';
@@ -9,7 +8,8 @@ class Organization {
   String? name;
   String? link;
   String? description;
-  Uint8List? logo;
+  String? logo;
+  Uint8List? logoToSet;
   OrganizationSettings settings = OrganizationSettings();
 
   Organization({
@@ -26,7 +26,7 @@ class Organization {
     name = json['name'];
     link = json['link'];
     description = json['description'];
-    logo = base64Decode(json['logo']);
+    logo = json['logo'];
   }
 
   @override

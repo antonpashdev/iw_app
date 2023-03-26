@@ -42,7 +42,13 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
           clipBehavior: Clip.antiAlias,
           child: FittedBox(
             fit: BoxFit.cover,
-            child: Image.memory(widget.organization.logo!),
+            child: FutureBuilder(
+              future: orgsApi.getLogo(widget.organization.logo!),
+              builder: (_, snapshot) {
+                if (!snapshot.hasData) return Container();
+                return Image.memory(snapshot.data!);
+              },
+            ),
           ),
         ),
         const SizedBox(width: 15),

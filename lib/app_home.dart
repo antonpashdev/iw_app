@@ -2,12 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/contribution_model.dart';
-import 'package:iw_app/models/organization_member_model.dart';
-import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/screens/login_screen.dart';
-import 'package:iw_app/screens/offer/offer_preview_screen.dart';
 
 import 'api/auth_api.dart';
 

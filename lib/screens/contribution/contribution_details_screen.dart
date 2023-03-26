@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
@@ -31,7 +32,13 @@ class ContributionDetailsScreen extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: FittedBox(
             fit: BoxFit.cover,
-            child: Image.memory(contribution.org.logo),
+            child: FutureBuilder(
+              future: orgsApi.getLogo(contribution.org.logo),
+              builder: (_, snapshot) {
+                if (!snapshot.hasData) return Container();
+                return Image.memory(snapshot.data!);
+              },
+            ),
           ),
         ),
         const SizedBox(width: 15),

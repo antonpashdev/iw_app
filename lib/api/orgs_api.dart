@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:iw_app/api/base_api.dart';
 import 'package:iw_app/models/organization_member_model.dart';
@@ -20,7 +22,7 @@ class _OrgsApi extends BaseApi {
   ) {
     final orgMap = organization.toMap(member);
     orgMap['logo'] = MultipartFile.fromBytes(
-      organization.logo!,
+      organization.logoToSet!,
       filename: 'logo',
     );
 
@@ -84,6 +86,17 @@ class _OrgsApi extends BaseApi {
 
   Future<Response> getOfferById(String orgId, String offerId) {
     return client.get('/orgs/$orgId/offers/$offerId');
+  }
+
+  Future<Uint8List> getLogo(String url) async {
+    final response = await client.get(
+      url,
+      options: Options(
+        responseType: ResponseType.bytes,
+      ),
+    );
+
+    return response.data;
   }
 }
 

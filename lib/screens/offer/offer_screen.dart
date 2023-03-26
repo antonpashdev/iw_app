@@ -57,7 +57,13 @@ class _OfferScreenState extends State<OfferScreen> {
           clipBehavior: Clip.antiAlias,
           child: FittedBox(
             fit: BoxFit.cover,
-            child: Image.memory(offer.org.logo!),
+            child: FutureBuilder(
+              future: orgsApi.getLogo(offer.org.logo!),
+              builder: (_, snapshot) {
+                if (!snapshot.hasData) return Container();
+                return Image.memory(snapshot.data!);
+              },
+            ),
           ),
         ),
         const SizedBox(width: 15),
