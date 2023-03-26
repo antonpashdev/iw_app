@@ -19,57 +19,58 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-        title: 'Item and Price',
+        title: AppLocalizations.of(context)!.receiveMoneyScreen_title,
         child: InputForm(
           formKey: _formKey,
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text('Item'),
-                const SizedBox(height: 5),
-                AppTextFormFieldBordered(
-                  autofocus: true,
-                  onChanged: (value) {
-                    setState(() {
-                      _item = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 45),
-                const Text('Price'),
-                const SizedBox(height: 5),
-                AppTextFormFieldBordered(
-                    inputType: TextInputType.number,
-                    prefix: const Text('\$'),
-                    validator: multiValidate([
-                      numberField('Price'),
-                    ]),
-                    onChanged: (value) {
-                      setState(() {
-                        _price = value;
-                      });
-                    }),
-                Expanded(
-                    flex: 1,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 330,
-                          child: ElevatedButton(
-                              onPressed: _item.isEmpty || _price.isEmpty
-                                  ? null
-                                  : () {
-                                      if (_formKey.currentState!.validate()) {
-                                        print('$_item, $_price');
-                                      }
-                                    },
-                              child: const Text('Generate  Payment Link')),
-                        )
-                      ],
-                    ))
-              ]),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
+                  Widget>[
+            Text(AppLocalizations.of(context)!.receiveMoneyScreen_label_item),
+            const SizedBox(height: 5),
+            AppTextFormFieldBordered(
+              autofocus: true,
+              onChanged: (value) {
+                setState(() {
+                  _item = value;
+                });
+              },
+            ),
+            const SizedBox(height: 45),
+            Text(AppLocalizations.of(context)!.receiveMoneyScreen_label_price),
+            const SizedBox(height: 5),
+            AppTextFormFieldBordered(
+                inputType: TextInputType.number,
+                prefix: const Text('\$'),
+                validator: multiValidate([
+                  numberField('Price'),
+                ]),
+                onChanged: (value) {
+                  setState(() {
+                    _price = value;
+                  });
+                }),
+            Expanded(
+                flex: 1,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 330,
+                      child: ElevatedButton(
+                          onPressed: _item.isEmpty || _price.isEmpty
+                              ? null
+                              : () {
+                                  if (_formKey.currentState!.validate()) {
+                                    print('$_item, $_price');
+                                  }
+                                },
+                          child: Text(AppLocalizations.of(context)!
+                              .receiveMoneyScreen_label_generate_link)),
+                    )
+                  ],
+                ))
+          ]),
         ));
   }
 }
