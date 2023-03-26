@@ -153,7 +153,13 @@ class _HomeScreenState extends State<HomeScreen> {
               clipBehavior: Clip.antiAlias,
               child: FittedBox(
                 fit: BoxFit.cover,
-                child: Image.memory(omm.member!.org.logo),
+                child: FutureBuilder(
+                  future: orgsApi.getLogo(omm.member!.org.logo),
+                  builder: (_, snapshot) {
+                    if (!snapshot.hasData) return Container();
+                    return Image.memory(snapshot.data!);
+                  },
+                ),
               ),
             ),
             name: omm.member!.org.name,
@@ -224,10 +230,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     clipBehavior: Clip.antiAlias,
                     child: FittedBox(
                       fit: BoxFit.cover,
-                      child: user?.image != null
-                          ? Image.memory(
-                              user!.image!,
-                            )
+                      child: user?.avatar != null
+                          ? FutureBuilder(
+                              future: usersApi.getAvatar(user!.avatar!),
+                              builder: (_, snapshot) {
+                                if (!snapshot.hasData) return Container();
+                                return Image.memory(snapshot.data!);
+                              })
                           : const Icon(Icons.person, color: Color(0xFFBDBDBD)),
                     ),
                   ),

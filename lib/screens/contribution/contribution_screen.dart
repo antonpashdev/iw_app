@@ -71,7 +71,13 @@ class _ContributionScreenState extends State<ContributionScreen> {
           clipBehavior: Clip.antiAlias,
           child: FittedBox(
             fit: BoxFit.cover,
-            child: Image.memory(widget.contribution.org.logo),
+            child: FutureBuilder(
+              future: orgsApi.getLogo(widget.contribution.org.logo),
+              builder: (_, snapshot) {
+                if (!snapshot.hasData) return Container();
+                return Image.memory(snapshot.data!);
+              },
+            ),
           ),
         ),
         const SizedBox(width: 15),

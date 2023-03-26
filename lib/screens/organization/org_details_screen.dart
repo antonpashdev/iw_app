@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/orgs_api.dart';
+import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
@@ -71,7 +72,13 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           clipBehavior: Clip.antiAlias,
           child: FittedBox(
             fit: BoxFit.cover,
-            child: Image.memory(org.logo!),
+            child: FutureBuilder(
+              future: orgsApi.getLogo(org.logo!),
+              builder: (_, snapshot) {
+                if (!snapshot.hasData) return Container();
+                return Image.memory(snapshot.data!);
+              },
+            ),
           ),
         ),
         const SizedBox(width: 20),
@@ -173,7 +180,13 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
               clipBehavior: Clip.antiAlias,
               child: FittedBox(
                 fit: BoxFit.cover,
-                child: Image.memory(data.member!.user.image),
+                child: FutureBuilder(
+                  future: usersApi.getAvatar(data.member!.user.avatar),
+                  builder: (_, snapshot) {
+                    if (!snapshot.hasData) return Container();
+                    return Image.memory(snapshot.data!);
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 5),

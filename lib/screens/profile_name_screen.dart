@@ -30,7 +30,7 @@ class _CreateProfile extends State<CreateProfile> {
         .pickFiles(type: FileType.image, allowMultiple: false);
 
     if (pickedImage != null) {
-      user.image = pickedImage.files.first.bytes!;
+      user.avatarToSet = pickedImage.files.first.bytes!;
 
       setState(() {
         _imageBuffer = pickedImage.files.first.bytes!;
@@ -47,7 +47,7 @@ class _CreateProfile extends State<CreateProfile> {
       final data = await usersApi.createUser(
         user.name,
         user.nickname,
-        user.image,
+        user.avatarToSet,
       );
       await appStorage.write('jwt_token', data.token);
       handleNext(data.secretLink);

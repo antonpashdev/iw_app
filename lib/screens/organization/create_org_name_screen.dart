@@ -39,13 +39,13 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
 
     if (pickedImage != null) {
       setState(() {
-        widget.organization.logo = pickedImage.files.first.bytes!;
+        widget.organization.logoToSet = pickedImage.files.first.bytes!;
       });
     }
   }
 
   String? requiredLogoValidator(String? value) {
-    if (widget.organization.logo == null) {
+    if (widget.organization.logoToSet == null) {
       return '${AppLocalizations.of(context)!.createOrgNameScreen_logoLabel} ${AppLocalizations.of(context)!.required}';
     }
     return null;
@@ -69,7 +69,7 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
                 child: InkWell(
                   onTap: selectLogo,
                   borderRadius: BorderRadius.circular(20),
-                  child: widget.organization.logo == null
+                  child: widget.organization.logoToSet == null
                       ? const Center(
                           child: Image(
                             image: AssetImage('assets/icons/add_image.png'),
@@ -78,7 +78,7 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
                       : FittedBox(
                           clipBehavior: Clip.hardEdge,
                           fit: BoxFit.cover,
-                          child: Image.memory(widget.organization.logo!),
+                          child: Image.memory(widget.organization.logoToSet!),
                         ),
                 ),
               ),

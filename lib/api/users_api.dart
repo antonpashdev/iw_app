@@ -73,6 +73,17 @@ class _UsersApi extends BaseApi {
     }
     return client.get('/users/$userId/contributions', queryParameters: params);
   }
+
+  Future<Uint8List> getAvatar(String url) async {
+    final response = await client.get(
+      url,
+      options: Options(
+        responseType: ResponseType.bytes,
+      ),
+    );
+
+    return response.data;
+  }
 }
 
 final usersApi = _UsersApi();
