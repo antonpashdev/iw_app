@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/screens/organization/receive_money_generate_link_screen.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -18,8 +20,40 @@ class ReceiveMoneyScreen extends StatefulWidget {
 class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
   final _formKey = GlobalKey<FormState>();
   late String _item = '';
-  late String _price = '';
+  double? _price;
+  bool isLoading = false;
+
   get organization => widget.organization;
+
+  handleGeneratePressed() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final response =
+          await orgsApi.receivePayment(organization.id, _item, _price!);
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReceiveMoneyGenerateLinkScreen(
+              organization: organization,
+              payment: Payment.fromJson(response.data),
+            ),
+          ),
+        );
+      }
+    } catch (error) {
+      print(error);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +85,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                 ]),
                 onChanged: (value) {
                   setState(() {
-                    _price = value;
+                    _price = double.tryParse(value);
                   });
                 }),
             Expanded(
@@ -63,21 +97,16 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                     SizedBox(
                       width: 330,
                       child: ElevatedButton(
-                          onPressed: _item.isEmpty || _price.isEmpty
-                              ? null
-                              : () {
-                                  if (_formKey.currentState!.validate()) {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ReceiveMoneyGenerateLinkScreen(
-                                                    organization:
-                                                        organization)));
-                                  }
-                                },
-                          child: Text(AppLocalizations.of(context)!
-                              .receiveMoneyScreen_label_generate_link)),
+                        onPressed: _item.isEmpty || _price == null || isLoading
+                            ? null
+                            : handleGeneratePressed,
+                        child: isLoading
+                            ? const CircularProgressIndicator.adaptive()
+                            : Text(
+                                AppLocalizations.of(context)!
+                                    .receiveMoneyScreen_label_generate_link,
+                              ),
+                      ),
                     )
                   ],
                 ))

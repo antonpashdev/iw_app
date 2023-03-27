@@ -187,13 +187,15 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
               clipBehavior: Clip.antiAlias,
               child: FittedBox(
                 fit: BoxFit.cover,
-                child: FutureBuilder(
-                  future: usersApi.getAvatar(data.member!.user.avatar),
-                  builder: (_, snapshot) {
-                    if (!snapshot.hasData) return Container();
-                    return Image.memory(snapshot.data!);
-                  },
-                ),
+                child: data.member!.user.avatar != null
+                    ? FutureBuilder(
+                        future: usersApi.getAvatar(data.member!.user.avatar),
+                        builder: (_, snapshot) {
+                          if (!snapshot.hasData) return Container();
+                          return Image.memory(snapshot.data!);
+                        },
+                      )
+                    : Container(),
               ),
             ),
             const SizedBox(height: 5),

@@ -126,13 +126,15 @@ class OrgMemberCard extends StatelessWidget {
                       clipBehavior: Clip.antiAlias,
                       child: FittedBox(
                         fit: BoxFit.cover,
-                        child: FutureBuilder(
-                          future: usersApi.getAvatar(member.user.avatar),
-                          builder: (_, snapshot) {
-                            if (!snapshot.hasData) return Container();
-                            return Image.memory(snapshot.data!);
-                          },
-                        ),
+                        child: member.user.avatar != null
+                            ? FutureBuilder(
+                                future: usersApi.getAvatar(member.user.avatar),
+                                builder: (_, snapshot) {
+                                  if (!snapshot.hasData) return Container();
+                                  return Image.memory(snapshot.data!);
+                                },
+                              )
+                            : Container(),
                       ),
                     );
                   }),

@@ -98,6 +98,19 @@ class _OrgsApi extends BaseApi {
 
     return response.data;
   }
+
+  Future<Response> receivePayment(
+    String orgId,
+    String item,
+    double price,
+  ) {
+    final body = {
+      'item': item,
+      'amount': price,
+    };
+
+    return client.post('/orgs/$orgId/payments/receive', data: body);
+  }
 }
 
 final orgsApi = _OrgsApi();

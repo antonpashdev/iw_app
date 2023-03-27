@@ -7,14 +7,19 @@ const TIMEOUT = Duration(days: 1);
 class BaseApi {
   final _dioClient = Dio(
     BaseOptions(
-      // baseUrl: 'http://localhost:9898',
       baseUrl: 'https://impact-wallet.herokuapp.com',
+      // baseUrl: 'http://localhost:9898',
       connectTimeout: TIMEOUT,
       sendTimeout: TIMEOUT,
       receiveTimeout: TIMEOUT,
       followRedirects: true,
     ),
-  )..interceptors.add(tokenInterceptor);
+  );
+
+  BaseApi() {
+    _dioClient.interceptors.add(tokenInterceptor);
+    // _dioClient.interceptors.add(pathInterceptor);
+  }
 
   @protected
   Dio get client {
@@ -28,6 +33,13 @@ final tokenInterceptor = InterceptorsWrapper(
     if (token != null) {
       options.headers.addAll({'Authorization': 'Bearer $token'});
     }
+    handler.next(options);
+  },
+);
+
+final pathInterceptor = InterceptorsWrapper(
+  onRequest: (options, handler) async {
+    options.path = '/api${options.path}';
     handler.next(options);
   },
 );
