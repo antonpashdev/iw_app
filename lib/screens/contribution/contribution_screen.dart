@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -114,6 +115,7 @@ class _ContributionScreenState extends State<ContributionScreen> {
       children: [
         RichText(
           text: const TextSpan(
+            style: TextStyle(color: COLOR_ALMOST_BLACK),
             children: [
               WidgetSpan(child: SizedBox(width: 50)),
               TextSpan(text: 'Your future is created'),
@@ -122,12 +124,15 @@ class _ContributionScreenState extends State<ContributionScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 20),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 300),
-          child: Image.asset(
-            'assets/images/contribution_img.png',
-            width: MediaQuery.of(context).size.width * 0.7,
+          child: Transform.rotate(
+            angle: -math.pi / 50,
+            child: Image.asset(
+              'assets/images/contribution_gif.gif',
+              width: MediaQuery.of(context).size.width * 0.7,
+            ),
           ),
         ),
       ],
