@@ -245,11 +245,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                 if (!snapshot.hasData) return Container();
                                 return Image.memory(snapshot.data!);
                               })
-                          : const Icon(Icons.person, color: Color(0xFFBDBDBD)),
+                          : const Icon(
+                              Icons.person,
+                              color: Color(0xFFBDBDBD),
+                            ),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Text(user?.nickname ?? ''),
+                  const Icon(
+                    Icons.keyboard_arrow_down_outlined,
+                    size: 20,
+                  ),
                 ],
               );
             },
@@ -280,9 +287,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (!snapshot.hasData) {
                           return const CircularProgressIndicator.adaptive();
                         }
-                        return Text(
-                          '\$${snapshot.data!.toStringAsFixed(2)}',
-                          style: Theme.of(context).textTheme.headlineMedium,
+                        return Row(
+                          children: [
+                            Text(
+                              '\$${snapshot.data!.toStringAsFixed(2)}',
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                            const SizedBox(width: 10),
+                            const Icon(Icons.keyboard_arrow_down_outlined),
+                          ],
                         );
                       },
                     ),
