@@ -29,6 +29,7 @@ class OrgDetailsScreen extends StatefulWidget {
 class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   late Future<Organization> futureOrg;
   late Future<List<OrganizationMemberWithEquity>> futureMembers;
+  late Future<double> futureBalance;
 
   bool isLoading = false;
 
@@ -41,7 +42,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
 
   Future<Organization> fetchOrg() async {
     final response = await orgsApi.getOrgById(widget.orgId);
-    return Organization.fromJson(response.data);
+    final org = Organization.fromJson(response.data);
+    futureBalance = fetchBalance(org.id!);
+    return org;
   }
 
   Future<List<OrganizationMemberWithEquity>> fetchMembers() async {
@@ -58,6 +61,11 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   Future<MemberEquity> fetchMemberEquity(OrganizationMember member) async {
     final response = await orgsApi.getMemberEquity(member.org, member.id!);
     return MemberEquity.fromJson(response.data);
+  }
+
+  Future<double> fetchBalance(String orgId) async {
+    final response = await orgsApi.getBalance(orgId);
+    return response.data['balance'];
   }
 
   buildHeader(BuildContext context, Organization org) {
@@ -86,13 +94,20 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '\$0.00',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
+            FutureBuilder(
+                future: futureBalance,
+                builder: (_, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const CircularProgressIndicator.adaptive();
+                  }
+                  return Text(
+                    '\$${snapshot.data!.toStringAsFixed(2)}',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  );
+                }),
             const SizedBox(height: 15),
             Row(
               children: [

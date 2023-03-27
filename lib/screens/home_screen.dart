@@ -29,12 +29,14 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<User> futureUser;
   late Future<List<OrganizationMemberWithOtherMembers>> futureMembers;
   List<OrganizationMemberWithOtherMembers> members = [];
+  late Future<double> futureBalance;
 
   @override
   void initState() {
     super.initState();
     futureUser = fetchUser();
     futureMembers = fetchMembers();
+    futureBalance = fetchBalance();
   }
 
   Future<User> fetchUser() =>
@@ -68,6 +70,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<MemberEquity> fetchMemberEquity(String orgId, String memberId) async {
     final response = await orgsApi.getMemberEquity(orgId, memberId);
     return MemberEquity.fromJson(response.data);
+  }
+
+  Future<double> fetchBalance() async {
+    final userId = await authApi.userId;
+    final response = await usersApi.getBalance(userId!);
+    return response.data['balance'];
   }
 
   Widget buildCallToCreateCard(BuildContext context) {
@@ -266,9 +274,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 children: [
                   AppPadding(
-                    child: Text(
-                      '\$0.00',
-                      style: Theme.of(context).textTheme.headlineMedium,
+                    child: FutureBuilder(
+                      future: futureBalance,
+                      builder: (_, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const CircularProgressIndicator.adaptive();
+                        }
+                        return Text(
+                          '\$${snapshot.data!.toStringAsFixed(2)}',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(height: 45),

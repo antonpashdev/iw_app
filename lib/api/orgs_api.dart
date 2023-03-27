@@ -111,6 +111,10 @@ class _OrgsApi extends BaseApi {
 
     return client.post('/orgs/$orgId/payments/receive', data: body);
   }
+
+  Future<Response> getBalance(String orgId) {
+    return client.get('/orgs/$orgId/balance');
+  }
 }
 
 final orgsApi = _OrgsApi();
