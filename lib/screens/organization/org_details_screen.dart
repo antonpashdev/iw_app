@@ -271,62 +271,67 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
               ?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 15),
-        Row(
-          children: [
-            Column(
-              children: [
-                Container(
-                  width: 90,
-                  height: 90,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffe2e2e8),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: InkWell(
-                    customBorder: RoundedRectangleBorder(
+        SizedBox(
+          height: 120,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    width: 90,
+                    height: 90,
+                    decoration: BoxDecoration(
+                      color: const Color(0xffe2e2e8),
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    onTap: () => {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => OfferNewMemberScreen(
-                                    organization: org,
-                                  )))
-                    },
-                    child: const Icon(
-                      CupertinoIcons.add,
-                      size: 35,
+                    child: InkWell(
+                      customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      onTap: () => {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => OfferNewMemberScreen(
+                                      organization: org,
+                                    )))
+                      },
+                      child: const Icon(
+                        CupertinoIcons.add,
+                        size: 35,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'Invite member',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(width: 10),
-            ...members
-                .asMap()
-                .map((i, member) {
-                  return MapEntry(
-                      i,
-                      Row(
-                        children: [
-                          buildMember(member),
-                          if (i != members.length - 1)
-                            const SizedBox(width: 10),
-                        ],
-                      ));
-                })
-                .values
-                .toList(),
-          ],
+                  const SizedBox(height: 5),
+                  Text(
+                    'Invite member',
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 10),
+              ...members
+                  .asMap()
+                  .map((i, member) {
+                    return MapEntry(
+                        i,
+                        Row(
+                          children: [
+                            buildMember(member),
+                            if (i != members.length - 1)
+                              const SizedBox(width: 10),
+                          ],
+                        ));
+                  })
+                  .values
+                  .toList(),
+            ],
+          ),
         ),
       ],
     );
@@ -425,28 +430,36 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
               appBar: AppBar(
                 title: Text('@${snapshot.data?[0].username}'),
               ),
-              body: AppPadding(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: ListView(
-                        children: [
-                          const SizedBox(height: 20),
-                          buildHeader(context, snapshot.data?[0]),
-                          const SizedBox(height: 25),
-                          buildDetails(context, snapshot.data?[0]),
-                          const SizedBox(height: 60),
-                          buildMembers(
+              body: Column(
+                children: [
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        const SizedBox(height: 20),
+                        AppPadding(
+                          child: buildHeader(context, snapshot.data?[0]),
+                        ),
+                        const SizedBox(height: 25),
+                        AppPadding(
+                          child: buildDetails(context, snapshot.data?[0]),
+                        ),
+                        const SizedBox(height: 60),
+                        AppPadding(
+                          child: buildMembers(
                               context, snapshot.data?[0], snapshot.data?[1]),
-                          const SizedBox(height: 50),
-                          buildPulse(context, snapshot.data?[0]),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 50),
+                        AppPadding(
+                          child: buildPulse(context, snapshot.data?[0]),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
                     ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
+                  ),
+                  const SizedBox(height: 10),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 290),
+                    child: ElevatedButton(
                       onPressed:
                           isLoading ? null : handleStartContributingPressed,
                       child: Row(
@@ -462,9 +475,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 30),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 30),
+                ],
               ),
             );
           }),

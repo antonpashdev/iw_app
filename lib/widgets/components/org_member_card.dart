@@ -113,39 +113,67 @@ class OrgMemberCard extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Container();
               }
-              return Row(
-                children: [
-                  ...snapshot.data!.map((member) {
-                    return Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: COLOR_GRAY,
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: member.user.avatar != null
-                            ? FutureBuilder(
-                                future: usersApi.getAvatar(member.user.avatar),
-                                builder: (_, snapshot) {
-                                  if (!snapshot.hasData) return Container();
-                                  return Image.memory(snapshot.data!);
-                                },
-                              )
-                            : Container(),
-                      ),
-                    );
-                  }),
-                  const SizedBox(width: 5),
-                  Text(
-                    '${snapshot.data!.length} members',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
+              return SizedBox(
+                height: 30,
+                child: Stack(
+                  children: [
+                    ...snapshot.data!
+                        .asMap()
+                        .map((i, member) {
+                          return MapEntry(
+                            i,
+                            Positioned(
+                              left: 10.0 * i,
+                              top: 0,
+                              child: Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: COLOR_GRAY,
+                                  border: Border.all(
+                                    color: COLOR_WHITE.withAlpha(200),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: FittedBox(
+                                  fit: BoxFit.cover,
+                                  child: member.user.avatar != null
+                                      ? FutureBuilder(
+                                          future: usersApi
+                                              .getAvatar(member.user.avatar),
+                                          builder: (_, snapshot) {
+                                            if (!snapshot.hasData) {
+                                              return Container();
+                                            }
+                                            return Image.memory(snapshot.data!);
+                                          },
+                                        )
+                                      : Container(),
+                                ),
+                              ),
+                            ),
+                          );
+                        })
+                        .values
+                        .toList(),
+                    Positioned(
+                      top: 0,
+                      bottom: 0,
+                      left: 30 + ((snapshot.data!.length - 1) * 10) + 5,
+                      child: Center(
+                        child: Text(
+                          '${snapshot.data!.length} members',
+                          style:
+                              Theme.of(context).textTheme.labelMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
                         ),
-                  ),
-                ],
+                      ),
+                    ),
+                  ],
+                ),
               );
             }),
       ],
