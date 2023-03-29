@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/auth_api.dart';
@@ -212,6 +213,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future onRefresh() {
+    futureMembers = fetchMembers();
+    futureBalance = fetchBalance();
+    return Future.wait([futureMembers, futureBalance]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -277,90 +284,114 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: CircularProgressIndicator(),
                 );
               }
-              return ListView(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                children: [
-                  AppPadding(
-                    child: FutureBuilder(
-                      future: futureBalance,
-                      builder: (_, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const CircularProgressIndicator.adaptive();
-                        }
-                        return Row(
-                          children: [
-                            Text(
-                              '\$${snapshot.data!.toStringAsFixed(2)}',
-                              style: Theme.of(context).textTheme.headlineMedium,
-                            ),
-                            const SizedBox(width: 10),
-                            const Icon(Icons.keyboard_arrow_down_outlined),
-                          ],
-                        );
-                      },
-                    ),
+              return CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  CupertinoSliverRefreshControl(
+                    onRefresh: onRefresh,
                   ),
-                  const SizedBox(height: 45),
-                  AppPadding(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!
-                              .homeScreen_organizationsTitle,
-                          style: Theme.of(context).textTheme.headlineLarge,
-                        ),
-                        if (members.isNotEmpty)
-                          InkWell(
-                            borderRadius: BorderRadius.circular(30),
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) => const CreateOrgScreen()));
+                  SliverList(
+                    delegate: SliverChildListDelegate.fixed(
+                      [
+                        AppPadding(
+                          child: FutureBuilder(
+                            future: futureBalance,
+                            builder: (_, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const CircularProgressIndicator
+                                    .adaptive();
+                              }
+                              return Row(
+                                children: [
+                                  Text(
+                                    '\$${snapshot.data!.toStringAsFixed(2)}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  const Icon(
+                                      Icons.keyboard_arrow_down_outlined),
+                                ],
+                              );
                             },
-                            child:
-                                SvgPicture.asset('assets/icons/add_circle.svg'),
+                          ),
+                        ),
+                        const SizedBox(height: 45),
+                        AppPadding(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context)!
+                                    .homeScreen_organizationsTitle,
+                                style:
+                                    Theme.of(context).textTheme.headlineLarge,
+                              ),
+                              if (members.isNotEmpty)
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(30),
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                const CreateOrgScreen()));
+                                  },
+                                  child: SvgPicture.asset(
+                                      'assets/icons/add_circle.svg'),
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          height: 290,
+                          child: buildOrgsMembers(snapshot.data!),
+                        ),
+                        const SizedBox(height: 45),
+                        AppPadding(
+                          child: Text(
+                            AppLocalizations.of(context)!
+                                .homeScreen_assetsTitle,
+                            style: Theme.of(context).textTheme.headlineLarge,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        AppPadding(
+                          child: snapshot.data!.isEmpty
+                              ? buildAssetExample()
+                              : buildAssets(snapshot.data!),
+                        ),
+                        if (snapshot.data!.isEmpty)
+                          AppPadding(
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 15),
+                                SvgPicture.asset(
+                                    'assets/icons/arrow_up_big.svg'),
+                                const SizedBox(height: 15),
+                                Text(
+                                  AppLocalizations.of(context)!
+                                      .homeScreen_assetsExampleDesc,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    height: 290,
-                    child: buildOrgsMembers(snapshot.data!),
-                  ),
-                  const SizedBox(height: 45),
-                  AppPadding(
-                    child: Text(
-                      AppLocalizations.of(context)!.homeScreen_assetsTitle,
-                      style: Theme.of(context).textTheme.headlineLarge,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  AppPadding(
-                    child: snapshot.data!.isEmpty
-                        ? buildAssetExample()
-                        : buildAssets(snapshot.data!),
-                  ),
-                  if (snapshot.data!.isEmpty)
-                    AppPadding(
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 15),
-                          SvgPicture.asset('assets/icons/arrow_up_big.svg'),
-                          const SizedBox(height: 15),
-                          Text(
-                            AppLocalizations.of(context)!
-                                .homeScreen_assetsExampleDesc,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                 ],
               );
+              // return ListView(
+              //   padding: const EdgeInsets.symmetric(vertical: 10),
+              //   children: [
+
+              //   ],
+              // );
             }),
       ),
     );
