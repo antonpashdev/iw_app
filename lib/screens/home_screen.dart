@@ -214,8 +214,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future onRefresh() {
-    futureMembers = fetchMembers();
-    futureBalance = fetchBalance();
+    setState(() {
+      futureMembers = fetchMembers();
+      futureBalance = fetchBalance();
+    });
     return Future.wait([futureMembers, futureBalance]);
   }
 
@@ -279,13 +281,13 @@ class _HomeScreenState extends State<HomeScreen> {
         body: FutureBuilder(
             future: futureMembers,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+              if (!snapshot.hasData) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               }
               return CustomScrollView(
-                physics: const BouncingScrollPhysics(),
+                physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
                   CupertinoSliverRefreshControl(
                     onRefresh: onRefresh,
