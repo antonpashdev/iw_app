@@ -263,12 +263,14 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '${members.length} Members',
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
+        AppPadding(
+          child: Text(
+            '${members.length} Members',
+            style: Theme.of(context)
+                .textTheme
+                .bodyLarge
+                ?.copyWith(fontWeight: FontWeight.bold),
+          ),
         ),
         const SizedBox(height: 15),
         SizedBox(
@@ -277,42 +279,45 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
             scrollDirection: Axis.horizontal,
             clipBehavior: Clip.none,
             children: [
-              Column(
-                children: [
-                  Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      color: const Color(0xffe2e2e8),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: InkWell(
-                      customBorder: RoundedRectangleBorder(
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 90,
+                      height: 90,
+                      decoration: BoxDecoration(
+                        color: const Color(0xffe2e2e8),
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      onTap: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => OfferNewMemberScreen(
-                                      organization: org,
-                                    )))
-                      },
-                      child: const Icon(
-                        CupertinoIcons.add,
-                        size: 35,
+                      child: InkWell(
+                        customBorder: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        onTap: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => OfferNewMemberScreen(
+                                        organization: org,
+                                      )))
+                        },
+                        child: const Icon(
+                          CupertinoIcons.add,
+                          size: 35,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    'Invite member',
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelMedium
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ],
+                    const SizedBox(height: 5),
+                    Text(
+                      'Invite member',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(width: 10),
               ...members
@@ -325,6 +330,8 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                             buildMember(member),
                             if (i != members.length - 1)
                               const SizedBox(width: 10),
+                            if (i == members.length - 1)
+                              const SizedBox(width: 20),
                           ],
                         ));
                   })
@@ -444,10 +451,8 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                           child: buildDetails(context, snapshot.data?[0]),
                         ),
                         const SizedBox(height: 60),
-                        AppPadding(
-                          child: buildMembers(
-                              context, snapshot.data?[0], snapshot.data?[1]),
-                        ),
+                        buildMembers(
+                            context, snapshot.data?[0], snapshot.data?[1]),
                         const SizedBox(height: 50),
                         AppPadding(
                           child: buildPulse(context, snapshot.data?[0]),
