@@ -5,6 +5,7 @@ import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
+import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class OfferScreen extends StatefulWidget {
@@ -57,12 +58,8 @@ class _OfferScreenState extends State<OfferScreen> {
           clipBehavior: Clip.antiAlias,
           child: FittedBox(
             fit: BoxFit.cover,
-            child: FutureBuilder(
-              future: orgsApi.getLogo(offer.org.logo!),
-              builder: (_, snapshot) {
-                if (!snapshot.hasData) return Container();
-                return Image.memory(snapshot.data!);
-              },
+            child: NetworkImageAuth(
+              imageUrl: '${orgsApi.baseUrl}${offer.org.logo!}',
             ),
           ),
         ),

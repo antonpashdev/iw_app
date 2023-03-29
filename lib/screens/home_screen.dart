@@ -12,6 +12,7 @@ import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/org_member_card.dart';
 import 'package:iw_app/widgets/list/assets_list_tile.dart';
+import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
@@ -162,12 +163,8 @@ class _HomeScreenState extends State<HomeScreen> {
               clipBehavior: Clip.antiAlias,
               child: FittedBox(
                 fit: BoxFit.cover,
-                child: FutureBuilder(
-                  future: orgsApi.getLogo(omm.member!.org.logo),
-                  builder: (_, snapshot) {
-                    if (!snapshot.hasData) return Container();
-                    return Image.memory(snapshot.data!);
-                  },
+                child: NetworkImageAuth(
+                  imageUrl: '${orgsApi.baseUrl}${omm.member!.org.logo}',
                 ),
               ),
             ),
@@ -388,12 +385,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               );
-              // return ListView(
-              //   padding: const EdgeInsets.symmetric(vertical: 10),
-              //   children: [
-
-              //   ],
-              // );
             }),
       ),
     );

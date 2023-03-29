@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
-import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/media/network_image_auth.dart';
 
 class OrgMemberCard extends StatelessWidget {
   final Function()? onTap;
@@ -23,12 +23,8 @@ class OrgMemberCard extends StatelessWidget {
         ? FittedBox(
             clipBehavior: Clip.hardEdge,
             fit: BoxFit.cover,
-            child: FutureBuilder(
-              future: orgsApi.getLogo(member?.org?.logo),
-              builder: (_, snapshot) {
-                if (!snapshot.hasData) return Container();
-                return Image.memory(snapshot.data!);
-              },
+            child: NetworkImageAuth(
+              imageUrl: '${orgsApi.baseUrl}${member?.org?.logo}',
             ),
           )
         : const Center(
@@ -142,16 +138,9 @@ class OrgMemberCard extends StatelessWidget {
                                   child: FittedBox(
                                     fit: BoxFit.cover,
                                     child: member.user.avatar != null
-                                        ? FutureBuilder(
-                                            future: usersApi
-                                                .getAvatar(member.user.avatar),
-                                            builder: (_, snapshot) {
-                                              if (!snapshot.hasData) {
-                                                return Container();
-                                              }
-                                              return Image.memory(
-                                                  snapshot.data!);
-                                            },
+                                        ? NetworkImageAuth(
+                                            imageUrl:
+                                                '${orgsApi.baseUrl}${member.user.avatar}',
                                           )
                                         : Container(),
                                   ),

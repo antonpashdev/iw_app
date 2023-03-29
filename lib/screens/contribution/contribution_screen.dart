@@ -7,6 +7,7 @@ import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/screens/contribution/contribution_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/media/network_image_auth.dart';
 
 class ContributionScreen extends StatefulWidget {
   final Contribution contribution;
@@ -72,12 +73,8 @@ class _ContributionScreenState extends State<ContributionScreen> {
           clipBehavior: Clip.antiAlias,
           child: FittedBox(
             fit: BoxFit.cover,
-            child: FutureBuilder(
-              future: orgsApi.getLogo(widget.contribution.org.logo),
-              builder: (_, snapshot) {
-                if (!snapshot.hasData) return Container();
-                return Image.memory(snapshot.data!);
-              },
+            child: NetworkImageAuth(
+              imageUrl: '${orgsApi.baseUrl}${widget.contribution.org.logo}',
             ),
           ),
         ),

@@ -10,6 +10,7 @@ import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
 import 'package:iw_app/screens/organization/receive_money_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 class OrgDetailsScreen extends StatefulWidget {
@@ -81,12 +82,8 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           clipBehavior: Clip.antiAlias,
           child: FittedBox(
             fit: BoxFit.cover,
-            child: FutureBuilder(
-              future: orgsApi.getLogo(org.logo!),
-              builder: (_, snapshot) {
-                if (!snapshot.hasData) return Container();
-                return Image.memory(snapshot.data!);
-              },
+            child: NetworkImageAuth(
+              imageUrl: '${orgsApi.baseUrl}${org.logo!}',
             ),
           ),
         ),
