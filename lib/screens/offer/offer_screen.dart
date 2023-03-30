@@ -10,6 +10,7 @@ import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OfferScreen extends StatefulWidget {
   static String routeName = '/offer';
@@ -247,6 +248,13 @@ class _OfferScreenState extends State<OfferScreen> {
     );
   }
 
+  Future<void> openPaymentLink(String link) async {
+    final url = Uri.parse(link);
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   handlePressed(Offer offer, String status) async {
     setState(() {
       isLoading = true;
@@ -262,6 +270,7 @@ class _OfferScreenState extends State<OfferScreen> {
         setState(() {
           payment = Payment.fromJson(response.data!);
         });
+        openPaymentLink(payment!.cpPaymentUrl!);
       }
     } catch (err) {
       print(err);

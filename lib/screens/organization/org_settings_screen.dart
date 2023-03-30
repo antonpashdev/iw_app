@@ -68,19 +68,20 @@ class OrgSettingsScreen extends StatelessWidget {
         children: [
           buildHeader(context),
           const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: COLOR_LIGHT_GRAY3,
-              borderRadius: BorderRadius.circular(20),
+          if (organization.description != null)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: COLOR_LIGHT_GRAY3,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                organization.description!,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
             ),
-            child: Text(
-              'Our first collaboration via Impact Wallet',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ),
           const SizedBox(height: 35),
           GrayButton(
             onPressed: () {
