@@ -5,6 +5,7 @@ import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
+import 'package:shimmer/shimmer.dart';
 
 class OrgMemberCard extends StatelessWidget {
   final Function()? onTap;
@@ -67,6 +68,33 @@ class OrgMemberCard extends StatelessWidget {
     );
   }
 
+  buildMembersShimmer() {
+    return Shimmer.fromColors(
+      baseColor: COLOR_LIGHT_GRAY,
+      highlightColor: COLOR_LIGHT_GRAY2,
+      child: Row(
+        children: [
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: COLOR_GRAY,
+            ),
+          ),
+          const SizedBox(width: 5),
+          Container(
+            width: 60,
+            height: 10,
+            decoration: const BoxDecoration(
+              color: COLOR_GRAY,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   buildMainSection(BuildContext context) {
     if (member == null) {
       return Center(
@@ -107,7 +135,7 @@ class OrgMemberCard extends StatelessWidget {
             future: futureOtherMembers,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Container();
+                return buildMembersShimmer();
               }
               return SizedBox(
                 height: 30,
