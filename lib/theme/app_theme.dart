@@ -124,6 +124,7 @@ const Color COLOR_BLACK = Color(0xff000000);
 const Color COLOR_ALMOST_BLACK = Color(0xff222222);
 const Color COLOR_LIGHT_GRAY = Color(0xffEEF0F3);
 const Color COLOR_LIGHT_GRAY2 = Color(0xffC4C4C4);
+const Color COLOR_LIGHT_GRAY3 = Color(0xfff3f4f6);
 const Color COLOR_GRAY = Color(0xff87899B);
 const Color COLOR_GRAY2 = Color(0xffB8BFCA);
 const Color COLOR_GREEN = Color(0xff0E9E17);
@@ -133,3 +134,4 @@ const Color COLOR_CORAL = Color(0xff3EA592);
 
 const Color APP_BODY_BG = COLOR_WHITE;
 const Color BTN_BLUE_BG = COLOR_BLUE;
+const Color BTN_GRAY_GB = COLOR_LIGHT_GRAY3;

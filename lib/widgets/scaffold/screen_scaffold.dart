@@ -8,13 +8,16 @@ class ScreenScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Padding(
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+        ),
+        body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-          child: SafeArea(bottom: true, child: child)),
+          child: child,
+        ),
+      ),
     );
   }
 }

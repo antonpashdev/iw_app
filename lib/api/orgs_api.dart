@@ -73,12 +73,10 @@ class _OrgsApi extends BaseApi {
   Future<Response> acceptDeclineOffer(
     String orgId,
     String offerId,
-    String userId,
     String status,
   ) {
     final body = {
       'status': status,
-      'userId': userId,
     };
 
     return client.patch('/orgs/$orgId/offers/$offerId', data: body);

@@ -8,6 +8,7 @@ import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
+import 'package:iw_app/screens/organization/org_settings_screen.dart';
 import 'package:iw_app/screens/organization/receive_money_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
@@ -433,6 +434,20 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
               backgroundColor: COLOR_WHITE,
               appBar: AppBar(
                 title: Text('@${snapshot.data?[0].username}'),
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => OrgSettingsScreen(
+                            organization: snapshot.data![0],
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.settings_outlined),
+                  ),
+                ],
               ),
               body: Column(
                 children: [
