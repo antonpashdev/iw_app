@@ -112,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
               MaterialPageRoute(
                 builder: (_) => OrgDetailsScreen(
                   orgId: member.org.id,
-                  memberId: member.id!,
+                  member: member,
                 ),
               ),
             );

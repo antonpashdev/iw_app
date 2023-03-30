@@ -16,12 +16,12 @@ import 'package:iw_app/widgets/utils/app_padding.dart';
 
 class OrgDetailsScreen extends StatefulWidget {
   final String orgId;
-  final String memberId;
+  final OrganizationMember member;
 
   const OrgDetailsScreen({
     Key? key,
     required this.orgId,
-    required this.memberId,
+    required this.member,
   }) : super(key: key);
 
   @override
@@ -393,7 +393,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     });
     try {
       final response =
-          await orgsApi.startContribution(widget.orgId, widget.memberId);
+          await orgsApi.startContribution(widget.orgId, widget.member.id!);
       final contribution = Contribution.fromJson(response.data);
       if (context.mounted) {
         Navigator.of(context).pushAndRemoveUntil(
@@ -478,7 +478,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                     constraints: const BoxConstraints(maxWidth: 290),
                     child: ElevatedButton(
                       onPressed:
-                          isLoading ? null : handleStartContributingPressed,
+                          isLoading || widget.member.role == MemberRole.Investor
+                              ? null
+                              : handleStartContributingPressed,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
