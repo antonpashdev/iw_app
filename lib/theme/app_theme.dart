@@ -4,6 +4,7 @@ ThemeData getAppTheme() {
   return ThemeData(
     fontFamily: 'SF Pro Display',
     scaffoldBackgroundColor: COLOR_WHITE,
+    hoverColor: Colors.transparent,
     colorScheme: const ColorScheme.light(
       primary: COLOR_ALMOST_BLACK,
       secondary: COLOR_WHITE,

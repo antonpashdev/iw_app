@@ -11,6 +11,7 @@ import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/validation.dart';
+import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 
@@ -60,10 +61,28 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
             },
           ),
           const SizedBox(height: 30),
-          Text(
-            AppLocalizations.of(context)!
-                .createOrgMemberScreen_impactRatioLabel,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              Text(
+                AppLocalizations.of(context)!
+                    .createOrgMemberScreen_impactRatioLabel,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                onPressed: () {
+                  showBottomInfoSheet(context,
+                      title: AppLocalizations.of(context)!
+                          .createOrgMemberScreen_impactRatioLabel,
+                      description: AppLocalizations.of(context)!
+                          .impactRatio_description);
+                },
+                icon: const Icon(Icons.info_outline_rounded),
+                iconSize: 16,
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                color: COLOR_GRAY,
+              ),
+            ],
           ),
           const SizedBox(height: 15),
           AppTextFormFieldBordered(
@@ -89,10 +108,28 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                AppLocalizations.of(context)!
-                    .createOrgMemberScreen_monthlyCompensationLabel,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              Row(
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!
+                        .createOrgMemberScreen_monthlyCompensationLabel,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showBottomInfoSheet(context,
+                          title: AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                          description: AppLocalizations.of(context)!
+                              .monthlyCompensation_description);
+                    },
+                    icon: const Icon(Icons.info_outline_rounded),
+                    iconSize: 16,
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    color: COLOR_GRAY,
+                  ),
+                ],
               ),
               CupertinoSwitch(
                 value: member.isMonthlyCompensated!,
@@ -133,10 +170,28 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                AppLocalizations.of(context)!
-                    .createOrgMemberScreen_autoContributionLabel,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              Row(
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!
+                        .createOrgMemberScreen_autoContributionLabel,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showBottomInfoSheet(context,
+                          title: AppLocalizations.of(context)!
+                              .createOrgMemberScreen_autoContributionLabel,
+                          description: AppLocalizations.of(context)!
+                              .autoContribution_description);
+                    },
+                    icon: const Icon(Icons.info_outline_rounded),
+                    iconSize: 16,
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    color: COLOR_GRAY,
+                  ),
+                ],
               ),
               CupertinoSwitch(
                 value: member.autoContribution!,
