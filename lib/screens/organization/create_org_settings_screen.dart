@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/organization/create_org_member_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/validation.dart';
+import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 
 class CreateOrgSettingsScreen extends StatefulWidget {
@@ -35,13 +37,30 @@ class _CreateOrgSettingsScreenState extends State<CreateOrgSettingsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
-                flex: 3,
-                child: Text(
-                  AppLocalizations.of(context)!
-                      .createOrgSettingsScreen_treasuryLabel,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
+                  flex: 3,
+                  child: Row(
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!
+                            .createOrgSettingsScreen_treasuryLabel,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          showBottomInfoSheet(context,
+                              title: AppLocalizations.of(context)!
+                                  .createOrgSettingsScreen_treasuryLabel,
+                              description: AppLocalizations.of(context)!
+                                  .treasury_description);
+                        },
+                        icon: const Icon(Icons.info_outline_rounded),
+                        iconSize: 16,
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        color: COLOR_GRAY,
+                      ),
+                    ],
+                  )),
               Flexible(
                 flex: 1,
                 child: AppTextFormFieldBordered(
