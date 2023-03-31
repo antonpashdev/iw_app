@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/auth_api.dart';
@@ -11,6 +12,7 @@ import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/org_member_card.dart';
 import 'package:iw_app/widgets/list/assets_list_tile.dart';
+import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
@@ -29,12 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<User> futureUser;
   late Future<List<OrganizationMemberWithOtherMembers>> futureMembers;
   List<OrganizationMemberWithOtherMembers> members = [];
+  late Future<double> futureBalance;
 
   @override
   void initState() {
     super.initState();
     futureUser = fetchUser();
     futureMembers = fetchMembers();
+    futureBalance = fetchBalance();
   }
 
   Future<User> fetchUser() =>
@@ -70,6 +74,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return MemberEquity.fromJson(response.data);
   }
 
+  Future<double> fetchBalance() async {
+    final userId = await authApi.userId;
+    final response = await usersApi.getBalance(userId!);
+    return response.data['balance'];
+  }
+
   Widget buildCallToCreateCard(BuildContext context) {
     return Row(
       children: [
@@ -102,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
               MaterialPageRoute(
                 builder: (_) => OrgDetailsScreen(
                   orgId: member.org.id,
-                  memberId: member.id!,
+                  member: member,
                 ),
               ),
             );
@@ -153,12 +163,8 @@ class _HomeScreenState extends State<HomeScreen> {
               clipBehavior: Clip.antiAlias,
               child: FittedBox(
                 fit: BoxFit.cover,
-                child: FutureBuilder(
-                  future: orgsApi.getLogo(omm.member!.org.logo),
-                  builder: (_, snapshot) {
-                    if (!snapshot.hasData) return Container();
-                    return Image.memory(snapshot.data!);
-                  },
+                child: NetworkImageAuth(
+                  imageUrl: '${orgsApi.baseUrl}${omm.member!.org.logo}',
                 ),
               ),
             ),
@@ -204,6 +210,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future onRefresh() {
+    setState(() {
+      futureMembers = fetchMembers();
+      futureBalance = fetchBalance();
+    });
+    return Future.wait([futureMembers, futureBalance]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -237,11 +251,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                 if (!snapshot.hasData) return Container();
                                 return Image.memory(snapshot.data!);
                               })
-                          : const Icon(Icons.person, color: Color(0xFFBDBDBD)),
+                          : const Icon(
+                              Icons.person,
+                              color: Color(0xFFBDBDBD),
+                            ),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Text(user?.nickname ?? ''),
+                  const Icon(
+                    Icons.keyboard_arrow_down_outlined,
+                    size: 20,
+                  ),
                 ],
               );
             },
@@ -257,79 +278,111 @@ class _HomeScreenState extends State<HomeScreen> {
         body: FutureBuilder(
             future: futureMembers,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+              if (!snapshot.hasData) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               }
-              return ListView(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                children: [
-                  AppPadding(
-                    child: Text(
-                      '\$0.00',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
+              return CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  CupertinoSliverRefreshControl(
+                    onRefresh: onRefresh,
                   ),
-                  const SizedBox(height: 45),
-                  AppPadding(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)!
-                              .homeScreen_organizationsTitle,
-                          style: Theme.of(context).textTheme.headlineLarge,
-                        ),
-                        if (members.isNotEmpty)
-                          InkWell(
-                            borderRadius: BorderRadius.circular(30),
-                            onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (_) => const CreateOrgScreen()));
+                  SliverList(
+                    delegate: SliverChildListDelegate.fixed(
+                      [
+                        AppPadding(
+                          child: FutureBuilder(
+                            future: futureBalance,
+                            builder: (_, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const CircularProgressIndicator
+                                    .adaptive();
+                              }
+                              return Row(
+                                children: [
+                                  Text(
+                                    '\$${snapshot.data!.toStringAsFixed(2)}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  const Icon(
+                                      Icons.keyboard_arrow_down_outlined),
+                                ],
+                              );
                             },
-                            child:
-                                SvgPicture.asset('assets/icons/add_circle.svg'),
+                          ),
+                        ),
+                        const SizedBox(height: 45),
+                        AppPadding(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                AppLocalizations.of(context)!
+                                    .homeScreen_organizationsTitle,
+                                style:
+                                    Theme.of(context).textTheme.headlineLarge,
+                              ),
+                              if (members.isNotEmpty)
+                                InkWell(
+                                  borderRadius: BorderRadius.circular(30),
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                const CreateOrgScreen()));
+                                  },
+                                  child: SvgPicture.asset(
+                                      'assets/icons/add_circle.svg'),
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          height: 290,
+                          child: buildOrgsMembers(snapshot.data!),
+                        ),
+                        const SizedBox(height: 45),
+                        AppPadding(
+                          child: Text(
+                            AppLocalizations.of(context)!
+                                .homeScreen_assetsTitle,
+                            style: Theme.of(context).textTheme.headlineLarge,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        AppPadding(
+                          child: snapshot.data!.isEmpty
+                              ? buildAssetExample()
+                              : buildAssets(snapshot.data!),
+                        ),
+                        if (snapshot.data!.isEmpty)
+                          AppPadding(
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 15),
+                                SvgPicture.asset(
+                                    'assets/icons/arrow_up_big.svg'),
+                                const SizedBox(height: 15),
+                                Text(
+                                  AppLocalizations.of(context)!
+                                      .homeScreen_assetsExampleDesc,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    height: 290,
-                    child: buildOrgsMembers(snapshot.data!),
-                  ),
-                  const SizedBox(height: 45),
-                  AppPadding(
-                    child: Text(
-                      AppLocalizations.of(context)!.homeScreen_assetsTitle,
-                      style: Theme.of(context).textTheme.headlineLarge,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  AppPadding(
-                    child: snapshot.data!.isEmpty
-                        ? buildAssetExample()
-                        : buildAssets(snapshot.data!),
-                  ),
-                  if (snapshot.data!.isEmpty)
-                    AppPadding(
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 15),
-                          SvgPicture.asset('assets/icons/arrow_up_big.svg'),
-                          const SizedBox(height: 15),
-                          Text(
-                            AppLocalizations.of(context)!
-                                .homeScreen_assetsExampleDesc,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                 ],
               );
             }),

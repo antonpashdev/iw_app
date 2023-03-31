@@ -66,6 +66,17 @@
     }(window.location))
   </script>
   <script>
+    function disableNativeNavSwipe() {
+      const mainC = document.querySelector('flt-glass-pane');
+      mainC.addEventListener('touchstart', (e) => {
+        if (e.pageX > 25 && e.pageX < window.innerWidth - 25) return;
+        e.preventDefault();
+      });
+      mainC.addEventListener('touchmove', (e) => {
+        if (e.pageX > 25 && e.pageX < window.innerWidth - 25) return;
+        e.preventDefault();
+      });
+    }
     window.addEventListener('load', function (ev) {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
@@ -75,6 +86,7 @@
         onEntrypointLoaded: function (engineInitializer) {
           engineInitializer.initializeEngine().then(function (appRunner) {
             appRunner.runApp();
+            disableNativeNavSwipe();
           });
         }
       });

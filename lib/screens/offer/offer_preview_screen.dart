@@ -8,6 +8,7 @@ import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class OfferPreviewScreen extends StatefulWidget {
@@ -42,12 +43,8 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
           clipBehavior: Clip.antiAlias,
           child: FittedBox(
             fit: BoxFit.cover,
-            child: FutureBuilder(
-              future: orgsApi.getLogo(widget.organization.logo!),
-              builder: (_, snapshot) {
-                if (!snapshot.hasData) return Container();
-                return Image.memory(snapshot.data!);
-              },
+            child: NetworkImageAuth(
+              imageUrl: '${orgsApi.baseUrl}${widget.organization.logo!}',
             ),
           ),
         ),
@@ -56,7 +53,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'From',
+              widget.member.role == MemberRole.Investor ? 'Invest to' : 'From',
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: COLOR_GRAY,
                     fontWeight: FontWeight.w500,
@@ -74,6 +71,77 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
           ],
         ),
       ],
+    );
+  }
+
+  buildInvestorDetails(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: COLOR_LIGHT_GRAY,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              'Offer for Investors',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+          ),
+          const Divider(
+            color: COLOR_LIGHT_GRAY2,
+            height: 1,
+          ),
+          const Padding(
+            padding: EdgeInsets.all(20),
+            child: Text(
+              'Hi,\n\nWe invite you to invest in our organization on following conditions',
+            ),
+          ),
+          const Divider(
+            color: COLOR_LIGHT_GRAY2,
+            height: 1,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Raising Sum',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      '\$${widget.member.investorSettings!.investmentAmount}',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Equity Allocation',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      '${widget.member.investorSettings!.equityAllocation}%',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -220,7 +288,9 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: 'Offer Preview',
+      title: widget.member.role == MemberRole.Investor
+          ? 'Investment Proposal Preview'
+          : 'Offer Preview',
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -234,37 +304,45 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                   height: 1,
                 ),
                 const SizedBox(height: 20),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: () {},
-                    icon: SvgPicture.asset(
-                      'assets/icons/terms_icon.svg',
-                      width: 20,
-                      height: 20,
-                    ),
-                    label: const Text('View Terms',
-                        style: TextStyle(fontSize: 16)),
-                    style: TextButton.styleFrom(
-                      iconColor: COLOR_BLUE,
-                      foregroundColor: COLOR_BLUE,
+                if (widget.member.role != MemberRole.Investor)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: () {},
+                      icon: SvgPicture.asset(
+                        'assets/icons/terms_icon.svg',
+                        width: 20,
+                        height: 20,
+                      ),
+                      label: const Text('View Terms',
+                          style: TextStyle(fontSize: 16)),
+                      style: TextButton.styleFrom(
+                        iconColor: COLOR_BLUE,
+                        foregroundColor: COLOR_BLUE,
+                      ),
                     ),
                   ),
-                ),
                 const SizedBox(height: 17),
-                const Text(
-                  'You are invited to join this Impact Organization under the  following conditions.',
-                  style: TextStyle(color: COLOR_GRAY),
-                ),
+                if (widget.member.role != MemberRole.Investor)
+                  const Text(
+                    'You are invited to join this Impact Organization under the  following conditions.',
+                    style: TextStyle(color: COLOR_GRAY),
+                  ),
                 const SizedBox(height: 25),
-                buildMemberDetails(context),
+                if (widget.member.role != MemberRole.Investor)
+                  buildMemberDetails(context),
+                if (widget.member.role == MemberRole.Investor)
+                  buildInvestorDetails(context),
                 if (offer != null)
                   Column(
                     children: [
                       const SizedBox(height: 30),
-                      const Text(
-                        'This Offer is available by the link below. Send it to the person you want to invite to the organization.',
-                        style: TextStyle(
+                      Text(
+                        widget.member.role == MemberRole.Investor
+                            ? 'This Investment Proposal is available by the link below. Send it to the right person.'
+                            : 'This Offer is available by the link below. Send it to the person you want to invite to the organization.',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
                           color: COLOR_CORAL,
                           fontWeight: FontWeight.w500,
                         ),
@@ -272,6 +350,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                       const SizedBox(height: 20),
                       Text(
                         'app.impactwallet.xyz/offer?i=${offer!.id}&oi=${widget.organization.id}',
+                        textAlign: TextAlign.center,
                         style: const TextStyle(color: COLOR_GRAY),
                       ),
                       const SizedBox(height: 25),
@@ -297,7 +376,9 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                     onPressed: isLoading ? null : handleCreatePressed,
                     child: isLoading
                         ? const CircularProgressIndicator.adaptive()
-                        : const Text('Create Offer'),
+                        : Text(
+                            'Create ${widget.member.role == MemberRole.Investor ? 'Investment Proposal' : 'Offer'}',
+                          ),
                   ),
                 ),
               ),

@@ -6,6 +6,7 @@ enum MemberRole {
   Member,
   Admin,
   CoOwner,
+  Investor,
 }
 
 class OrganizationMember {
@@ -19,6 +20,7 @@ class OrganizationMember {
   dynamic user;
   dynamic org;
   double? contributed;
+  InvestorSettings? investorSettings;
 
   OrganizationMember({
     this.occupation,
@@ -30,6 +32,7 @@ class OrganizationMember {
     this.user,
     this.org,
     this.contributed = 0,
+    this.investorSettings,
   });
 
   OrganizationMember.fromJson(Map<String, dynamic> json) {
@@ -43,6 +46,9 @@ class OrganizationMember {
     user = json['user'] is Map ? User.fromJson(json['user']) : json['user'];
     org = json['org'] is Map ? Organization.fromJson(json['org']) : json['org'];
     contributed = json['contributed'];
+    investorSettings = json['investorSettings'] is Map
+        ? InvestorSettings.fromJson(json['investorSettings'])
+        : json['investorSettings'];
   }
 
   @override
@@ -67,6 +73,7 @@ autoContribution: $autoContribution
       'autoContribution': autoContribution,
       'user': user,
       'org': org,
+      'investorSettings': investorSettings?.toJson(),
     };
   }
 }
@@ -108,4 +115,26 @@ class OrganizationMemberWithOtherMembers extends OrganizationMemberWithEquity {
           equity: equity,
           futureEquity: futureEquity,
         );
+}
+
+class InvestorSettings {
+  double? investmentAmount;
+  double? equityAllocation;
+
+  InvestorSettings({
+    this.investmentAmount,
+    this.equityAllocation,
+  });
+
+  InvestorSettings.fromJson(Map<String, dynamic> json) {
+    investmentAmount = json['investmentAmount'];
+    equityAllocation = json['equityAllocation'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'investmentAmount': investmentAmount,
+      'equityAllocation': equityAllocation,
+    };
+  }
 }

@@ -73,12 +73,10 @@ class _OrgsApi extends BaseApi {
   Future<Response> acceptDeclineOffer(
     String orgId,
     String offerId,
-    String userId,
     String status,
   ) {
     final body = {
       'status': status,
-      'userId': userId,
     };
 
     return client.patch('/orgs/$orgId/offers/$offerId', data: body);
@@ -97,6 +95,23 @@ class _OrgsApi extends BaseApi {
     );
 
     return response.data;
+  }
+
+  Future<Response> receivePayment(
+    String orgId,
+    String item,
+    double price,
+  ) {
+    final body = {
+      'item': item,
+      'amount': price,
+    };
+
+    return client.post('/orgs/$orgId/payments/receive', data: body);
+  }
+
+  Future<Response> getBalance(String orgId) {
+    return client.get('/orgs/$orgId/balance');
   }
 }
 

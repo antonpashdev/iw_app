@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
-import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/media/network_image_auth.dart';
+import 'package:shimmer/shimmer.dart';
 
 class OrgMemberCard extends StatelessWidget {
   final Function()? onTap;
@@ -23,12 +24,8 @@ class OrgMemberCard extends StatelessWidget {
         ? FittedBox(
             clipBehavior: Clip.hardEdge,
             fit: BoxFit.cover,
-            child: FutureBuilder(
-              future: orgsApi.getLogo(member?.org?.logo),
-              builder: (_, snapshot) {
-                if (!snapshot.hasData) return Container();
-                return Image.memory(snapshot.data!);
-              },
+            child: NetworkImageAuth(
+              imageUrl: '${orgsApi.baseUrl}${member?.org?.logo}',
             ),
           )
         : const Center(
@@ -68,6 +65,33 @@ class OrgMemberCard extends StatelessWidget {
               ?.copyWith(color: COLOR_GRAY),
         ),
       ],
+    );
+  }
+
+  buildMembersShimmer() {
+    return Shimmer.fromColors(
+      baseColor: COLOR_LIGHT_GRAY,
+      highlightColor: COLOR_LIGHT_GRAY2,
+      child: Row(
+        children: [
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: COLOR_GRAY,
+            ),
+          ),
+          const SizedBox(width: 5),
+          Container(
+            width: 60,
+            height: 10,
+            decoration: const BoxDecoration(
+              color: COLOR_GRAY,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -111,39 +135,66 @@ class OrgMemberCard extends StatelessWidget {
             future: futureOtherMembers,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Container();
+                return buildMembersShimmer();
               }
-              return Row(
-                children: [
-                  ...snapshot.data!.map((member) {
-                    return Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: COLOR_GRAY,
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: FutureBuilder(
-                          future: usersApi.getAvatar(member.user.avatar),
-                          builder: (_, snapshot) {
-                            if (!snapshot.hasData) return Container();
-                            return Image.memory(snapshot.data!);
-                          },
+              return SizedBox(
+                height: 30,
+                child: Stack(
+                  children: [
+                    ...snapshot.data!
+                        .asMap()
+                        .map((i, member) {
+                          return MapEntry(
+                            i,
+                            Positioned(
+                              left: 10.0 * i,
+                              top: 0,
+                              child: Container(
+                                width: 30,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: COLOR_GRAY,
+                                  border: Border.all(
+                                    color: COLOR_WHITE.withAlpha(200),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: FittedBox(
+                                    fit: BoxFit.cover,
+                                    child: member.user.avatar != null
+                                        ? NetworkImageAuth(
+                                            imageUrl:
+                                                '${orgsApi.baseUrl}${member.user.avatar}',
+                                          )
+                                        : Container(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        })
+                        .values
+                        .toList(),
+                    Positioned(
+                      top: 0,
+                      bottom: 0,
+                      left: 30 + ((snapshot.data!.length - 1) * 10) + 5,
+                      child: Center(
+                        child: Text(
+                          '${snapshot.data!.length} members',
+                          style:
+                              Theme.of(context).textTheme.labelMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
                         ),
                       ),
-                    );
-                  }),
-                  const SizedBox(width: 5),
-                  Text(
-                    '${snapshot.data!.length} members',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               );
             }),
       ],

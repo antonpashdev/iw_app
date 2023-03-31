@@ -84,6 +84,10 @@ class _UsersApi extends BaseApi {
 
     return response.data;
   }
+
+  Future<Response> getBalance(String userId) {
+    return client.get('/users/$userId/balance');
+  }
 }
 
 final usersApi = _UsersApi();
