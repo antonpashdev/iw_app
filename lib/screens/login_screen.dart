@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/screens/nickname_screen.dart';
+import 'package:iw_app/screens/restore_account.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 
@@ -97,7 +98,13 @@ class LoginScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 10),
                             SecondaryButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const RestoreAccountScreen()));
+                              },
                               child: Text(
                                 AppLocalizations.of(context)!
                                     .loginScreen_secondaryBtnTitle,
