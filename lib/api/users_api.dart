@@ -88,6 +88,14 @@ class _UsersApi extends BaseApi {
   Future<Response> getBalance(String userId) {
     return client.get('/users/$userId/balance');
   }
+
+  Future<CreateUserResponse> restoreAccount(String code) async {
+    final response =
+        await client.post('/users/$code/restore', data: {'secretLink': code});
+
+    final userResponse = CreateUserResponse.fromJson(response.data);
+    return userResponse;
+  }
 }
 
 final usersApi = _UsersApi();
