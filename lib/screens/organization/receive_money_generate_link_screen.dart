@@ -44,6 +44,11 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
     callSnackBar(context);
   }
 
+  handleCopyWalletPressed(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: organization.wallet!));
+    callSnackBar(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
@@ -51,23 +56,21 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const Text('Organization’s Crypto Wallet',
+              const Text('Organization’s Solana Wallet',
                   style: TextStyle(color: COLOR_GRAY)),
-              const SizedBox(height: 5),
+              const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                      width: 250,
-                      padding: const EdgeInsets.only(right: 13.0),
+                  Flexible(
                       child: TextButton.icon(
-                        label: Text(organization.wallet!,
-                            overflow: TextOverflow.ellipsis),
-                        icon: const Icon(Icons.copy, size: 12),
-                        onPressed: () {},
-                      )),
+                    label: Text(organization.wallet!,
+                        overflow: TextOverflow.ellipsis),
+                    icon: const Icon(Icons.copy, size: 12),
+                    onPressed: () => handleCopyWalletPressed(context),
+                  )),
                   Container(
-                      padding: const EdgeInsets.only(right: 13.0),
+                      padding: const EdgeInsets.only(left: 20.0),
                       child: Row(
                         children: [
                           Image.asset(
@@ -92,13 +95,8 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
                         flex: 1,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
-                              'QR',
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 40),
                             Center(
                               child: Container(
                                   alignment: Alignment.center,
@@ -116,34 +114,23 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
                                       ]),
                                   child: QRCodeWidget(
                                     url: payment.cpPaymentUrl!,
-                                    orgLogo: '${orgsApi.baseUrl}${organization.logo!}',
+                                    orgLogo:
+                                        '${orgsApi.baseUrl}${organization.logo!}',
                                   )),
                             ),
-                            const SizedBox(height: 50),
+                            const SizedBox(height: 25),
                             const Text(
-                                'Get payments in any supported method (USDC, card, bank wire, ACH future rails) will settle as USDC in your Circle Account.',
-                                textAlign: TextAlign.start,
+                                'Show QR-code or send link below to let \npay for your products and services',
+                                textAlign: TextAlign.center,
                                 softWrap: true,
                                 style: TextStyle(color: COLOR_GRAY)),
                           ],
                         )),
-                    const SizedBox(height: 30),
-                    const Divider(),
-                    const SizedBox(height: 30),
-                    const Text(
-                        'Send this link to let someone pay to your organization’s wallet',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(color: COLOR_GRAY)),
-                    const SizedBox(height: 20),
                     Row(children: <Widget>[
                       Flexible(
-                        flex: 1,
-                        child: Container(
-                          padding: const EdgeInsets.only(right: 13.0),
-                          child: Text(
-                            payment.cpPaymentUrl!,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                        child: Text(
+                          payment.cpPaymentUrl!,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       TextButton.icon(
@@ -152,6 +139,16 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
                         onPressed: () => handleCopyPressed(context),
                       )
                     ]),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 30),
+                        child: SizedBox(
+                            width: 290,
+                            child: ElevatedButton(
+                                onPressed: () => handleCopyPressed(context),
+                                child: const Text('Copy Payment Link'))),
+                      ),
+                    )
                   ],
                 ),
               )
