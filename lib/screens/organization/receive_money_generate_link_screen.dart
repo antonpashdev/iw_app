@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/components/url_qr_code.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
@@ -96,27 +98,35 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
                               'QR',
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 20),
-                            Container(
-                                alignment: Alignment.center,
-                                width: 250,
-                                height: 250,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 5))
-                                    ]))
+                            const SizedBox(height: 40),
+                            Center(
+                              child: Container(
+                                  alignment: Alignment.center,
+                                  width: 300,
+                                  height: 300,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.1),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 5))
+                                      ]),
+                                  child: QRCodeWidget(
+                                    url: payment.cpPaymentUrl!,
+                                    orgLogo: '${orgsApi.baseUrl}${organization.logo!}',
+                                  )),
+                            ),
+                            const SizedBox(height: 50),
+                            const Text(
+                                'Get payments in any supported method (USDC, card, bank wire, ACH future rails) will settle as USDC in your Circle Account.',
+                                textAlign: TextAlign.start,
+                                softWrap: true,
+                                style: TextStyle(color: COLOR_GRAY)),
                           ],
                         )),
-                    const SizedBox(height: 50),
-                    const Text(
-                        'Get payments in any supported method (USDC, card, bank wire, ACH future rails) will settle as USDC in your Circle Account.',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(color: COLOR_GRAY)),
                     const SizedBox(height: 30),
                     const Divider(),
                     const SizedBox(height: 30),
