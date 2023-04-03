@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
@@ -105,6 +106,12 @@ class OrgMemberCard extends StatelessWidget {
       );
     }
 
+    final contributed = member!.role == MemberRole.Investor
+        ? '\$${NumberFormat.compact().format(member!.investorSettings!.investmentAmount)}'
+        : '${member!.contributed!.toStringAsFixed(2)}h';
+    final ratioOrAllocation = member!.role == MemberRole.Investor
+        ? '${member!.investorSettings!.equityAllocation}%'
+        : '${member!.impactRatio}x';
     final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
           fontWeight: FontWeight.w500,
         );
@@ -115,17 +122,21 @@ class OrgMemberCard extends StatelessWidget {
           dense: true,
           title: Text('You Contributed', style: textStyle),
           contentPadding: const EdgeInsets.all(0),
-          trailing: Text('${member!.contributed!.toStringAsFixed(2)}h',
-              style: textStyle),
+          trailing: Text(contributed, style: textStyle),
           visualDensity:
               const VisualDensity(vertical: VisualDensity.minimumDensity),
         ),
         const Divider(height: 1),
         ListTile(
           dense: true,
-          title: Text('Your Impact Ratio', style: textStyle),
+          title: Text(
+            member!.role == MemberRole.Investor
+                ? 'Your Equity Allocation'
+                : 'Your Impact Ratio',
+            style: textStyle,
+          ),
           contentPadding: const EdgeInsets.all(0),
-          trailing: Text('${member!.impactRatio}x', style: textStyle),
+          trailing: Text(ratioOrAllocation, style: textStyle),
           visualDensity:
               const VisualDensity(vertical: VisualDensity.minimumDensity),
         ),
