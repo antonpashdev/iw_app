@@ -58,12 +58,12 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-        title: AppLocalizations.of(context)!.receiveMoneyScreen_title,
-        child: InputForm(
-          formKey: _formKey,
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
-                  Widget>[
+      title: AppLocalizations.of(context)!.receiveMoneyScreen_title,
+      child: InputForm(
+        formKey: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
             Text(AppLocalizations.of(context)!.receiveMoneyScreen_label_item),
             const SizedBox(height: 5),
             AppTextFormFieldBordered(
@@ -89,28 +89,31 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   });
                 }),
             Expanded(
-                flex: 1,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 330,
-                      child: ElevatedButton(
-                        onPressed: _item.isEmpty || _price == null || isLoading
-                            ? null
-                            : handleGeneratePressed,
-                        child: isLoading
-                            ? const CircularProgressIndicator.adaptive()
-                            : Text(
-                                AppLocalizations.of(context)!
-                                    .receiveMoneyScreen_label_generate_link,
-                              ),
-                      ),
-                    )
-                  ],
-                ))
-          ]),
-        ));
+              flex: 1,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 290,
+                    child: ElevatedButton(
+                      onPressed: _item.isEmpty || _price == null || isLoading
+                          ? null
+                          : handleGeneratePressed,
+                      child: isLoading
+                          ? const CircularProgressIndicator.adaptive()
+                          : Text(
+                              AppLocalizations.of(context)!
+                                  .receiveMoneyScreen_label_generate_link,
+                            ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

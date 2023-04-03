@@ -7,14 +7,12 @@ class QRCodeWidget extends StatelessWidget {
 
   const QRCodeWidget({super.key, required this.url, required this.orgLogo});
 
-
   @override
   Widget build(BuildContext context) {
     print(orgLogo);
     return QrImage(
       data: url,
       version: QrVersions.auto,
-      size: 300.0,      
       gapless: false,
       embeddedImage: NetworkImage(orgLogo),
       embeddedImageStyle: QrEmbeddedImageStyle(size: const Size(70, 70)),
