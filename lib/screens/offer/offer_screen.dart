@@ -378,9 +378,20 @@ class _OfferScreenState extends State<OfferScreen> {
                       flex: 1,
                       child: Container(
                         padding: const EdgeInsets.only(right: 13.0),
-                        child: Text(
-                          payment!.cpPaymentUrl!,
-                          overflow: TextOverflow.ellipsis,
+                        child: TextButton.icon(
+                          onPressed: () async {
+                            final url = Uri.parse(payment!.cpPaymentUrl!);
+                            if (!(await launchUrl(url))) {
+                              throw Exception('Could not launch $url');
+                            }
+                          },
+                          icon: const Icon(Icons.link),
+                          label: Text(payment!.cpPaymentUrl!,
+                              overflow: TextOverflow.ellipsis, maxLines: 1),
+                          style: TextButton.styleFrom(
+                            iconColor: COLOR_BLUE,
+                            foregroundColor: COLOR_BLUE,
+                          ),
                         ),
                       ),
                     ),
