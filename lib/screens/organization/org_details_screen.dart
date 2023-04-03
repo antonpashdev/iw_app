@@ -13,6 +13,7 @@ import 'package:iw_app/screens/organization/receive_money_payment_type_screen.da
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrgDetailsScreen extends StatefulWidget {
   final String orgId;
@@ -164,7 +165,12 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           Row(
             children: [
               TextButton.icon(
-                onPressed: () {},
+                onPressed: () async {
+                  final url = Uri.parse(org.link!);
+                  if (!(await launchUrl(url))) {
+                    throw Exception('Could not launch $url');
+                  }
+                },
                 icon: const Icon(Icons.link),
                 label: Text(org.link!),
                 style: TextButton.styleFrom(
