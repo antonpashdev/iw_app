@@ -9,6 +9,7 @@ import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details_screen.dart';
+import 'package:iw_app/screens/settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/org_member_card.dart';
 import 'package:iw_app/widgets/list/assets_list_tile.dart';
@@ -233,36 +234,49 @@ class _HomeScreenState extends State<HomeScreen> {
               final user = snapshot.data;
 
               return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: COLOR_GRAY,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: FittedBox(
-                      fit: BoxFit.cover,
-                      child: user?.avatar != null
-                          ? FutureBuilder(
-                              future: usersApi.getAvatar(user!.avatar!),
-                              builder: (_, snapshot) {
-                                if (!snapshot.hasData) return Container();
-                                return Image.memory(snapshot.data!);
-                              })
-                          : const Icon(
-                              Icons.person,
-                              color: Color(0xFFBDBDBD),
-                            ),
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: COLOR_GRAY,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: user?.avatar != null
+                              ? FutureBuilder(
+                                  future: usersApi.getAvatar(user!.avatar!),
+                                  builder: (_, snapshot) {
+                                    if (!snapshot.hasData) return Container();
+                                    return Image.memory(snapshot.data!);
+                                  })
+                              : const Icon(
+                                  Icons.person,
+                                  color: Color(0xFFBDBDBD),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(user?.nickname ?? ''),
+                      const Icon(
+                        Icons.keyboard_arrow_down_outlined,
+                        size: 20,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 10),
-                  Text(user?.nickname ?? ''),
-                  const Icon(
-                    Icons.keyboard_arrow_down_outlined,
-                    size: 20,
-                  ),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return const SettingsSreen();
+                        }));
+                      },
+                      icon: const Icon(Icons.settings_outlined))
                 ],
               );
             },
