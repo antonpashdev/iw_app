@@ -69,28 +69,32 @@ class _OfferScreenState extends State<OfferScreen> {
           ),
         ),
         const SizedBox(width: 15),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              offer.memberProspect!.role == MemberRole.Investor
-                  ? 'Invest to'
-                  : 'From',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: COLOR_GRAY,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              '${offer.org.name}',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            Text(
-              '@${offer.org.username}',
-              style: const TextStyle(color: COLOR_GRAY),
-            ),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                offer.memberProspect!.role == MemberRole.Investor
+                    ? 'Invest to'
+                    : 'From',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: COLOR_GRAY,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '${offer.org.name}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              Text(
+                '@${offer.org.username}',
+                style: const TextStyle(color: COLOR_GRAY),
+              ),
+            ],
+          ),
         ),
       ],
     );

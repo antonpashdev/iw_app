@@ -47,6 +47,8 @@ class OrgMemberCard extends StatelessWidget {
     }
     return Text(
       member?.org?.name,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
       style: Theme.of(context).textTheme.headlineSmall,
     );
   }

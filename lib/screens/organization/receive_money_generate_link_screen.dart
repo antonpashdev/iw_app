@@ -7,6 +7,7 @@ import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/url_qr_code.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
   final Organization organization;
@@ -138,20 +139,20 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Row(
-                  children: <Widget>[
-                    Flexible(
-                      child: Text(
-                        payment.cpPaymentUrl!,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    TextButton.icon(
-                      label: const Text('Copy'),
-                      icon: const Icon(Icons.copy, size: 12),
-                      onPressed: () => handleCopyPressed(context),
-                    )
-                  ],
+                TextButton.icon(
+                  onPressed: () async {
+                    final url = Uri.parse(payment.cpPaymentUrl!);
+                    if (!(await launchUrl(url))) {
+                      throw Exception('Could not launch $url');
+                    }
+                  },
+                  icon: const Icon(Icons.link),
+                  label: Text(payment.cpPaymentUrl!,
+                      overflow: TextOverflow.ellipsis, maxLines: 1),
+                  style: TextButton.styleFrom(
+                    iconColor: COLOR_BLUE,
+                    foregroundColor: COLOR_BLUE,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Center(

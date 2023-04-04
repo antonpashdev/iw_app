@@ -42,28 +42,32 @@ class ContributionDetailsScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 15),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'to',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(color: COLOR_GRAY),
-            ),
-            Text(
-              contribution.org.name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              '@${contribution.org.username}',
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                    color: COLOR_GRAY,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'to',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(color: COLOR_GRAY),
+              ),
+              Text(
+                contribution.org.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '@${contribution.org.username}',
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: COLOR_GRAY,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+            ],
+          ),
         ),
       ],
     );

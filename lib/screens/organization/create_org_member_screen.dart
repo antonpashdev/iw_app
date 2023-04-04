@@ -269,7 +269,7 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
               child: ElevatedButton(
                 onPressed: isLoading ? null : handleNextPressed,
                 child: isLoading
-                    ? const CircularProgressIndicator(color: COLOR_GRAY)
+                    ? const CircularProgressIndicator.adaptive()
                     : Text(AppLocalizations.of(context)!.next),
               ),
             ),

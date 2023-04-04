@@ -36,25 +36,29 @@ class OrgSettingsScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 15),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${organization.name}',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 5),
-            if (organization.link != null)
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.link),
-                label: Text(organization.link!),
-                style: TextButton.styleFrom(
-                  iconColor: COLOR_BLUE,
-                  foregroundColor: COLOR_BLUE,
-                ),
-              )
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${organization.name}',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 5),
+              if (organization.link != null)
+                TextButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.link),
+                  label: Text(organization.link!),
+                  style: TextButton.styleFrom(
+                    iconColor: COLOR_BLUE,
+                    foregroundColor: COLOR_BLUE,
+                  ),
+                )
+            ],
+          ),
         ),
       ],
     );
