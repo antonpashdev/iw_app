@@ -71,6 +71,14 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     return response.data['balance'];
   }
 
+  Future onRefresh() {
+    setState(() {
+      futureOrg = fetchOrg();
+      futureMembers = fetchMembers();
+    });
+    return Future.wait([futureOrg, futureMembers, futureBalance]);
+  }
+
   buildHeader(BuildContext context, Organization org) {
     return Row(
       children: [
@@ -458,24 +466,34 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
               body: Column(
                 children: [
                   Expanded(
-                    child: ListView(
-                      children: [
-                        const SizedBox(height: 20),
-                        AppPadding(
-                          child: buildHeader(context, snapshot.data?[0]),
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        CupertinoSliverRefreshControl(
+                          onRefresh: onRefresh,
                         ),
-                        const SizedBox(height: 25),
-                        AppPadding(
-                          child: buildDetails(context, snapshot.data?[0]),
+                        SliverList(
+                          delegate: SliverChildListDelegate.fixed(
+                            [
+                              const SizedBox(height: 20),
+                              AppPadding(
+                                child: buildHeader(context, snapshot.data?[0]),
+                              ),
+                              const SizedBox(height: 25),
+                              AppPadding(
+                                child: buildDetails(context, snapshot.data?[0]),
+                              ),
+                              const SizedBox(height: 60),
+                              buildMembers(context, snapshot.data?[0],
+                                  snapshot.data?[1]),
+                              const SizedBox(height: 50),
+                              AppPadding(
+                                child: buildPulse(context, snapshot.data?[0]),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 60),
-                        buildMembers(
-                            context, snapshot.data?[0], snapshot.data?[1]),
-                        const SizedBox(height: 50),
-                        AppPadding(
-                          child: buildPulse(context, snapshot.data?[0]),
-                        ),
-                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
