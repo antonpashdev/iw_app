@@ -30,18 +30,20 @@ class ReceiveMoneyPaymentTypeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               TextButton.icon(
-                  onPressed: () {
-                    onTypeSelect(context, PaymentType.InStore);
-                  },
-                  icon: SvgPicture.asset('assets/icons/in-store-icon.svg'),
-                  label: const Text('In-Store Payment')),
-              const SizedBox(height: 20),
+                onPressed: () {
+                  onTypeSelect(context, PaymentType.InStore);
+                },
+                icon: SvgPicture.asset('assets/icons/in-store-icon.svg'),
+                label: const Text('In-Store Payment'),
+              ),
+              const SizedBox(height: 40),
               TextButton.icon(
-                  onPressed: () {
-                    onTypeSelect(context, PaymentType.Online);
-                  },
-                  icon: SvgPicture.asset('assets/icons/online-payment.svg'),
-                  label: const Text('On-Line Payment'))
+                onPressed: () {
+                  onTypeSelect(context, PaymentType.Online);
+                },
+                icon: SvgPicture.asset('assets/icons/online-payment.svg'),
+                label: const Text('On-Line Payment'),
+              )
             ],
           ),
         ));

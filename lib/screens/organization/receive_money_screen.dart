@@ -8,6 +8,7 @@ import 'package:iw_app/screens/organization/receive_money_generate_link_screen.d
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:iw_app/utils/validation.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ReceiveMoneyScreen extends StatefulWidget {
   final Organization organization;
@@ -29,6 +30,13 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
   get organization => widget.organization;
   get paymentType => widget.paymentType;
 
+  Future<void> _launchInBrowser(Uri url) async {
+    if (!await launchUrl(url,
+        mode: LaunchMode.platformDefault, webOnlyWindowName: 'Hey')) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   handleGeneratePressed() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -40,13 +48,19 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
       final response =
           await orgsApi.receivePayment(organization.id, _item, _price!);
       final paymentData = Payment.fromJson(response.data);
+      final bool isInStorePaymentType = paymentType == PaymentType.InStore;
 
-      if (paymentType == PaymentType.InStore) {
+      if (isInStorePaymentType) {
         paymentData.cpPaymentUrl =
             paymentData.cpPaymentUrl!.replaceFirst('checkout', 'pos');
       }
 
       if (context.mounted) {
+        if (isInStorePaymentType) {
+          _launchInBrowser(Uri.parse(paymentData.cpPaymentUrl!));
+          return;
+        }
+
         Navigator.push(
           context,
           MaterialPageRoute(
