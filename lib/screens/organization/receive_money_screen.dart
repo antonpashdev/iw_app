@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
+import 'package:iw_app/consrants/payment_type.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/payment_model.dart';
@@ -10,8 +11,10 @@ import 'package:iw_app/utils/validation.dart';
 
 class ReceiveMoneyScreen extends StatefulWidget {
   final Organization organization;
+  final PaymentType paymentType;
 
-  const ReceiveMoneyScreen({super.key, required this.organization});
+  const ReceiveMoneyScreen(
+      {super.key, required this.organization, required this.paymentType});
 
   @override
   State<ReceiveMoneyScreen> createState() => _ReceiveMoneyScreenState();
@@ -24,6 +27,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
   bool isLoading = false;
 
   get organization => widget.organization;
+  get paymentType => widget.paymentType;
 
   handleGeneratePressed() async {
     if (!_formKey.currentState!.validate()) {
@@ -35,13 +39,20 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
     try {
       final response =
           await orgsApi.receivePayment(organization.id, _item, _price!);
+      final paymentData = Payment.fromJson(response.data);
+
+      if (paymentType == PaymentType.InStore) {
+        paymentData.cpPaymentUrl =
+            paymentData.cpPaymentUrl!.replaceFirst('checkout', 'pos');
+      }
+
       if (context.mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ReceiveMoneyGenerateLinkScreen(
               organization: organization,
-              payment: Payment.fromJson(response.data),
+              payment: paymentData,
             ),
           ),
         );
@@ -52,6 +63,18 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  getButtonTextByPaymentType(PaymentType type) {
+    switch (type) {
+      case PaymentType.Online:
+        return Text(AppLocalizations.of(context)!
+            .receiveMoneyScreen_label_generate_link);
+      case PaymentType.InStore:
+        return const Text('Generate Payment QR-Code');
+      default:
+        return const Text('Generate Payment Link');
     }
   }
 
@@ -102,10 +125,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                           : handleGeneratePressed,
                       child: isLoading
                           ? const CircularProgressIndicator.adaptive()
-                          : Text(
-                              AppLocalizations.of(context)!
-                                  .receiveMoneyScreen_label_generate_link,
-                            ),
+                          : getButtonTextByPaymentType(paymentType),
                     ),
                   )
                 ],
