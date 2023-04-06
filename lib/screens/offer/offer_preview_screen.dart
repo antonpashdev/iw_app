@@ -49,26 +49,32 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
           ),
         ),
         const SizedBox(width: 15),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.member.role == MemberRole.Investor ? 'Invest to' : 'From',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: COLOR_GRAY,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              '${widget.organization.name}',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            Text(
-              '@${widget.organization.username}',
-              style: const TextStyle(color: COLOR_GRAY),
-            ),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.member.role == MemberRole.Investor
+                    ? 'Invest to'
+                    : 'From',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: COLOR_GRAY,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '${widget.organization.name}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              Text(
+                '@${widget.organization.username}',
+                style: const TextStyle(color: COLOR_GRAY),
+              ),
+            ],
+          ),
         ),
       ],
     );

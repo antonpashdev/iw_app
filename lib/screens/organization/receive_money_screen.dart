@@ -4,12 +4,10 @@ import 'package:iw_app/consrants/payment_type.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/payment_model.dart';
-import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/screens/organization/receive_money_generate_link_screen.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:iw_app/utils/validation.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ReceiveMoneyScreen extends StatefulWidget {
   final Organization organization;
@@ -31,20 +29,6 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
   get organization => widget.organization;
   get paymentType => widget.paymentType;
 
-  Future<void> _launchInBrowser(Uri url) async {
-    if (!await launchUrl(url,
-        mode: LaunchMode.platformDefault, webOnlyWindowName: 'Hey')) {
-      throw Exception('Could not launch $url');
-    }
-  }
-
-  _goToHomeScreen() {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
-      (route) => false,
-    );
-  }
-
   handleGeneratePressed() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -64,12 +48,6 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
       }
 
       if (context.mounted) {
-        if (isInStorePaymentType) {
-          _launchInBrowser(Uri.parse(paymentData.cpPaymentUrl!));
-          _goToHomeScreen();
-          return;
-        }
-
         Navigator.push(
           context,
           MaterialPageRoute(

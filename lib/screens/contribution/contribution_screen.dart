@@ -79,28 +79,32 @@ class _ContributionScreenState extends State<ContributionScreen> {
           ),
         ),
         const SizedBox(width: 15),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'to',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(color: COLOR_GRAY),
-            ),
-            Text(
-              widget.contribution.org.name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              '@${widget.contribution.org.username}',
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                    color: COLOR_GRAY,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'to',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(color: COLOR_GRAY),
+              ),
+              Text(
+                widget.contribution.org.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '@${widget.contribution.org.username}',
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: COLOR_GRAY,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+            ],
+          ),
         ),
       ],
     );

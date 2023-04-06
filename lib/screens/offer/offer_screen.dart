@@ -69,28 +69,32 @@ class _OfferScreenState extends State<OfferScreen> {
           ),
         ),
         const SizedBox(width: 15),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              offer.memberProspect!.role == MemberRole.Investor
-                  ? 'Invest to'
-                  : 'From',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: COLOR_GRAY,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              '${offer.org.name}',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            Text(
-              '@${offer.org.username}',
-              style: const TextStyle(color: COLOR_GRAY),
-            ),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                offer.memberProspect!.role == MemberRole.Investor
+                    ? 'Invest to'
+                    : 'From',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: COLOR_GRAY,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '${offer.org.name}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              Text(
+                '@${offer.org.username}',
+                style: const TextStyle(color: COLOR_GRAY),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -378,9 +382,20 @@ class _OfferScreenState extends State<OfferScreen> {
                       flex: 1,
                       child: Container(
                         padding: const EdgeInsets.only(right: 13.0),
-                        child: Text(
-                          payment!.cpPaymentUrl!,
-                          overflow: TextOverflow.ellipsis,
+                        child: TextButton.icon(
+                          onPressed: () async {
+                            final url = Uri.parse(payment!.cpPaymentUrl!);
+                            if (!(await launchUrl(url))) {
+                              throw Exception('Could not launch $url');
+                            }
+                          },
+                          icon: const Icon(Icons.link),
+                          label: Text(payment!.cpPaymentUrl!,
+                              overflow: TextOverflow.ellipsis, maxLines: 1),
+                          style: TextButton.styleFrom(
+                            iconColor: COLOR_BLUE,
+                            foregroundColor: COLOR_BLUE,
+                          ),
                         ),
                       ),
                     ),
