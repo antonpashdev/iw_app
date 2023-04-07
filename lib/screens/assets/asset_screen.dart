@@ -133,20 +133,24 @@ class AssetScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: memberWithEquity.equity!.lamportsEarned == 0
+                      ? null
+                      : () {},
                   child: const Text('Send Asset'),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => SellAssetScreen(
-                              organization: memberWithEquity.member!.org,
-                              member: memberWithEquity.member!,
-                            )));
-                  },
+                  onPressed: memberWithEquity.equity!.lamportsEarned == 0
+                      ? null
+                      : () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => SellAssetScreen(
+                                    organization: memberWithEquity.member!.org,
+                                    member: memberWithEquity.member!,
+                                  )));
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: COLOR_BLUE,
                   ),

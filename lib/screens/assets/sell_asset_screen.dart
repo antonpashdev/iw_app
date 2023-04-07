@@ -74,8 +74,8 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
               requiredField('Number of Impact Shares'),
               numberField('Number of Impact Shares'),
             ]),
-            suffix: TextButton(
-              onPressed: () {
+            suffix: InkWell(
+              onTap: () {
                 setState(() {
                   saleOffer.tokensAmount =
                       widget.member.lamportsEarned! / LAMPORTS_IN_SOL;
@@ -83,7 +83,13 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
                 amountController.text = saleOffer.tokensAmount.toString();
                 fetchEquity();
               },
-              child: const Text('Max'),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  'Max',
+                  style: Theme.of(context).textTheme.bodySmall!,
+                ),
+              ),
             ),
             onChanged: (value) {
               saleOffer.tokensAmount = double.tryParse(value);
@@ -101,8 +107,8 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
           AppTextFormFieldBordered(
             controller: equityController,
             prefix: const Text('%'),
-            suffix: TextButton(
-              onPressed: () {
+            suffix: InkWell(
+              onTap: () {
                 setState(() {
                   saleOffer.tokensAmount =
                       widget.member.lamportsEarned! / LAMPORTS_IN_SOL;
@@ -110,7 +116,13 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
                 amountController.text = saleOffer.tokensAmount.toString();
                 fetchEquity();
               },
-              child: const Text('Max'),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  'Max',
+                  style: Theme.of(context).textTheme.bodySmall!,
+                ),
+              ),
             ),
             onChanged: (value) {
               equityController.text = equity ?? '';
@@ -176,42 +188,31 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
   Widget build(BuildContext context) {
     return ScreenScaffold(
       title: 'Number of iShares and Price',
-      child: Stack(
+      child: Column(
         children: [
-          Positioned.fill(
-            child: Column(
+          Expanded(
+            child: ListView(
               children: [
-                Expanded(
-                  child: ListView(
-                    children: [
-                      const SizedBox(height: 10),
-                      const Text(
-                        'Enter number of Impact Shares and the price',
-                        style: TextStyle(
-                            color: COLOR_GRAY, fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(height: 30),
-                      buildForm(context),
-                      const SizedBox(height: 100),
-                    ],
-                  ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Enter number of Impact Shares and the price',
+                  style:
+                      TextStyle(color: COLOR_GRAY, fontWeight: FontWeight.w500),
                 ),
+                const SizedBox(height: 30),
+                buildForm(context),
               ],
             ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: SizedBox(
-                width: 290,
-                child: ElevatedButton(
-                  onPressed: isLoading ? null : handleNextPressed,
-                  child: isLoading
-                      ? const CircularProgressIndicator.adaptive()
-                      : const Text('Next'),
-                ),
+          const SizedBox(height: 10),
+          Center(
+            child: SizedBox(
+              width: 290,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : handleNextPressed,
+                child: isLoading
+                    ? const CircularProgressIndicator.adaptive()
+                    : const Text('Next'),
               ),
             ),
           ),
