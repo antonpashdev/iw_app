@@ -1,10 +1,12 @@
+import 'package:iw_app/models/organization_model.dart';
+
 class SaleOffer {
   String? id;
   String? status;
   double? tokensAmount;
   double? price;
   String? seller;
-  String? org;
+  dynamic org;
   String? buyer;
 
   SaleOffer({
@@ -22,7 +24,7 @@ class SaleOffer {
     tokensAmount = json['tokensAmount'];
     price = json['price'];
     seller = json['seller'];
-    org = json['org'];
+    org = json['org'] is Map ? Organization.fromJson(json['org']) : json['org'];
     buyer = json['buyer'];
   }
 

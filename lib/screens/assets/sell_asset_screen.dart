@@ -5,6 +5,7 @@ import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
+import 'package:iw_app/screens/offer/sale_offer_preview_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
@@ -153,6 +154,15 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
         userId: (await authApi.userId)!,
       );
       final newSaleOffer = SaleOffer.fromJson(response.data!);
+      if (context.mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => SaleOfferPreviewScreen(
+              saleOffer: newSaleOffer,
+            ),
+          ),
+        );
+      }
     } catch (err) {
       print(err);
     } finally {
