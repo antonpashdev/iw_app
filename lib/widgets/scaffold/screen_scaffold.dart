@@ -4,7 +4,11 @@ class ScreenScaffold extends StatelessWidget {
   final Widget child;
   final String title;
 
-  const ScreenScaffold({super.key, required this.child, required this.title});
+  const ScreenScaffold({
+    super.key,
+    required this.title,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {

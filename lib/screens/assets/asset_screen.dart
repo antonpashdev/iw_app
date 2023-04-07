@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/organization_member_model.dart';
+import 'package:iw_app/screens/assets/sell_asset_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -139,7 +140,13 @@ class AssetScreen extends StatelessWidget {
               const SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => SellAssetScreen(
+                              organization: memberWithEquity.member!.org,
+                              member: memberWithEquity.member!,
+                            )));
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: COLOR_BLUE,
                   ),

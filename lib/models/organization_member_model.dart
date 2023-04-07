@@ -21,6 +21,7 @@ class OrganizationMember {
   dynamic org;
   double? contributed;
   InvestorSettings? investorSettings;
+  int? lamportsEarned;
 
   OrganizationMember({
     this.occupation,
@@ -33,6 +34,7 @@ class OrganizationMember {
     this.org,
     this.contributed = 0,
     this.investorSettings,
+    this.lamportsEarned,
   });
 
   OrganizationMember.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,7 @@ class OrganizationMember {
     user = json['user'] is Map ? User.fromJson(json['user']) : json['user'];
     org = json['org'] is Map ? Organization.fromJson(json['org']) : json['org'];
     contributed = json['contributed'];
+    lamportsEarned = json['lamportsEarned'];
     investorSettings = json['investorSettings'] is Map
         ? InvestorSettings.fromJson(json['investorSettings'])
         : json['investorSettings'];
@@ -81,6 +84,11 @@ autoContribution: $autoContribution
 class MemberEquity {
   int? lamportsEarned;
   double? equity;
+
+  MemberEquity({
+    this.lamportsEarned,
+    this.equity,
+  });
 
   MemberEquity.fromJson(Map<String, dynamic> json) {
     lamportsEarned = json['lamportsEarned'];
