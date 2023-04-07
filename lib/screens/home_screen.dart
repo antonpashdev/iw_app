@@ -7,7 +7,7 @@ import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/user_model.dart';
-import 'package:iw_app/screens/assets/assets_screen.dart';
+import 'package:iw_app/screens/assets/asset_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/screens/settings_screen.dart';
@@ -51,13 +51,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final response = await usersApi.getUserMemberships(userId!);
     final members = (response.data as List).map((member) {
       final m = OrganizationMember.fromJson(member);
-      final futureOtherMembers = fetchOtherMembers(m.org.id);
-      final futureEquity = fetchMemberEquity(m.org.id, m.id!);
       final memberWithOther = OrganizationMemberWithOtherMembers(
         member: m,
-        futureOtherMembers: futureOtherMembers,
-        futureEquity: futureEquity,
       );
+      final futureOtherMembers = fetchOtherMembers(m.org.id);
+      final futureEquity = fetchMemberEquity(m.org.id, m.id!, memberWithOther);
+      memberWithOther.futureOtherMembers = futureOtherMembers;
+      memberWithOther.futureEquity = futureEquity;
       return memberWithOther;
     }).toList();
     this.members = members;
@@ -71,9 +71,12 @@ class _HomeScreenState extends State<HomeScreen> {
         .toList();
   }
 
-  Future<MemberEquity> fetchMemberEquity(String orgId, String memberId) async {
+  Future<MemberEquity> fetchMemberEquity(String orgId, String memberId,
+      OrganizationMemberWithOtherMembers member) async {
     final response = await orgsApi.getMemberEquity(orgId, memberId);
-    return MemberEquity.fromJson(response.data);
+    final equity = MemberEquity.fromJson(response.data);
+    member.equity = equity;
+    return equity;
   }
 
   Future<double> fetchBalance() async {
@@ -144,43 +147,46 @@ class _HomeScreenState extends State<HomeScreen> {
 
   buildAsset(OrganizationMemberWithOtherMembers omm) {
     return FutureBuilder(
-        future: omm.futureEquity,
-        builder: (_, snapshot) {
-          if (!snapshot.hasData) {
-            return Container();
-          }
-          final tokensAmount =
-              (snapshot.data!.lamportsEarned! / LAMPORTS_IN_SOL)
-                  .toStringAsFixed(4)
-                  .replaceAll(trimZeroesRegExp, '');
-          final equity = (snapshot.data!.equity! * 100).toStringAsFixed(1);
-          return RawMaterialButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => AssetsScreen(omm: omm)));
-              },
-              child: AssetsListTile(
-                leading: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: COLOR_LIGHT_GRAY2,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: NetworkImageAuth(
-                      imageUrl: '${orgsApi.baseUrl}${omm.member!.org.logo}',
-                    ),
-                  ),
+      future: omm.futureEquity,
+      builder: (_, snapshot) {
+        if (!snapshot.hasData) {
+          return Container();
+        }
+        final tokensAmount = (snapshot.data!.lamportsEarned! / LAMPORTS_IN_SOL)
+            .toStringAsFixed(4)
+            .replaceAll(trimZeroesRegExp, '');
+        final equity = (snapshot.data!.equity! * 100).toStringAsFixed(1);
+        return InkWell(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => AssetScreen(memberWithEquity: omm)));
+          },
+          child: AssetsListTile(
+            leading: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: COLOR_LIGHT_GRAY2,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: NetworkImageAuth(
+                  imageUrl: '${orgsApi.baseUrl}${omm.member!.org.logo}',
                 ),
-                name: omm.member!.org.name,
-                account: '@${omm.member!.org.username}',
-                tokensAmount: tokensAmount,
-                equity: '$equity%',
-              ));
-        });
+              ),
+            ),
+            name: omm.member!.org.name,
+            account: '@${omm.member!.org.username}',
+            tokensAmount: tokensAmount,
+            equity: '$equity%',
+          ),
+        );
+      },
+    );
   }
 
   buildOrgsMembers(List<OrganizationMemberWithOtherMembers> members) {

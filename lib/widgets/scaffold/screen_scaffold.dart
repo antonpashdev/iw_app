@@ -14,7 +14,7 @@ class ScreenScaffold extends StatelessWidget {
           title: Text(title),
         ),
         body: Padding(
-          padding: const EdgeInsets.only(left: 30, right: 30, bottom: 20),
+          padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
           child: child,
         ),
       ),
