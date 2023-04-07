@@ -7,6 +7,7 @@ import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/user_model.dart';
+import 'package:iw_app/screens/assets/assets_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/screens/settings_screen.dart';
@@ -153,27 +154,32 @@ class _HomeScreenState extends State<HomeScreen> {
                   .toStringAsFixed(4)
                   .replaceAll(trimZeroesRegExp, '');
           final equity = (snapshot.data!.equity! * 100).toStringAsFixed(1);
-          return AssetsListTile(
-            leading: Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: COLOR_LIGHT_GRAY2,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: NetworkImageAuth(
-                  imageUrl: '${orgsApi.baseUrl}${omm.member!.org.logo}',
+          return RawMaterialButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => AssetsScreen(omm: omm)));
+              },
+              child: AssetsListTile(
+                leading: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: COLOR_LIGHT_GRAY2,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: NetworkImageAuth(
+                      imageUrl: '${orgsApi.baseUrl}${omm.member!.org.logo}',
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            name: omm.member!.org.name,
-            account: '@${omm.member!.org.username}',
-            tokensAmount: tokensAmount,
-            equity: '$equity%',
-          );
+                name: omm.member!.org.name,
+                account: '@${omm.member!.org.username}',
+                tokensAmount: tokensAmount,
+                equity: '$equity%',
+              ));
         });
   }
 
