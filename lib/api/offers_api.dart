@@ -16,6 +16,18 @@ class _OffersApi extends BaseApi {
     };
     return client.post('/offers/sale', data: body);
   }
+
+  Future<Response> getSaleOffer(String offerId) {
+    return client.get('/offers/sale/$offerId');
+  }
+
+  Future<Response> acceptDeclineSaleOffer(String offerId, String status) {
+    final body = {
+      'status': status,
+    };
+
+    return client.patch('/offers/sale/$offerId', data: body);
+  }
 }
 
 final offersApi = _OffersApi();
