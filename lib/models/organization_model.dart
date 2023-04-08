@@ -12,6 +12,7 @@ class Organization {
   String? wallet;
   Uint8List? logoToSet;
   OrganizationSettings settings = OrganizationSettings();
+  double? lamportsMinted;
 
   Organization({
     this.username,
@@ -20,6 +21,7 @@ class Organization {
     this.description,
     this.logo,
     this.wallet,
+    this.lamportsMinted,
   });
 
   Organization.fromJson(Map<String, dynamic> json) {
@@ -30,6 +32,7 @@ class Organization {
     description = json['description'];
     logo = json['logo'];
     wallet = json['wallet'];
+    lamportsMinted = json['lamportsMinted'];
   }
 
   @override
@@ -53,6 +56,7 @@ $settings
       'link': link,
       'description': description,
       'settings[treasury]': settings.treasury,
+      'lamportsMinted': lamportsMinted,
     };
     if (member != null) {
       orgMap['member[occupation]'] = member.occupation;
