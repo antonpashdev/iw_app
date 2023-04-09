@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:iw_app/api/base_api.dart';
+import 'package:iw_app/models/user_model.dart';
 
 class CreateUserResponse {
   final String secretLink;
@@ -89,12 +90,30 @@ class _UsersApi extends BaseApi {
     return client.get('/users/$userId/balance');
   }
 
+  Future<User?> getUserByNickname(String nickname) async {
+    User user;
+    try {
+      final resp =
+          await client.get('/users?nickname=$nickname&exactMatch=true');
+      user = User.fromJson(resp.data[0]);
+    } catch (ex) {
+      rethrow;
+    }
+
+    return user;
+  }
+
   Future<CreateUserResponse> restoreAccount(String code) async {
     final response =
         await client.post('/users/$code/restore', data: {'secretLink': code});
 
     final userResponse = CreateUserResponse.fromJson(response.data);
     return userResponse;
+  }
+
+  Future<Response> sendAssets(String orgId, String recipientId, double amount) {
+    return client.post('/users/assets/$orgId/send',
+        data: {'recipientId': recipientId, 'amount': amount});
   }
 }
 

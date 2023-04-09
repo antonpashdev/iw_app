@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/screens/assets/sell_asset_screen.dart';
+import 'package:iw_app/screens/assets/send/receiver_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -135,7 +136,13 @@ class AssetScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: memberWithEquity.equity!.lamportsEarned == 0
                       ? null
-                      : () {},
+                      : () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => ReceiverScreen(
+                                      memberWithEquity: memberWithEquity)));
+                        },
                   child: const Text('Send Asset'),
                 ),
               ),
