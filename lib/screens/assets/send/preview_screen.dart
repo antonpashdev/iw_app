@@ -186,9 +186,14 @@ class _PreviewScreenState extends State<PreviewScreen> {
       _isLoading = true;
     });
     try {
-      await usersApi.sendAssets(widget.memberWithEquity.member!.org.id,
-          widget.receiver.id!, double.parse(widget.tokens));
-      navigateToSuccessScreen(context);
+      await usersApi.sendAssets(
+        widget.memberWithEquity.member!.org.id,
+        widget.receiver.id!,
+        double.parse(widget.tokens),
+      );
+      if (context.mounted) {
+        navigateToSuccessScreen(context);
+      }
     } catch (ex) {
       print('error happened');
     } finally {

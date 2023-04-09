@@ -3,18 +3,18 @@ import 'dart:typed_data';
 class User {
   String nickname = '';
   String name = '';
-  String wallet = '';
   String? avatar;
   String? id;
+  String? wallet;
   Uint8List? avatarToSet;
 
   User({
     this.nickname = '',
     this.name = '',
     this.avatar,
-    this.wallet = '',
     this.avatarToSet,
     this.id,
+    this.wallet,
   });
 
   User.fromJson(Map<String, dynamic> json) {

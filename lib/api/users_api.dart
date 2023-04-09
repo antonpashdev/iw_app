@@ -3,23 +3,6 @@ import 'package:dio/dio.dart';
 import 'package:iw_app/api/base_api.dart';
 import 'package:iw_app/models/user_model.dart';
 
-class CreateUserResponse {
-  final String secretLink;
-  final String token;
-
-  const CreateUserResponse({
-    required this.secretLink,
-    required this.token,
-  });
-
-  factory CreateUserResponse.fromJson(Map<String, dynamic> json) {
-    return CreateUserResponse(
-      secretLink: json['secretLink'],
-      token: json['token'],
-    );
-  }
-}
-
 class _UsersApi extends BaseApi {
   // POST create user
   Future<CreateUserResponse> createUser(
@@ -118,3 +101,30 @@ class _UsersApi extends BaseApi {
 }
 
 final usersApi = _UsersApi();
+
+class CreateUserResponse {
+  final String secretLink;
+  final String token;
+
+  const CreateUserResponse({
+    required this.secretLink,
+    required this.token,
+  });
+
+  factory CreateUserResponse.fromJson(Map<String, dynamic> json) {
+    return CreateUserResponse(
+      secretLink: json['secretLink'],
+      token: json['token'],
+    );
+  }
+}
+
+class SendMoneyData {
+  double? amount;
+  String? address;
+
+  SendMoneyData({
+    this.amount,
+    this.address,
+  });
+}
