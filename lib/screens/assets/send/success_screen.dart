@@ -4,7 +4,7 @@ import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class SuccessScreen extends StatelessWidget {
-  final String sharesSent;
+  final double sharesSent;
   final String orgName;
   final String receiverNickName;
 

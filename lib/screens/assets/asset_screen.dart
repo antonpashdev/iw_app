@@ -141,7 +141,9 @@ class AssetScreen extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (_) => ReceiverScreen(
-                                      memberWithEquity: memberWithEquity)));
+                                      organization:
+                                          memberWithEquity.member!.org,
+                                      member: memberWithEquity.member!)));
                         },
                   child: const Text('Send Asset'),
                 ),

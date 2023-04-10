@@ -85,7 +85,10 @@ class SaleOfferPreviewScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Number of Impact Shares'),
+              Text(
+                'Number of Impact Shares',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
               Text(
                 '${saleOffer.tokensAmount}',
                 style: const TextStyle(fontWeight: FontWeight.bold),
@@ -96,7 +99,10 @@ class SaleOfferPreviewScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Equity to Date'),
+              Text(
+                'Equity to Date',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
               Text(
                 '$equity%',
                 style: const TextStyle(
@@ -182,7 +188,7 @@ class SaleOfferPreviewScreen extends StatelessWidget {
               children: [
                 const SizedBox(height: 30),
                 const Text(
-                  'This Offer is available by the link below. Send it to the person you want to invite to the organization.',
+                  'This Offer is available by the link below. Send it to a person you want to sell iShares',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: COLOR_CORAL,
