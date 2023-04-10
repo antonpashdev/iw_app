@@ -464,62 +464,72 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                 ],
               ),
               body: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(
-                    child: CustomScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      slivers: [
-                        CupertinoSliverRefreshControl(
-                          onRefresh: onRefresh,
-                        ),
-                        SliverList(
-                          delegate: SliverChildListDelegate.fixed(
-                            [
-                              const SizedBox(height: 20),
-                              AppPadding(
-                                child: buildHeader(context, snapshot.data?[0]),
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: CustomScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            slivers: [
+                              CupertinoSliverRefreshControl(
+                                onRefresh: onRefresh,
                               ),
-                              const SizedBox(height: 25),
-                              AppPadding(
-                                child: buildDetails(context, snapshot.data?[0]),
+                              SliverList(
+                                delegate: SliverChildListDelegate.fixed(
+                                  [
+                                    const SizedBox(height: 20),
+                                    AppPadding(
+                                      child: buildHeader(
+                                          context, snapshot.data?[0]),
+                                    ),
+                                    const SizedBox(height: 25),
+                                    AppPadding(
+                                      child: buildDetails(
+                                          context, snapshot.data?[0]),
+                                    ),
+                                    const SizedBox(height: 60),
+                                    buildMembers(context, snapshot.data?[0],
+                                        snapshot.data?[1]),
+                                    const SizedBox(height: 50),
+                                    AppPadding(
+                                      child: buildPulse(
+                                          context, snapshot.data?[0]),
+                                    ),
+                                    const SizedBox(height: 90),
+                                  ],
+                                ),
                               ),
-                              const SizedBox(height: 60),
-                              buildMembers(context, snapshot.data?[0],
-                                  snapshot.data?[1]),
-                              const SizedBox(height: 50),
-                              AppPadding(
-                                child: buildPulse(context, snapshot.data?[0]),
-                              ),
-                              const SizedBox(height: 20),
                             ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Positioned(
+                          bottom: 30,
+                          left: 0,
+                          right: 0,
+                          child: Center(
+                            child: SizedBox(
+                              width: 290,
+                              child: ElevatedButton(
+                                onPressed: isLoading ||
+                                        widget.member.role ==
+                                            MemberRole.Investor
+                                    ? null
+                                    : handleStartContributingPressed,
+                                child: isLoading
+                                    ? const Center(
+                                        child: CircularProgressIndicator
+                                            .adaptive())
+                                    : const Text('Start Contributing'),
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 290),
-                    child: ElevatedButton(
-                      onPressed:
-                          isLoading || widget.member.role == MemberRole.Investor
-                              ? null
-                              : handleStartContributingPressed,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (isLoading)
-                            const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator.adaptive(),
-                            ),
-                          const Text('Start Contributing'),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
                 ],
               ),
             );
