@@ -37,8 +37,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   }
 
   Future<double> fetchBalance() async {
-    final userId = await authApi.userId;
-    final response = await usersApi.getBalance(userId!);
+    final response = await usersApi.getBalance();
     return response.data['balance'];
   }
 

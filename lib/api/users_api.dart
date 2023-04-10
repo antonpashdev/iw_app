@@ -69,8 +69,16 @@ class _UsersApi extends BaseApi {
     return response.data;
   }
 
-  Future<Response> getBalance(String userId) {
-    return client.get('/users/$userId/balance');
+  Future<Response> getBalance() {
+    return client.get('/users/usdc/balance');
+  }
+
+  Future<Response> sendMoney(SendMoneyData data) {
+    final body = {
+      'recipient': data.recipient,
+      'amount': data.amount,
+    };
+    return client.post('/users/usdc/send', data: body);
   }
 
   Future<User?> getUserByNickname(String nickname) async {
@@ -121,10 +129,10 @@ class CreateUserResponse {
 
 class SendMoneyData {
   double? amount;
-  String? address;
+  String? recipient;
 
   SendMoneyData({
     this.amount,
-    this.address,
+    this.recipient,
   });
 }

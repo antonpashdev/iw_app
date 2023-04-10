@@ -35,7 +35,7 @@ class SendMoneySuccessScreen extends StatelessWidget {
             const SizedBox(height: 30),
             AppPadding(
               child: Text(
-                'Your money has been successfully sent to ${sendMoneyData.address!.replaceRange(4, 40, '...')}',
+                'Your money has been successfully sent to ${sendMoneyData.recipient!.replaceRange(4, 40, '...')}',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontFamily: 'Gilroy',

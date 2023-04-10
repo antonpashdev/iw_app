@@ -26,18 +26,24 @@ class _SendMoneyPreviewScreenState extends State<SendMoneyPreviewScreen> {
     setState(() {
       isLoading = true;
     });
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() {
-      isLoading = false;
-    });
-    if (context.mounted) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => SendMoneySuccessScreen(
-            sendMoneyData: widget.sendMoneyData,
+    try {
+      await usersApi.sendMoney(widget.sendMoneyData);
+
+      if (context.mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => SendMoneySuccessScreen(
+              sendMoneyData: widget.sendMoneyData,
+            ),
           ),
-        ),
-      );
+        );
+      }
+    } catch (e) {
+      print(e);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -97,7 +103,7 @@ class _SendMoneyPreviewScreenState extends State<SendMoneyPreviewScreen> {
                   const SizedBox(height: 50),
                   buildAddressInfo('From your wallet', widget.user.wallet!),
                   const SizedBox(height: 10),
-                  buildAddressInfo('To', widget.sendMoneyData.address!),
+                  buildAddressInfo('To', widget.sendMoneyData.recipient!),
                 ],
               ),
             ),

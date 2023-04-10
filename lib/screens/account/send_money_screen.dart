@@ -44,7 +44,7 @@ class SendMoneyScreen extends StatelessWidget {
                           helperText:
                               'Please enter an address of wallet on the Solana blockchain you are goning to send money to.',
                           onChanged: (value) {
-                            data.address = value;
+                            data.recipient = value;
                           },
                           validator: multiValidate([
                             requiredField('Recipient’s Solana Wallet'),
