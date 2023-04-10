@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -245,6 +246,11 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
       setState(() {
         offer = Offer.fromJson(response.data);
       });
+    } on DioError catch (err) {
+      final equityError = err.response?.data['equityAllocation'];
+      if (equityError != null && context.mounted) {
+        Navigator.of(context).pop(equityError);
+      }
     } catch (err) {
       print(err);
     } finally {

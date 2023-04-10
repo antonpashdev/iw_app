@@ -38,6 +38,17 @@ String? Function(String?) walletAddres() {
   };
 }
 
+String? Function(String?) max(double max) {
+  return (value) {
+    if (value != null &&
+        double.tryParse(value) != null &&
+        double.tryParse(value)! > max) {
+      return 'Value must be not greater than $max';
+    }
+    return null;
+  };
+}
+
 String? Function(String?) multiValidate(
   List<String? Function(String?)> validators,
 ) {

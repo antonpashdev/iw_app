@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/user_model.dart';
-import 'package:iw_app/screens/account/send_money_screen.dart';
+import 'package:iw_app/screens/account/send_money_recipient_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
@@ -188,7 +188,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (_) => SendMoneyScreen(user: user)));
+                        builder: (_) => SendMoneyRecipientScreen(user: user)));
                   },
                   icon: SvgPicture.asset('assets/icons/arrow_up_box.svg'),
                   label: const Text('Send'),
@@ -325,7 +325,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
             builder: (_, snapshot) {
               if (!snapshot.hasData) {
                 return const Center(
-                  child: CircularProgressIndicator.adaptive(),
+                  child: CircularProgressIndicator(),
                 );
               }
               return Column(

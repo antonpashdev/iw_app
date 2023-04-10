@@ -7,11 +7,13 @@ import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
 import 'package:iw_app/screens/offer/sale_offer_preview_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/debounce.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
+final _debouncer = Debouncer(duration: const Duration(milliseconds: 1000));
 
 class SellAssetScreen extends StatefulWidget {
   final Organization organization;
@@ -36,13 +38,15 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
   int? lamportsMinted;
 
   fetchEquity() async {
-    try {
-      final response = await orgsApi.getOrgById(widget.organization.id!);
-      lamportsMinted = response.data!['lamportsMinted'];
-      equityController.text = equity!;
-    } catch (err) {
-      print(err);
-    }
+    _debouncer.debounce(() async {
+      try {
+        final response = await orgsApi.getOrgById(widget.organization.id!);
+        lamportsMinted = response.data!['lamportsMinted'];
+        equityController.text = equity!;
+      } catch (err) {
+        print(err);
+      }
+    });
   }
 
   String? get equity {
@@ -73,6 +77,7 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
             validator: multiValidate([
               requiredField('Number of Impact Shares'),
               numberField('Number of Impact Shares'),
+              max(widget.member.lamportsEarned! / LAMPORTS_IN_SOL),
             ]),
             suffix: InkWell(
               onTap: () {

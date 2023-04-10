@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/user_model.dart';
-import 'package:iw_app/screens/account/send_money_preview_screen.dart';
+import 'package:iw_app/screens/account/send_money_amount_screen.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
-class SendMoneyScreen extends StatelessWidget {
+class SendMoneyRecipientScreen extends StatelessWidget {
   final formKey = GlobalKey<FormState>();
   final User user;
   final SendMoneyData data = SendMoneyData();
 
-  SendMoneyScreen({Key? key, required this.user}) : super(key: key);
+  SendMoneyRecipientScreen({Key? key, required this.user}) : super(key: key);
 
   handleNextPressed(BuildContext context) async {
     if (!formKey.currentState!.validate()) {
       return;
     }
     Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => SendMoneyPreviewScreen(
-              sendMoneyData: data,
-              user: user,
-            )));
+        builder: (_) =>
+            SendMoneyAmountScreen(user: user, sendMoneyData: data)));
   }
 
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-        title: 'Recipient and Amount',
+        title: 'Recipient',
         child: Column(
           children: [
             Expanded(
@@ -51,23 +49,6 @@ class SendMoneyScreen extends StatelessWidget {
                             walletAddres(),
                           ]),
                           maxLines: 1,
-                        ),
-                        const SizedBox(height: 40),
-                        const Text(
-                          'Enter amount',
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                        const SizedBox(height: 10),
-                        AppTextFormFieldBordered(
-                          prefix: const Text('\$'),
-                          suffix: const Text('USDC'),
-                          onChanged: (value) {
-                            data.amount = double.tryParse(value);
-                          },
-                          validator: multiValidate([
-                            requiredField('Amount'),
-                            numberField('Amount'),
-                          ]),
                         ),
                       ],
                     ),
