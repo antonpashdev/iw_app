@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
+import 'package:iw_app/app_home.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
@@ -56,7 +57,7 @@ class SendMoneySuccessScreen<T extends Widget> extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (_) => originScreenFactory(),
                     ),
-                    ModalRoute.withName('/'),
+                    ModalRoute.withName(AppHome.routeName),
                   );
                 },
                 child: const Text('Done'),

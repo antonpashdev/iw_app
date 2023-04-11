@@ -20,6 +20,7 @@ class App extends StatelessWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       routes: {
+        AppHome.routeName: (context) => const AppHome(),
         AppStorybook.routeName: (context) => const AppStorybook(),
       },
       onGenerateRoute: (settings) {
@@ -44,7 +45,6 @@ class App extends StatelessWidget {
         }
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       },
-      home: const AppHome(),
     );
   }
 }

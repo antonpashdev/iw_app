@@ -9,6 +9,8 @@ import 'package:iw_app/screens/login_screen.dart';
 import 'api/auth_api.dart';
 
 class AppHome extends StatefulWidget {
+  static const routeName = '/';
+
   const AppHome({Key? key}) : super(key: key);
 
   @override
