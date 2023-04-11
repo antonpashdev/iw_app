@@ -1,35 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:iw_app/api/users_api.dart';
-import 'package:iw_app/models/user_model.dart';
-import 'package:iw_app/screens/account/send_money_preview_screen.dart';
+import 'package:iw_app/api/models/send_money_data_model.dart';
+import 'package:iw_app/screens/send_money/send_money_amount_screen.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
-class SendMoneyAmountScreen extends StatelessWidget {
+class SendMoneyRecipientScreen<T extends Widget> extends StatelessWidget {
   final formKey = GlobalKey<FormState>();
-  final User user;
-  final SendMoneyData sendMoneyData;
+  final String senderWallet;
+  final SendMoneyData data = SendMoneyData();
+  final Future Function(SendMoneyData) onSendMoney;
+  final T Function() originScreenFactory;
 
-  SendMoneyAmountScreen(
-      {Key? key, required this.user, required this.sendMoneyData})
-      : super(key: key);
+  SendMoneyRecipientScreen({
+    Key? key,
+    required this.senderWallet,
+    required this.onSendMoney,
+    required this.originScreenFactory,
+  }) : super(key: key);
 
   handleNextPressed(BuildContext context) async {
     if (!formKey.currentState!.validate()) {
       return;
     }
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => SendMoneyPreviewScreen(
-              sendMoneyData: sendMoneyData,
-              user: user,
-            )));
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SendMoneyAmountScreen(
+          senderWallet: senderWallet,
+          sendMoneyData: data,
+          onSendMoney: onSendMoney,
+          originScreenFactory: originScreenFactory,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-        title: 'Enter Amount',
+        title: 'Recipient',
         child: Column(
           children: [
             Expanded(
@@ -41,21 +50,18 @@ class SendMoneyAmountScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'You Send',
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                        const SizedBox(height: 10),
-                        AppTextFormFieldBordered(
-                          prefix: const Text('\$'),
-                          suffix: const Text('USDC'),
+                        AppTextFormField(
+                          labelText: 'Enter Recipient’s Solana Wallet',
+                          helperText:
+                              'Please enter an address of wallet on the Solana blockchain you are goning to send money to.',
                           onChanged: (value) {
-                            sendMoneyData.amount = double.tryParse(value);
+                            data.recipient = value;
                           },
                           validator: multiValidate([
-                            requiredField('Amount'),
-                            numberField('Amount'),
+                            requiredField('Recipient’s Solana Wallet'),
+                            walletAddres(),
                           ]),
+                          maxLines: 1,
                         ),
                       ],
                     ),

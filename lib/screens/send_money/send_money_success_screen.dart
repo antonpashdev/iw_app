@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:iw_app/api/users_api.dart';
-import 'package:iw_app/screens/account/account_details_screen.dart';
+import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
-class SendMoneySuccessScreen extends StatelessWidget {
+class SendMoneySuccessScreen<T extends Widget> extends StatelessWidget {
   final SendMoneyData sendMoneyData;
+  final T Function() originScreenFactory;
 
-  const SendMoneySuccessScreen({Key? key, required this.sendMoneyData})
-      : super(key: key);
+  const SendMoneySuccessScreen({
+    Key? key,
+    required this.sendMoneyData,
+    required this.originScreenFactory,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +54,7 @@ class SendMoneySuccessScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
-                      builder: (_) => const AccountDetailsScreen(),
+                      builder: (_) => originScreenFactory(),
                     ),
                     ModalRoute.withName('/'),
                   );

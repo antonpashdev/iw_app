@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:iw_app/api/users_api.dart';
-import 'package:iw_app/models/user_model.dart';
-import 'package:iw_app/screens/account/send_money_success_screen.dart';
+import 'package:iw_app/api/models/send_money_data_model.dart';
+import 'package:iw_app/screens/send_money/send_money_success_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
-class SendMoneyPreviewScreen extends StatefulWidget {
-  final User user;
+class SendMoneyPreviewScreen<T extends Widget> extends StatefulWidget {
+  final String senderWallet;
   final SendMoneyData sendMoneyData;
+  final Future Function(SendMoneyData) onSendMoney;
+  final T Function() originScreenFactory;
 
   const SendMoneyPreviewScreen({
     Key? key,
     required this.sendMoneyData,
-    required this.user,
+    required this.senderWallet,
+    required this.onSendMoney,
+    required this.originScreenFactory,
   }) : super(key: key);
 
   @override
@@ -27,13 +30,14 @@ class _SendMoneyPreviewScreenState extends State<SendMoneyPreviewScreen> {
       isLoading = true;
     });
     try {
-      await usersApi.sendMoney(widget.sendMoneyData);
+      await widget.onSendMoney(widget.sendMoneyData);
 
       if (context.mounted) {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => SendMoneySuccessScreen(
               sendMoneyData: widget.sendMoneyData,
+              originScreenFactory: widget.originScreenFactory,
             ),
           ),
         );
@@ -101,7 +105,7 @@ class _SendMoneyPreviewScreenState extends State<SendMoneyPreviewScreen> {
                     child: buildAmount(context),
                   ),
                   const SizedBox(height: 50),
-                  buildAddressInfo('From your wallet', widget.user.wallet!),
+                  buildAddressInfo('From your wallet', widget.senderWallet),
                   const SizedBox(height: 10),
                   buildAddressInfo('To', widget.sendMoneyData.recipient!),
                 ],

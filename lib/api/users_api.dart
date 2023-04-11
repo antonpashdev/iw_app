@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:iw_app/api/base_api.dart';
+import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/models/user_model.dart';
 
 class _UsersApi extends BaseApi {
@@ -125,14 +126,4 @@ class CreateUserResponse {
       token: json['token'],
     );
   }
-}
-
-class SendMoneyData {
-  double? amount;
-  String? recipient;
-
-  SendMoneyData({
-    this.amount,
-    this.recipient,
-  });
 }

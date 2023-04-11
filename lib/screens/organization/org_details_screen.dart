@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/contribution_model.dart';
@@ -10,6 +11,7 @@ import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
 import 'package:iw_app/screens/organization/org_settings_screen.dart';
 import 'package:iw_app/screens/organization/receive_money_payment_type_screen.dart';
+import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
@@ -119,7 +121,21 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
             Row(
               children: [
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => SendMoneyRecipientScreen(
+                          senderWallet: org.wallet!,
+                          onSendMoney: (SendMoneyData data) =>
+                              orgsApi.sendMoney(widget.orgId, data),
+                          originScreenFactory: () => OrgDetailsScreen(
+                            orgId: widget.orgId,
+                            member: widget.member,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                   icon: SvgPicture.asset('assets/icons/arrow_up_box.svg'),
                   label: const Text('Send'),
                   style: ElevatedButton.styleFrom(
