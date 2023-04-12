@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -232,74 +233,94 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 15),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 330),
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      Image.asset('assets/images/iw_card.png', width: 50),
-                      const SizedBox(width: 15),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          FutureBuilder(
-                            future: futureBalance,
-                            builder: (_, snapshot) {
-                              double amount = 0;
-                              if (snapshot.hasData) {
-                                amount = snapshot.data!;
-                              }
-                              return Text(
-                                '\$${amount.toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w500),
-                              );
-                            },
-                          ),
-                          Text(
-                            'Impact Wallet Card',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelSmall!
-                                .copyWith(color: COLOR_GRAY),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: COLOR_LIGHT_GRAY.withAlpha(150),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 20,
-                  right: 20,
-                  child: Text(
-                    'Coming Soon...',
-                    style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                        color: COLOR_BLUE, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ],
     );
+  }
+
+  buildIWCard() {
+    return AppPadding(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 330),
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Image.asset('assets/images/iw_card.png', width: 50),
+                    const SizedBox(width: 15),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        FutureBuilder(
+                          future: futureBalance,
+                          builder: (_, snapshot) {
+                            double amount = 0;
+                            if (snapshot.hasData) {
+                              amount = snapshot.data!;
+                            }
+                            return Text(
+                              '\$${amount.toStringAsFixed(2)}',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w500),
+                            );
+                          },
+                        ),
+                        Text(
+                          'Impact Wallet Card',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelSmall!
+                              .copyWith(color: COLOR_GRAY),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: COLOR_LIGHT_GRAY.withAlpha(150),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 20,
+                right: 20,
+                child: Text(
+                  'Coming Soon...',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium!
+                      .copyWith(color: COLOR_BLUE, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  buildHistoryItem(BuildContext context) {
+    return AppPadding(
+      child: Container(),
+    );
+  }
+
+  Future onRefresh() {
+    setState(() {
+      futureUser = fetchUser();
+      futureBalance = fetchBalance();
+    });
+    return Future.wait([futureUser, futureBalance]);
   }
 
   @override
@@ -329,6 +350,12 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                 );
               },
             ),
+            titleTextStyle: const TextStyle(
+              fontFamily: 'SF Pro Display',
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+              color: COLOR_ALMOST_BLACK,
+            ),
           ),
           body: FutureBuilder(
             future: futureUser,
@@ -338,14 +365,45 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   child: CircularProgressIndicator(),
                 );
               }
-              return Column(
-                children: [
-                  const SizedBox(height: 10),
-                  Center(child: buildBalance()),
-                  const SizedBox(height: 10),
-                  AppPadding(
-                    child: buildWalletSection(context, snapshot.data!),
-                  )
+              return CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  CupertinoSliverRefreshControl(
+                    onRefresh: onRefresh,
+                  ),
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _HeaderDelegate(
+                      child: Container(
+                        color: COLOR_WHITE,
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            Center(child: buildBalance()),
+                            const SizedBox(height: 10),
+                            AppPadding(
+                              child:
+                                  buildWalletSection(context, snapshot.data!),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        buildIWCard(),
+                        const SizedBox(height: 30),
+                      ],
+                    ),
+                  ),
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => buildHistoryItem(context),
+                      childCount: 0,
+                    ),
+                  ),
                 ],
               );
             },
@@ -353,5 +411,28 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         );
       },
     );
+  }
+}
+
+class _HeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _HeaderDelegate({required this.child});
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  double get maxExtent => 200;
+
+  @override
+  double get minExtent => 200;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
   }
 }
