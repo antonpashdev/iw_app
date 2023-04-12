@@ -4,6 +4,7 @@ import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/offer/role_selection_screen.dart';
 import 'package:iw_app/widgets/components/new_member_form.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class OfferNewMemberScreen extends StatefulWidget {
@@ -44,13 +45,19 @@ class _OfferNewMemberScreen extends State<OfferNewMemberScreen> {
       title: 'Offer to a New Member',
       child: Column(
         children: <Widget>[
-          NewMemberForm(
-            title:
-                'Set the terms upon which a new member is invited to join organization',
-            formKey: formKey,
-            member: member,
+          Expanded(
+            child: KeyboardDismissableListView(
+              children: [
+                NewMemberForm(
+                  title:
+                      'Set the terms upon which a new member is invited to join organization',
+                  formKey: formKey,
+                  member: member,
+                ),
+              ],
+            ),
           ),
-          const Spacer(),
+          const SizedBox(height: 10),
           SizedBox(
             width: 290,
             child: ElevatedButton(

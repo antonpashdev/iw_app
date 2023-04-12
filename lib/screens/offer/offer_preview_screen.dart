@@ -228,6 +228,25 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                 ),
               ],
             ),
+          if (widget.member.isAutoContributing!)
+            Column(
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Auto Contribution',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      '${widget.member.hoursPerWeek} hours / week',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+              ],
+            ),
         ],
       ),
     );

@@ -62,7 +62,8 @@ class AssetScreen extends StatelessWidget {
     );
   }
 
-  buildAmount(BuildContext context, String amount, Color color, Color bgColor) {
+  buildAmount(BuildContext context, String title, String amount, Color color,
+      Color bgColor) {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -71,9 +72,9 @@ class AssetScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'Impact Shares',
-            style: TextStyle(
+          Text(
+            title,
+            style: const TextStyle(
               fontWeight: FontWeight.w300,
             ),
           ),
@@ -101,6 +102,7 @@ class AssetScreen extends StatelessWidget {
         Expanded(
           child: buildAmount(
             context,
+            'Impact Shares',
             tokensAmount,
             COLOR_BLUE,
             COLOR_LIGHT_GRAY,
@@ -110,6 +112,7 @@ class AssetScreen extends StatelessWidget {
         Expanded(
           child: buildAmount(
             context,
+            'Equity',
             '$equity%',
             COLOR_GREEN,
             const Color(0xffb2e789).withAlpha(100),

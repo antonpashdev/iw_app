@@ -247,6 +247,25 @@ class _OfferScreenState extends State<OfferScreen> {
                 ),
               ],
             ),
+          if (offer.memberProspect!.isAutoContributing!)
+            Column(
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Auto Contribution',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      '${offer.memberProspect!.hoursPerWeek} hours / week',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+              ],
+            ),
         ],
       ),
     );

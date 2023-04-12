@@ -25,6 +25,9 @@ class NewMemberForm extends StatefulWidget {
 
 class _NewMemberFormState extends State<NewMemberForm> {
   final compensationCtrl = TextEditingController();
+  late final TextEditingController hoursPerWeekCtrl = TextEditingController(
+    text: member.hoursPerWeek!.toString(),
+  );
 
   OrganizationMember get member => widget.member;
   String get title => widget.title;
@@ -47,6 +50,12 @@ class _NewMemberFormState extends State<NewMemberForm> {
     });
   }
 
+  onHoursPerWeekChanged(String value) {
+    setState(() {
+      member.hoursPerWeek = double.tryParse(value) ?? 0;
+    });
+  }
+
   onIsMonthlyCompensatedChanged(bool value) {
     setState(() {
       member.isMonthlyCompensated = value;
@@ -55,7 +64,7 @@ class _NewMemberFormState extends State<NewMemberForm> {
 
   onAutoContributionChanged(bool value) {
     setState(() {
-      member.autoContribution = value;
+      member.isAutoContributing = value;
     });
   }
 
@@ -161,7 +170,7 @@ class _NewMemberFormState extends State<NewMemberForm> {
           const SizedBox(height: 10),
           AppTextFormFieldBordered(
             controller: compensationCtrl,
-            enabled: widget.member.isMonthlyCompensated,
+            enabled: widget.member.isMonthlyCompensated!,
             prefix: const Text('\$'),
             validator: widget.member.isMonthlyCompensated!
                 ? multiValidate([
@@ -205,13 +214,34 @@ class _NewMemberFormState extends State<NewMemberForm> {
                 ],
               ),
               CupertinoSwitch(
-                value: widget.member.autoContribution!,
+                value: widget.member.isAutoContributing!,
                 activeColor: COLOR_GREEN,
                 onChanged: (bool? value) {
                   onAutoContributionChanged(value!);
                 },
               ),
             ],
+          ),
+          const SizedBox(height: 10),
+          AppTextFormFieldBordered(
+            controller: hoursPerWeekCtrl,
+            enabled: widget.member.isAutoContributing!,
+            suffix: Text(AppLocalizations.of(context)!
+                .createOrgMemberScreen_hoursPerWeekLabel),
+            validator: widget.member.isAutoContributing!
+                ? multiValidate([
+                    requiredField(
+                      AppLocalizations.of(context)!
+                          .createOrgMemberScreen_hoursPerWeekLabel,
+                    ),
+                    numberField(
+                      AppLocalizations.of(context)!
+                          .createOrgMemberScreen_hoursPerWeekLabel,
+                    ),
+                    max(112),
+                  ])
+                : (_) => null,
+            onChanged: onHoursPerWeekChanged,
           ),
         ],
       ),
