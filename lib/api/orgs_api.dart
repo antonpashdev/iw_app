@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:iw_app/api/base_api.dart';
+import 'package:iw_app/api/models/org_offers_filter_model.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
@@ -85,6 +86,11 @@ class _OrgsApi extends BaseApi {
 
   Future<Response> getOfferById(String orgId, String offerId) {
     return client.get('/orgs/$orgId/offers/$offerId');
+  }
+
+  Future<Response> getOffers(String orgId, OrgOffersFilter filter) {
+    final params = filter.toMap();
+    return client.get('/orgs/$orgId/offers', queryParameters: params);
   }
 
   Future<Uint8List> getLogo(String url) async {

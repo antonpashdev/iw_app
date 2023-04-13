@@ -7,7 +7,6 @@ import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
-import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -15,11 +14,13 @@ import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 class OfferPreviewScreen extends StatefulWidget {
   final Organization organization;
   final OrganizationMember member;
+  final Offer? offer;
 
   const OfferPreviewScreen({
     Key? key,
     required this.organization,
     required this.member,
+    this.offer,
   }) : super(key: key);
 
   @override
@@ -29,6 +30,12 @@ class OfferPreviewScreen extends StatefulWidget {
 class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
   bool isLoading = false;
   Offer? offer;
+
+  @override
+  initState() {
+    super.initState();
+    offer = widget.offer;
+  }
 
   buildOrganizationSection(BuildContext context) {
     return Row(
@@ -305,15 +312,6 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
         text:
             'app.impactwallet.xyz/offer?i=${offer!.id}&oi=${widget.organization.id}'));
     callSnackBar(context);
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (context.mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-        (route) => false,
-      );
-    }
   }
 
   @override
