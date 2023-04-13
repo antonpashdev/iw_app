@@ -97,7 +97,7 @@ class _UsersApi extends BaseApi {
 
   Future<CreateUserResponse> restoreAccount(String code) async {
     final response =
-        await client.post('/users/$code/restore', data: {'secretLink': code});
+        await client.post('/users/restore', data: {'secretLink': code});
 
     final userResponse = CreateUserResponse.fromJson(response.data);
     return userResponse;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/app_home.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
-import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/screens/offer/offer_screen.dart';
 import 'package:iw_app/screens/offer/sale_offer_screen.dart';
+import 'package:iw_app/screens/restore_account_immidiate_screen.dart';
 import 'package:iw_app/storybook/app_storybook.dart';
 import 'package:iw_app/theme/app_theme.dart';
 
@@ -24,7 +24,7 @@ class App extends StatelessWidget {
         AppStorybook.routeName: (context) => const AppStorybook(),
       },
       onGenerateRoute: (settings) {
-        if (settings.name!.contains(OfferScreen.routeName)) {
+        if (settings.name!.startsWith(OfferScreen.routeName)) {
           final settingsUri = Uri.parse(settings.name!);
           String? offerId = settingsUri.queryParameters['i'];
           String? orgId = settingsUri.queryParameters['oi'];
@@ -34,7 +34,7 @@ class App extends StatelessWidget {
               offerId: offerId!,
             ),
           );
-        } else if (settings.name!.contains(SaleOfferScreen.routeName)) {
+        } else if (settings.name!.startsWith(SaleOfferScreen.routeName)) {
           final settingsUri = Uri.parse(settings.name!);
           String? offerId = settingsUri.queryParameters['i'];
           return MaterialPageRoute(
@@ -42,8 +42,17 @@ class App extends StatelessWidget {
               offerId: offerId!,
             ),
           );
+        } else if (settings.name!
+            .startsWith(RestoreAccountImmidiateScreen.routeName)) {
+          final code = settings.name!
+              .substring(RestoreAccountImmidiateScreen.routeName.length);
+          return MaterialPageRoute(
+            builder: (_) => RestoreAccountImmidiateScreen(
+              code: code,
+            ),
+          );
         }
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        return MaterialPageRoute(builder: (_) => const AppHome());
       },
     );
   }

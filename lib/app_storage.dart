@@ -38,7 +38,7 @@ class _AppStorage {
     }
   }
 
-  write(String key, dynamic value) async {
+  Future write(String key, dynamic value) async {
     try {
       await _storage.write(key: key, value: value.toString());
     } catch (error) {
