@@ -7,6 +7,7 @@ import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/user_model.dart';
+import 'package:iw_app/screens/account/account_details_screen.dart';
 import 'package:iw_app/screens/assets/asset_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details_screen.dart';
@@ -80,8 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<double> fetchBalance() async {
-    final userId = await authApi.userId;
-    final response = await usersApi.getBalance(userId!);
+    final response = await usersApi.getBalance();
     return response.data['balance'];
   }
 
@@ -281,14 +281,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  IconButton(
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return const SettingsSreen();
-                        }));
-                      },
-                      icon: const Icon(Icons.settings_outlined))
                 ],
               );
             },
@@ -300,6 +292,16 @@ class _HomeScreenState extends State<HomeScreen> {
             fontSize: 16,
             color: COLOR_ALMOST_BLACK,
           ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const SettingsSreen();
+                }));
+              },
+              icon: const Icon(Icons.settings_outlined),
+            ),
+          ],
         ),
         body: FutureBuilder(
             future: futureMembers,
@@ -318,28 +320,40 @@ class _HomeScreenState extends State<HomeScreen> {
                   SliverList(
                     delegate: SliverChildListDelegate.fixed(
                       [
-                        AppPadding(
-                          child: FutureBuilder(
-                            future: futureBalance,
-                            builder: (_, snapshot) {
-                              if (!snapshot.hasData) {
-                                return const CircularProgressIndicator
-                                    .adaptive();
-                              }
-                              return Row(
-                                children: [
-                                  Text(
-                                    '\$${snapshot.data!.toStringAsFixed(2)}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium,
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: AppPadding(
+                            child: FutureBuilder(
+                              future: futureBalance,
+                              builder: (_, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return const CircularProgressIndicator
+                                      .adaptive();
+                                }
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                const AccountDetailsScreen()));
+                                  },
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '\$${snapshot.data!.toStringAsFixed(2)}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      const Icon(
+                                          Icons.keyboard_arrow_down_outlined),
+                                    ],
                                   ),
-                                  const SizedBox(width: 10),
-                                  const Icon(
-                                      Icons.keyboard_arrow_down_outlined),
-                                ],
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
                         ),
                         const SizedBox(height: 45),

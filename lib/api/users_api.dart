@@ -1,24 +1,8 @@
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:iw_app/api/base_api.dart';
+import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/models/user_model.dart';
-
-class CreateUserResponse {
-  final String secretLink;
-  final String token;
-
-  const CreateUserResponse({
-    required this.secretLink,
-    required this.token,
-  });
-
-  factory CreateUserResponse.fromJson(Map<String, dynamic> json) {
-    return CreateUserResponse(
-      secretLink: json['secretLink'],
-      token: json['token'],
-    );
-  }
-}
 
 class _UsersApi extends BaseApi {
   // POST create user
@@ -86,8 +70,16 @@ class _UsersApi extends BaseApi {
     return response.data;
   }
 
-  Future<Response> getBalance(String userId) {
-    return client.get('/users/$userId/balance');
+  Future<Response> getBalance() {
+    return client.get('/users/usdc/balance');
+  }
+
+  Future<Response> sendMoney(SendMoneyData data) {
+    final body = {
+      'recipient': data.recipient,
+      'amount': data.amount,
+    };
+    return client.post('/users/usdc/send', data: body);
   }
 
   Future<User?> getUserByNickname(String nickname) async {
@@ -105,7 +97,7 @@ class _UsersApi extends BaseApi {
 
   Future<CreateUserResponse> restoreAccount(String code) async {
     final response =
-        await client.post('/users/$code/restore', data: {'secretLink': code});
+        await client.post('/users/restore', data: {'secretLink': code});
 
     final userResponse = CreateUserResponse.fromJson(response.data);
     return userResponse;
@@ -118,3 +110,20 @@ class _UsersApi extends BaseApi {
 }
 
 final usersApi = _UsersApi();
+
+class CreateUserResponse {
+  final String secretLink;
+  final String token;
+
+  const CreateUserResponse({
+    required this.secretLink,
+    required this.token,
+  });
+
+  factory CreateUserResponse.fromJson(Map<String, dynamic> json) {
+    return CreateUserResponse(
+      secretLink: json['secretLink'],
+      token: json['token'],
+    );
+  }
+}

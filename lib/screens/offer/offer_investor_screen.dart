@@ -7,18 +7,26 @@ import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
-class OfferInvestorScreen extends StatelessWidget {
+class OfferInvestorScreen extends StatefulWidget {
   final Organization organization;
+
+  const OfferInvestorScreen({
+    Key? key,
+    required this.organization,
+  }) : super(key: key);
+
+  @override
+  State<OfferInvestorScreen> createState() => _OfferInvestorScreenState();
+}
+
+class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
   final formKey = GlobalKey<FormState>();
+  String? equityError;
+
   final OrganizationMember memberProspect = OrganizationMember(
     role: MemberRole.Investor,
     investorSettings: InvestorSettings(),
   );
-
-  OfferInvestorScreen({
-    Key? key,
-    required this.organization,
-  }) : super(key: key);
 
   buildForm() {
     return InputForm(
@@ -54,6 +62,7 @@ class OfferInvestorScreen extends StatelessWidget {
           ),
           const SizedBox(height: 15),
           AppTextFormFieldBordered(
+            errorText: equityError,
             prefix: const Text('%'),
             validator: multiValidate([
               requiredField('Equity Allocation'),
@@ -74,14 +83,19 @@ class OfferInvestorScreen extends StatelessWidget {
       return;
     }
     try {
-      Navigator.of(context).push(
+      final equityError = await Navigator.of(context).push<String?>(
         MaterialPageRoute(
           builder: (_) => OfferPreviewScreen(
-            organization: organization,
+            organization: widget.organization,
             member: memberProspect,
           ),
         ),
       );
+      if (equityError != null) {
+        setState(() {
+          this.equityError = equityError;
+        });
+      }
     } catch (err) {
       print(err);
     }

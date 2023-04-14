@@ -29,6 +29,26 @@ String? Function(String?) requiredField(String fieldName) {
   };
 }
 
+String? Function(String?) walletAddres() {
+  return (value) {
+    if (value != null && value.trim().length != 44) {
+      return 'Wallet address is not valid';
+    }
+    return null;
+  };
+}
+
+String? Function(String?) max(double max) {
+  return (value) {
+    if (value != null &&
+        double.tryParse(value) != null &&
+        double.tryParse(value)! > max) {
+      return 'Value must be not greater than $max';
+    }
+    return null;
+  };
+}
+
 String? Function(String?) multiValidate(
   List<String? Function(String?)> validators,
 ) {

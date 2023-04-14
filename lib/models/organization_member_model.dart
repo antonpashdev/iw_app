@@ -16,7 +16,8 @@ class OrganizationMember {
   double? impactRatio;
   bool? isMonthlyCompensated;
   double? monthlyCompensation;
-  bool? autoContribution;
+  bool? isAutoContributing;
+  double? hoursPerWeek;
   dynamic user;
   dynamic org;
   double? contributed;
@@ -29,7 +30,8 @@ class OrganizationMember {
     this.impactRatio = 1,
     this.isMonthlyCompensated = true,
     this.monthlyCompensation,
-    this.autoContribution = false,
+    this.isAutoContributing = false,
+    this.hoursPerWeek = 40,
     this.user,
     this.org,
     this.contributed = 0,
@@ -44,7 +46,8 @@ class OrganizationMember {
     impactRatio = json['impactRatio'];
     isMonthlyCompensated = json['isMonthlyCompensated'];
     monthlyCompensation = json['monthlyCompensation'];
-    autoContribution = json['autoContribution'];
+    isAutoContributing = json['isAutoContributing'];
+    hoursPerWeek = json['hoursPerWeek'];
     user = json['user'] is Map ? User.fromJson(json['user']) : json['user'];
     org = json['org'] is Map ? Organization.fromJson(json['org']) : json['org'];
     contributed = json['contributed'];
@@ -62,7 +65,8 @@ occupation: $occupation
 impactRatio: $impactRatio
 isMonthlyCompensated: $isMonthlyCompensated
 monthlyCompensation: $monthlyCompensation
-autoContribution: $autoContribution
+isAutoContributing: $isAutoContributing
+hoursPerWeek: $hoursPerWeek
 ''';
   }
 
@@ -73,7 +77,8 @@ autoContribution: $autoContribution
       'impactRatio': impactRatio,
       'isMonthlyCompensated': isMonthlyCompensated,
       'monthlyCompensation': monthlyCompensation,
-      'autoContribution': autoContribution,
+      'isAutoContributing': isAutoContributing,
+      'hoursPerWeek': hoursPerWeek,
       'user': user,
       'org': org,
       'investorSettings': investorSettings?.toJson(),

@@ -115,7 +115,10 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Number of Impact Shares'),
+              Text(
+                'Number of Impact Shares',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
               Text(
                 '${saleOffer.tokensAmount}',
                 style: const TextStyle(fontWeight: FontWeight.bold),
@@ -126,7 +129,10 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Equity to Date'),
+              Text(
+                'Equity to Date',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
               Text(
                 '$equity%',
                 style: const TextStyle(
@@ -200,6 +206,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                         ),
                         TextSpan(
                           text: ' ${saleOffer.seller.name}',
+                          style: const TextStyle(color: COLOR_ALMOST_BLACK),
                         ),
                       ],
                     ),
