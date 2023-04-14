@@ -9,6 +9,7 @@ import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
+import 'package:iw_app/screens/organization/members_details_screen.dart';
 import 'package:iw_app/screens/organization/org_settings_screen.dart';
 import 'package:iw_app/screens/organization/receive_money_payment_type_screen.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
@@ -291,14 +292,36 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AppPadding(
-          child: Text(
-            '${members.length} Members',
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge
-                ?.copyWith(fontWeight: FontWeight.bold),
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            AppPadding(
+              child: Text(
+                '${members.length} Members',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+            AppPadding(
+              child: InkWell(
+                child: const Text('View Details',
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: COLOR_BLUE,
+                        fontWeight: FontWeight.w600)),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => OrgMemebersDetails(
+                                memebersWithEquity: members,
+                              )));
+                },
+              ),
+            )
+          ],
         ),
         const SizedBox(height: 15),
         SizedBox(
