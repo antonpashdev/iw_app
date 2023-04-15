@@ -292,20 +292,18 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            AppPadding(
-              child: Text(
+        AppPadding(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
                 '${members.length} Members',
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
-            ),
-            AppPadding(
-              child: InkWell(
+              InkWell(
                 child: const Text('View Details',
                     style: TextStyle(
                         fontSize: 14,
@@ -319,9 +317,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                 memebersWithEquity: members,
                               )));
                 },
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
         const SizedBox(height: 15),
         SizedBox(

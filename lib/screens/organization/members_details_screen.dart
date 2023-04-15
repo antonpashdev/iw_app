@@ -3,6 +3,7 @@ import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
@@ -48,23 +49,28 @@ class MemberDeitails extends StatelessWidget {
         memeberWithEquity.member!.role == MemberRole.Investor;
     Widget avatar = memberAvatar == null
         ? const Icon(Icons.man_2_rounded)
-        : ClipRRect(
-            borderRadius: BorderRadius.circular(10.0),
-            child: Image.network(
-              '${usersApi.baseUrl}$memberAvatar',
-              width: 30.0,
-              height: 30.0,
+        : Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: COLOR_LIGHT_GRAY2,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: FittedBox(
               fit: BoxFit.cover,
+              child: NetworkImageAuth(
+                imageUrl: '${usersApi.baseUrl}$memberAvatar',
+              ),
             ),
           );
-
     const TextStyle defaultDetailDataItemTextStyle = TextStyle(
         color: COLOR_ALMOST_BLACK, fontSize: 16, fontWeight: FontWeight.w500);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 25),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Column(children: [avatar]),
+        avatar,
         Flexible(
           child: Padding(
             padding: const EdgeInsets.only(left: 10),
@@ -122,7 +128,7 @@ class MemberDeitails extends StatelessWidget {
                             data: FutureBuilder(
                               future: memeberWithEquity.futureEquity,
                               builder: (context, snapshot) {
-                                if (snapshot.data == null) {
+                                if (!snapshot.hasData) {
                                   return Container();
                                 }
 
@@ -136,7 +142,7 @@ class MemberDeitails extends StatelessWidget {
                             ))
                       ]),
                   const SizedBox(height: 20),
-                  isLast ? Container() : const Divider()
+                  if (!isLast) const Divider()
                 ]),
           ),
         )
@@ -155,9 +161,11 @@ class DetailDataItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(children: [
       data,
-      Text(title,
-          style: const TextStyle(
-              color: COLOR_GRAY, fontSize: 12, fontWeight: FontWeight.w300))
+      Text(
+        title,
+        style: const TextStyle(
+            color: COLOR_GRAY, fontSize: 12, fontWeight: FontWeight.w300),
+      ),
     ]);
   }
 }
