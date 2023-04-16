@@ -142,7 +142,7 @@ class OrgMemberCard extends StatelessWidget {
         FutureBuilder(
             future: futureOtherMembers,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
+              if (!snapshot.hasData) {
                 return buildMembersShimmer();
               }
               return SizedBox(

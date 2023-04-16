@@ -5,6 +5,7 @@ import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
@@ -179,7 +180,7 @@ class SaleOfferPreviewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenScaffold(
         title: 'Offer to Buy',
-        child: ListView(
+        child: KeyboardDismissableListView(
           children: [
             const SizedBox(height: 20),
             buildDetails(context),

@@ -17,7 +17,7 @@ class SendMoneySuccessScreen<T extends Widget> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: COLOR_WHITE,
+      backgroundColor: APP_BODY_BG,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

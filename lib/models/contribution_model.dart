@@ -1,4 +1,5 @@
 import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/utils/numbers.dart';
 
 class Contribution {
   String? id;
@@ -26,10 +27,10 @@ class Contribution {
     id = json['_id'];
     member = json['member'];
     org = json['org'] is Map ? Organization.fromJson(json['org']) : json['org'];
-    impactRatio = json['impactRatio'];
+    impactRatio = intToDouble(json['impactRatio']);
     stoppedAt = json['stoppedAt'];
     txnHash = json['txnHash'];
-    lamportsEarned = json['lamportsEarned'];
+    lamportsEarned = intToDouble(json['lamportsEarned']);
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
   }

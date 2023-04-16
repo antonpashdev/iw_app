@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
@@ -145,13 +146,14 @@ class _CreateOrgScreenState extends State<CreateOrgScreen> {
         !formKey.currentState!.validate() ||
         isLoading;
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: COLOR_WHITE,
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.createOrgScreen_title),
-        ),
-        body: Column(
+    return Scaffold(
+      backgroundColor: APP_BODY_BG,
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        title: Text(AppLocalizations.of(context)!.createOrgScreen_title),
+      ),
+      body: SafeArea(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(

@@ -6,6 +6,7 @@ import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/assets/send/success_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -230,7 +231,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
         child: Stack(
           children: [
             Positioned.fill(
-              child: ListView(
+              child: KeyboardDismissableListView(
                 children: <Widget>[
                   buildHeader(context),
                   const SizedBox(height: 5),

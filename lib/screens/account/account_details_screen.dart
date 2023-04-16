@@ -329,8 +329,9 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
       future: futureUser,
       builder: (_, snapshot) {
         return Scaffold(
-          backgroundColor: COLOR_WHITE,
+          backgroundColor: APP_BODY_BG,
           appBar: AppBar(
+            systemOverlayStyle: SystemUiOverlayStyle.dark,
             centerTitle: true,
             title: FutureBuilder(
               future: futureUser,

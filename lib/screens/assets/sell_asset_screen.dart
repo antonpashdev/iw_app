@@ -10,6 +10,7 @@ import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/debounce.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
@@ -196,7 +197,7 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
       child: Column(
         children: [
           Expanded(
-            child: ListView(
+            child: KeyboardDismissableListView(
               children: [
                 const SizedBox(height: 10),
                 const Text(

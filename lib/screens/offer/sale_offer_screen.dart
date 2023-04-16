@@ -7,6 +7,7 @@ import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -303,7 +304,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                 child: Column(
                   children: [
                     Expanded(
-                      child: ListView(
+                      child: KeyboardDismissableListView(
                         children: [
                           const SizedBox(height: 20),
                           buildFromDetails(context, snapshot.data as SaleOffer),

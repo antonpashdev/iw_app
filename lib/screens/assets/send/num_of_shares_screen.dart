@@ -8,6 +8,7 @@ import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/debounce.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
@@ -85,7 +86,7 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
         child: Column(
           children: <Widget>[
             Expanded(
-              child: ListView(
+              child: KeyboardDismissableListView(
                 children: [
                   const Text(
                     'Enter number of Impact Shares you want to send',

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
@@ -233,77 +234,78 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: COLOR_WHITE,
-        appBar: AppBar(
-          title: FutureBuilder(
-            future: futureUser,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Container();
-              }
-              final user = snapshot.data;
+    return Scaffold(
+      backgroundColor: APP_BODY_BG,
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        title: FutureBuilder(
+          future: futureUser,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Container();
+            }
+            final user = snapshot.data;
 
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: COLOR_GRAY,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: FittedBox(
-                          fit: BoxFit.cover,
-                          child: user?.avatar != null
-                              ? FutureBuilder(
-                                  future: usersApi.getAvatar(user!.avatar!),
-                                  builder: (_, snapshot) {
-                                    if (!snapshot.hasData) return Container();
-                                    return Image.memory(snapshot.data!);
-                                  })
-                              : const Icon(
-                                  Icons.person,
-                                  color: Color(0xFFBDBDBD),
-                                ),
-                        ),
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: COLOR_GRAY,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      const SizedBox(width: 10),
-                      Text(user?.nickname ?? ''),
-                      const Icon(
-                        Icons.keyboard_arrow_down_outlined,
-                        size: 20,
+                      clipBehavior: Clip.antiAlias,
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: user?.avatar != null
+                            ? FutureBuilder(
+                                future: usersApi.getAvatar(user!.avatar!),
+                                builder: (_, snapshot) {
+                                  if (!snapshot.hasData) return Container();
+                                  return Image.memory(snapshot.data!);
+                                })
+                            : const Icon(
+                                Icons.person,
+                                color: Color(0xFFBDBDBD),
+                              ),
                       ),
-                    ],
-                  ),
-                ],
-              );
-            },
-          ),
-          centerTitle: false,
-          titleTextStyle: const TextStyle(
-            fontFamily: 'SF Pro Display',
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-            color: COLOR_ALMOST_BLACK,
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const SettingsSreen();
-                }));
-              },
-              icon: const Icon(Icons.settings_outlined),
-            ),
-          ],
+                    ),
+                    const SizedBox(width: 10),
+                    Text(user?.nickname ?? ''),
+                    const Icon(
+                      Icons.keyboard_arrow_down_outlined,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
         ),
-        body: FutureBuilder(
+        centerTitle: false,
+        titleTextStyle: const TextStyle(
+          fontFamily: 'SF Pro Display',
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+          color: COLOR_ALMOST_BLACK,
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const SettingsSreen();
+              }));
+            },
+            icon: const Icon(Icons.settings_outlined),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: FutureBuilder(
             future: futureMembers,
             builder: (context, snapshot) {
               if (!snapshot.hasData) {

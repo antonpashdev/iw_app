@@ -5,6 +5,7 @@ import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/screens/login_screen.dart';
+import 'package:iw_app/theme/app_theme.dart';
 
 import 'api/auth_api.dart';
 
@@ -64,8 +65,11 @@ class _AppHomeState extends State<AppHome> {
           return const LoginScreen();
         }
         if (!snapshot.hasData) {
-          return const Center(
-            child: CircularProgressIndicator(),
+          return const Scaffold(
+            backgroundColor: APP_BODY_BG,
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
           );
         }
         if (snapshot.data![0] == null) {
