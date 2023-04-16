@@ -187,9 +187,12 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                 clipBehavior: Clip.antiAlias,
                 child: FittedBox(
                   fit: BoxFit.cover,
-                  child: NetworkImageAuth(
-                    imageUrl: '${usersApi.baseUrl}${saleOffer.seller.avatar!}',
-                  ),
+                  child: saleOffer.seller.avatar != null
+                      ? NetworkImageAuth(
+                          imageUrl:
+                              '${usersApi.baseUrl}${saleOffer.seller.avatar}',
+                        )
+                      : null,
                 ),
               ),
               const SizedBox(width: 10),
