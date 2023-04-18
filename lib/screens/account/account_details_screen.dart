@@ -97,21 +97,6 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     ];
   }
 
-  buildBalance() {
-    return FutureBuilder(
-      future: futureBalance,
-      builder: (_, snapshot) {
-        if (!snapshot.hasData) {
-          return const CircularProgressIndicator.adaptive();
-        }
-        return Text(
-          '\$${snapshot.data!.toStringAsFixed(2)}',
-          style: Theme.of(context).textTheme.headlineLarge,
-        );
-      },
-    );
-  }
-
   callSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -323,6 +308,38 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     return Future.wait([futureUser, futureBalance]);
   }
 
+  buildHeader(User user, double? balance) {
+    return SliverPersistentHeader(
+      key: Key(balance != null ? balance.toString() : 'na'),
+      pinned: true,
+      delegate: _HeaderDelegate(
+        child: Container(
+          color: COLOR_WHITE,
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              Center(
+                child: balance == null
+                    ? const CircularProgressIndicator.adaptive()
+                    : Text(
+                        '\$${balance.toStringAsFixed(2)}',
+                        style: Theme.of(context).textTheme.headlineLarge,
+                      ),
+              ),
+              const SizedBox(height: 10),
+              AppPadding(
+                child: buildWalletSection(
+                  context,
+                  user,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -366,30 +383,18 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   child: CircularProgressIndicator(),
                 );
               }
+              final user = snapshot.data as User;
               return CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
                   CupertinoSliverRefreshControl(
                     onRefresh: onRefresh,
                   ),
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _HeaderDelegate(
-                      child: Container(
-                        color: COLOR_WHITE,
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 10),
-                            Center(child: buildBalance()),
-                            const SizedBox(height: 10),
-                            AppPadding(
-                              child:
-                                  buildWalletSection(context, snapshot.data!),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  FutureBuilder(
+                    future: futureBalance,
+                    builder: (_, snapshot) {
+                      return buildHeader(user, snapshot.data);
+                    },
                   ),
                   SliverToBoxAdapter(
                     child: Column(
