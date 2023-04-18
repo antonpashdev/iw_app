@@ -107,6 +107,10 @@ class _UsersApi extends BaseApi {
     return client.post('/users/assets/$orgId/send',
         data: {'recipientId': recipientId, 'amount': amount});
   }
+
+  Future<Response> getUsdcHistory() {
+    return client.get('/users/usdc/history');
+  }
 }
 
 final usersApi = _UsersApi();

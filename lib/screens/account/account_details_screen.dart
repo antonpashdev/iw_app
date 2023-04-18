@@ -5,10 +5,16 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/models/txn_history_item_model.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/datetime.dart';
+import 'package:iw_app/widgets/list/generic_list_tile.dart';
+import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
+
+const LAMPORTS_PER_USDC = 1000000;
 
 class AccountDetailsScreen extends StatefulWidget {
   const AccountDetailsScreen({Key? key}) : super(key: key);
@@ -20,11 +26,13 @@ class AccountDetailsScreen extends StatefulWidget {
 class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   late Future<User?> futureUser;
   late Future<double> futureBalance;
+  late Future<List<TxnHistoryItem>> futureHistory;
 
   @override
   void initState() {
     futureUser = fetchUser();
     futureBalance = fetchBalance();
+    futureHistory = fetchHistory();
     super.initState();
   }
 
@@ -41,6 +49,15 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   Future<double> fetchBalance() async {
     final response = await usersApi.getBalance();
     return response.data['balance'];
+  }
+
+  Future<List<TxnHistoryItem>> fetchHistory() async {
+    final response = await usersApi.getUsdcHistory();
+    final List<TxnHistoryItem> history = [];
+    for (final item in response.data) {
+      history.add(TxnHistoryItem.fromJson(item));
+    }
+    return history;
   }
 
   buildTitleShimmer() {
@@ -234,15 +251,25 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
           child: Stack(
             children: [
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(15),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset('assets/images/iw_card.png', width: 50),
+                    SizedBox(
+                      width: 125,
+                      height: 85,
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: Image.asset(
+                          'assets/images/iw_card.png',
+                        ),
+                      ),
+                    ),
                     const SizedBox(width: 15),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        const SizedBox(height: 10),
                         FutureBuilder(
                           future: futureBalance,
                           builder: (_, snapshot) {
@@ -277,8 +304,8 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                 ),
               ),
               Positioned(
-                bottom: 20,
-                right: 20,
+                bottom: 25,
+                left: 155,
                 child: Text(
                   'Coming Soon...',
                   style: Theme.of(context)
@@ -294,9 +321,73 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     );
   }
 
-  buildHistoryItem(BuildContext context) {
+  buildHistoryItem(
+      BuildContext context, TxnHistoryItem item, TxnHistoryItem? prevItem) {
+    final sign = item.amount != null && item.amount! < 0 ? '-' : '+';
+    final color = item.amount != null && item.amount! < 0
+        ? COLOR_ALMOST_BLACK
+        : COLOR_GREEN;
+    final amount = item.amount != null
+        ? '$sign \$${(item.amount!.abs() / LAMPORTS_PER_USDC).toStringAsFixed(2)} USDC'
+        : '-';
+    final title = item.addressOrUsername!.length == 44
+        ? item.addressOrUsername!.replaceRange(4, 40, '...')
+        : item.addressOrUsername!;
+    final icon = Icon(
+      item.amount != null && item.amount! < 0
+          ? Icons.arrow_outward_rounded
+          : Icons.arrow_downward_rounded,
+      size: 12,
+      color: COLOR_WHITE,
+    );
+    final primaryColor = item.amount != null && item.amount! < 0
+        ? COLOR_ALMOST_BLACK
+        : COLOR_BLUE;
+    final processedAt = item.processedAt != null
+        ? DateTime.fromMillisecondsSinceEpoch(item.processedAt!)
+        : DateTime.now();
+    final processedAtStr = getFormattedDate(processedAt);
+    bool shouldDisplayDate = true;
+    if (prevItem != null) {
+      final prevProcessedAt = prevItem.processedAt != null
+          ? DateTime.fromMillisecondsSinceEpoch(prevItem.processedAt!)
+          : DateTime.now();
+      final prevProcessedAtStr = getFormattedDate(prevProcessedAt);
+      shouldDisplayDate = prevProcessedAtStr != processedAtStr;
+    }
     return AppPadding(
-      child: Container(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (shouldDisplayDate)
+            Column(
+              children: [
+                Text(
+                  processedAtStr,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: COLOR_GRAY,
+                      ),
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          GenericListTile(
+            title: title,
+            subtitle: item.description,
+            image: item.img != null
+                ? NetworkImageAuth(imageUrl: '${usersApi.baseUrl}${item.img}')
+                : Image.asset('assets/images/avatar_placeholder.png'),
+            trailing: Text(
+              amount,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: color,
+                  ),
+            ),
+            icon: icon,
+            primaryColor: primaryColor,
+          ),
+        ],
+      ),
     );
   }
 
@@ -304,8 +395,9 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     setState(() {
       futureUser = fetchUser();
       futureBalance = fetchBalance();
+      futureHistory = fetchHistory();
     });
-    return Future.wait([futureUser, futureBalance]);
+    return Future.wait([futureUser, futureBalance, futureHistory]);
   }
 
   buildHeader(User user, double? balance) {
@@ -404,11 +496,32 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                       ],
                     ),
                   ),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => buildHistoryItem(context),
-                      childCount: 0,
-                    ),
+                  FutureBuilder(
+                    future: futureHistory,
+                    builder: (_, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const SliverToBoxAdapter(
+                          child: Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          ),
+                        );
+                      }
+                      return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => Column(
+                            children: [
+                              buildHistoryItem(
+                                context,
+                                snapshot.data![index],
+                                index > 0 ? snapshot.data![index - 1] : null,
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                          childCount: snapshot.data!.length,
+                        ),
+                      );
+                    },
                   ),
                 ],
               );
