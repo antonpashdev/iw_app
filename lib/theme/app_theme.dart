@@ -133,6 +133,7 @@ const Color COLOR_BLUE = Color(0xff1D55E4);
 const Color COLOR_RED = Color(0xffD02626);
 const Color COLOR_ORANGE = Color(0xffECA240);
 const Color COLOR_CORAL = Color(0xff3EA592);
+const Color COLOR_PURPLE = Color(0xff934BAE);
 
 const Color APP_BODY_BG = COLOR_WHITE;
 const Color BTN_BLUE_BG = COLOR_BLUE;

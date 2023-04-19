@@ -111,6 +111,10 @@ class _UsersApi extends BaseApi {
   Future<Response> getUsdcHistory() {
     return client.get('/users/usdc/history');
   }
+
+  Future<Response> getAssetHistory(String orgId) {
+    return client.get('/users/assets/$orgId/history');
+  }
 }
 
 final usersApi = _UsersApi();
