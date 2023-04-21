@@ -10,7 +10,7 @@ import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
-import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/utils/app_padding.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
 RegExp trimZeroesRegExp = RegExp(r'([.]*0+)(?!.*\d)');
@@ -218,130 +218,140 @@ class _AssetScreenState extends State<AssetScreen> {
       final prevProcessedAtStr = getFormattedDate(prevProcessedAt);
       shouldDisplayDate = prevProcessedAtStr != processedAtStr;
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (shouldDisplayDate)
-          Column(
-            children: [
-              Text(
-                processedAtStr,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: COLOR_GRAY,
-                    ),
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
-        GenericListTile(
-          title: title,
-          subtitle: item.description,
-          image: item.img != null
-              ? NetworkImageAuth(imageUrl: '${usersApi.baseUrl}${item.img}')
-              : Image.asset('assets/images/avatar_placeholder.png'),
-          trailingText: Text(
-            amount,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: COLOR_WHITE,
+    return AppPadding(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (shouldDisplayDate)
+            Column(
+              children: [
+                Text(
+                  processedAtStr,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: COLOR_GRAY,
+                      ),
                 ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          GenericListTile(
+            title: title,
+            subtitle: item.description,
+            image: item.img != null
+                ? NetworkImageAuth(imageUrl: '${usersApi.baseUrl}${item.img}')
+                : Image.asset('assets/images/avatar_placeholder.png'),
+            trailingText: Text(
+              amount,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: COLOR_WHITE,
+                  ),
+            ),
+            icon: icon,
+            primaryColor: primaryColor,
           ),
-          icon: icon,
-          primaryColor: primaryColor,
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return ScreenScaffold(
-      title: 'Asset',
-      child: FutureBuilder(
-          future: futureEquity,
-          builder: (context, snapshot) {
-            return Column(
-              children: [
-                Expanded(
-                  child: CustomScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    slivers: [
-                      CupertinoSliverRefreshControl(
-                        onRefresh: onRefresh,
-                      ),
-                      SliverPersistentHeader(
-                        pinned: true,
-                        delegate: _HeaderDelegate(
-                          equity: snapshot.data,
-                          child: Container(
-                            color: COLOR_WHITE,
+    return Scaffold(
+      backgroundColor: APP_BODY_BG,
+      appBar: AppBar(title: const Text('Asset')),
+      body: SafeArea(
+        child: FutureBuilder(
+            future: futureEquity,
+            builder: (context, snapshot) {
+              return Column(
+                children: [
+                  Expanded(
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        CupertinoSliverRefreshControl(
+                          onRefresh: onRefresh,
+                        ),
+                        SliverPersistentHeader(
+                          pinned: true,
+                          delegate: _HeaderDelegate(
+                            equity: snapshot.data,
+                            child: Container(
+                              color: COLOR_WHITE,
+                              child: AppPadding(
+                                child: Column(
+                                  children: [
+                                    const SizedBox(height: 10),
+                                    buildHeader(context),
+                                    const SizedBox(height: 20),
+                                    buildAmounts(context, snapshot.data),
+                                    const SizedBox(height: 20),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: AppPadding(
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const SizedBox(height: 10),
-                                buildHeader(context),
-                                const SizedBox(height: 20),
-                                buildAmounts(context, snapshot.data),
-                                const SizedBox(height: 20),
+                                Text(
+                                  'Activity',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                ),
+                                const SizedBox(height: 30),
                               ],
                             ),
                           ),
                         ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Activity',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                            ),
-                            const SizedBox(height: 30),
-                          ],
-                        ),
-                      ),
-                      FutureBuilder(
-                        future: futureHistory,
-                        builder: (_, snapshot) {
-                          if (!snapshot.hasData) {
-                            return const SliverToBoxAdapter(
-                              child: Center(
-                                child: CircularProgressIndicator.adaptive(),
+                        FutureBuilder(
+                          future: futureHistory,
+                          builder: (_, snapshot) {
+                            if (!snapshot.hasData) {
+                              return const SliverToBoxAdapter(
+                                child: Center(
+                                  child: CircularProgressIndicator.adaptive(),
+                                ),
+                              );
+                            }
+                            return SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) => Column(
+                                  children: [
+                                    buildHistoryItem(
+                                      context,
+                                      snapshot.data![index],
+                                      index > 0
+                                          ? snapshot.data![index - 1]
+                                          : null,
+                                    ),
+                                    const SizedBox(height: 20),
+                                  ],
+                                ),
+                                childCount: snapshot.data!.length,
                               ),
                             );
-                          }
-                          return SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                              (context, index) => Column(
-                                children: [
-                                  buildHistoryItem(
-                                    context,
-                                    snapshot.data![index],
-                                    index > 0
-                                        ? snapshot.data![index - 1]
-                                        : null,
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
-                              ),
-                              childCount: snapshot.data!.length,
-                            ),
-                          );
-                        },
-                      ),
-                    ],
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed:
-                            widget.memberWithEquity.equity!.lamportsEarned == 0
+                  const SizedBox(height: 10),
+                  AppPadding(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: widget.memberWithEquity.equity!
+                                        .lamportsEarned ==
+                                    0
                                 ? null
                                 : () {
                                     Navigator.push(
@@ -355,37 +365,42 @@ class _AssetScreenState extends State<AssetScreen> {
                                                 member: widget.memberWithEquity
                                                     .member!)));
                                   },
-                        child: const Text('Send Asset'),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: widget
-                                    .memberWithEquity.equity!.lamportsEarned ==
-                                0
-                            ? null
-                            : () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (_) => SellAssetScreen(
-                                          organization: widget
-                                              .memberWithEquity.member!.org,
-                                          member:
-                                              widget.memberWithEquity.member!,
-                                        )));
-                              },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: COLOR_BLUE,
+                            child: const Text('Send Asset'),
+                          ),
                         ),
-                        child: const Text('Sell Asset'),
-                      ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: widget.memberWithEquity.equity!
+                                        .lamportsEarned ==
+                                    0
+                                ? null
+                                : () {
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: (_) => SellAssetScreen(
+                                                  organization: widget
+                                                      .memberWithEquity
+                                                      .member!
+                                                      .org,
+                                                  member: widget
+                                                      .memberWithEquity.member!,
+                                                )));
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: COLOR_BLUE,
+                            ),
+                            child: const Text('Sell Asset'),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ],
-            );
-          }),
+                  ),
+                ],
+              );
+            }),
+      ),
     );
   }
 }
