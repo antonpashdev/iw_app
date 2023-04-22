@@ -92,7 +92,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                         color: COLOR_BLUE, fontWeight: FontWeight.w600)),
                 const SizedBox(width: 3),
                 Text(
-                  widget.receiver.name,
+                  widget.receiver.name!,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -219,7 +219,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
             builder: (_) => SuccessScreen(
                   sharesSent: widget.tokens,
                   orgName: widget.member.org.name,
-                  receiverNickName: widget.receiver.nickname,
+                  receiverNickName: widget.receiver.nickname!,
                 )),
         (route) => false);
   }

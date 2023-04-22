@@ -128,6 +128,10 @@ class _OrgsApi extends BaseApi {
     };
     return client.post('/orgs/$orgId/usdc/send', data: body);
   }
+
+  Future<Response> getOrgEventsHistory(String orgId) {
+    return client.get('/orgs/$orgId/history');
+  }
 }
 
 final orgsApi = _OrgsApi();

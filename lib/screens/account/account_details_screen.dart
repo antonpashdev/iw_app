@@ -108,7 +108,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
       ),
       const SizedBox(width: 10),
       Text(
-        user.nickname,
+        user.nickname!,
         style: const TextStyle(fontWeight: FontWeight.normal),
       ),
     ];
