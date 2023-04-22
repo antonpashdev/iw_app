@@ -29,7 +29,7 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
               Expanded(
-                flex: 4,
+                flex: 6,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -57,7 +57,7 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
               Flexible(
-                flex: 2,
+                flex: 3,
                 child: Container(
                   constraints: const BoxConstraints(maxWidth: 300),
                   width: double.infinity,

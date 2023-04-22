@@ -504,7 +504,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           image: item.user?.avatar != null
               ? NetworkImageAuth(
                   imageUrl: '${usersApi.baseUrl}${item.user?.avatar}')
-              : SvgPicture.asset('assets/images/avatar_placeholder.svg'),
+              : Image.asset('assets/images/avatar_placeholder.png'),
           trailingText: trailingText,
           primaryColor: primaryColor,
           icon: icon,

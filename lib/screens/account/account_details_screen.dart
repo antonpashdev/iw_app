@@ -376,7 +376,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
             subtitle: item.description,
             image: item.img != null
                 ? NetworkImageAuth(imageUrl: '${usersApi.baseUrl}${item.img}')
-                : SvgPicture.asset('assets/images/avatar_placeholder.svg'),
+                : Image.asset('assets/images/avatar_placeholder.png'),
             trailing: Text(
               amount,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(

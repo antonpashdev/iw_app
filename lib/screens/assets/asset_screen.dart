@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/organization_member_model.dart';
@@ -240,7 +239,7 @@ class _AssetScreenState extends State<AssetScreen> {
             subtitle: item.description,
             image: item.img != null
                 ? NetworkImageAuth(imageUrl: '${usersApi.baseUrl}${item.img}')
-                : SvgPicture.asset('assets/images/avatar_placeholder.svg'),
+                : Image.asset('assets/images/avatar_placeholder.png'),
             trailingText: Text(
               amount,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
@@ -398,6 +397,7 @@ class _AssetScreenState extends State<AssetScreen> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 20),
                 ],
               );
             }),
