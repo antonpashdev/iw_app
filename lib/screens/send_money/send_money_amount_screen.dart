@@ -3,6 +3,7 @@ import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/screens/send_money/send_money_preview_screen.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class SendMoneyAmountScreen<T extends Widget> extends StatelessWidget {
@@ -40,7 +41,7 @@ class SendMoneyAmountScreen<T extends Widget> extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: ListView(
+              child: KeyboardDismissableListView(
                 children: [
                   const SizedBox(height: 40),
                   InputForm(

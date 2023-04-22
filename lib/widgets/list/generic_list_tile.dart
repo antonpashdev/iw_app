@@ -7,6 +7,7 @@ class GenericListTile extends StatelessWidget {
   final String? subtitle;
   final Widget? image;
   final Text? trailingText;
+  final Widget? trailing;
   final VoidCallback? trailingOnTap;
   final Color primaryColor;
   final Widget? icon;
@@ -17,6 +18,7 @@ class GenericListTile extends StatelessWidget {
     this.subtitle,
     this.image,
     this.trailingText,
+    this.trailing,
     this.trailingOnTap,
     this.primaryColor = COLOR_GRAY,
     this.icon,
@@ -46,7 +48,7 @@ class GenericListTile extends StatelessWidget {
                             height: 50,
                             decoration: BoxDecoration(
                               color: COLOR_GRAY,
-                              borderRadius: BorderRadius.circular(18),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             clipBehavior: Clip.antiAlias,
                             child: FittedBox(
@@ -89,6 +91,8 @@ class GenericListTile extends StatelessWidget {
                       if (subtitle != null)
                         Text(
                           subtitle!,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style:
                               Theme.of(context).textTheme.bodySmall?.copyWith(
                                     fontWeight: FontWeight.w400,
@@ -102,7 +106,12 @@ class GenericListTile extends StatelessWidget {
               ],
             ),
           ),
-          if (trailingText != null)
+          if (trailing != null)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: padding),
+              child: trailing,
+            ),
+          if (trailing == null && trailingText != null)
             Padding(
               padding: EdgeInsets.symmetric(horizontal: padding),
               child: ElevatedButton(

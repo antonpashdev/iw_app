@@ -10,6 +10,7 @@ import 'package:iw_app/screens/offer/offer_preview_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/gray_button.dart';
 import 'package:iw_app/widgets/list/generic_list_tile.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
@@ -171,7 +172,7 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
   Widget build(BuildContext context) {
     return ScreenScaffold(
       title: 'Organization Info',
-      child: ListView(
+      child: KeyboardDismissableListView(
         children: [
           buildHeader(context),
           const SizedBox(height: 20),

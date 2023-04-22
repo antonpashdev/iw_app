@@ -5,6 +5,7 @@ import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class RestoreAccountScreen extends StatefulWidget {
@@ -81,57 +82,64 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
     return ScreenScaffold(
       title: 'Restore Account',
       child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            const Text('Paste your secret link to access to your Impact Wallet',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: COLOR_ALMOST_BLACK)),
-            const SizedBox(height: 35),
-            AppTextFormFieldBordered(
-              maxLines: 6,
-              minLines: 6,
-              autofocus: true,
-              onChanged: (value) {
-                setState(() {
-                  _restoreLink = value;
-                });
-                validateSecretLink(value);
-              },
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Expanded(
+            child: KeyboardDismissableListView(
               children: [
-                Text(getValidationStatusText(),
-                    style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                const Text(
+                    'Paste your secret link to access to your Impact Wallet',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
                         color: COLOR_ALMOST_BLACK)),
-                const SizedBox(width: 5),
-                SvgPicture.asset(getValidationStatusIcon()),
+                const SizedBox(height: 35),
+                AppTextFormFieldBordered(
+                  maxLines: 6,
+                  minLines: 6,
+                  autofocus: true,
+                  onChanged: (value) {
+                    setState(() {
+                      _restoreLink = value;
+                    });
+                    validateSecretLink(value);
+                  },
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(getValidationStatusText(),
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: COLOR_ALMOST_BLACK)),
+                    const SizedBox(width: 5),
+                    SvgPicture.asset(getValidationStatusIcon()),
+                  ],
+                ),
               ],
             ),
-            const SizedBox(height: 45),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 240,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        String? code = getSecretTokenFromSecretLink();
-                        if (code != null && isLinkValid) {
-                          restoreAccount(code);
-                        }
-                      },
-                      child: const Text('Restore My Account')),
-                )
-              ],
-            ),
-          ]),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 290,
+                child: ElevatedButton(
+                    onPressed: () {
+                      String? code = getSecretTokenFromSecretLink();
+                      if (code != null && isLinkValid) {
+                        restoreAccount(code);
+                      }
+                    },
+                    child: const Text('Restore My Account')),
+              )
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

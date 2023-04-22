@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:iw_app/models/organization_member_model.dart';
+import 'package:iw_app/utils/numbers.dart';
 
 class Organization {
   String? id;
@@ -32,7 +33,7 @@ class Organization {
     description = json['description'];
     logo = json['logo'];
     wallet = json['wallet'];
-    lamportsMinted = json['lamportsMinted'];
+    lamportsMinted = intToDouble(json['lamportsMinted']);
   }
 
   @override

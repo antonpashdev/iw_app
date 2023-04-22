@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:iw_app/theme/app_theme.dart';
 
 class ScreenScaffold extends StatelessWidget {
   final Widget child;
@@ -12,12 +14,14 @@ class ScreenScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-        ),
-        body: Padding(
+    return Scaffold(
+      backgroundColor: APP_BODY_BG,
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        title: Text(title),
+      ),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
           child: child,
         ),

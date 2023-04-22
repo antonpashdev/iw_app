@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/api/orgs_api.dart';
@@ -14,6 +15,7 @@ import 'package:iw_app/screens/organization/org_settings_screen.dart';
 import 'package:iw_app/screens/organization/receive_money_payment_type_screen.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/numbers.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -71,7 +73,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
 
   Future<double> fetchBalance(String orgId) async {
     final response = await orgsApi.getBalance(orgId);
-    return response.data['balance'];
+    return intToDouble(response.data['balance'])!;
   }
 
   Future onRefresh() {
@@ -468,109 +470,110 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: FutureBuilder<List<dynamic>>(
-          future: Future.wait([
-            futureOrg,
-            futureMembers,
-          ]),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Scaffold(
-                backgroundColor: COLOR_WHITE,
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
-            return Scaffold(
-              backgroundColor: COLOR_WHITE,
-              appBar: AppBar(
-                title: Text('@${snapshot.data?[0].username}'),
-                actions: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => OrgSettingsScreen(
-                            organization: snapshot.data![0],
-                          ),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.settings_outlined),
-                  ),
-                ],
+    return FutureBuilder<List<dynamic>>(
+      future: Future.wait([
+        futureOrg,
+        futureMembers,
+      ]),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Scaffold(
+            backgroundColor: APP_BODY_BG,
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return Scaffold(
+          backgroundColor: APP_BODY_BG,
+          appBar: AppBar(
+            systemOverlayStyle: SystemUiOverlayStyle.dark,
+            title: Text('@${snapshot.data?[0].username}'),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => OrgSettingsScreen(
+                        organization: snapshot.data![0],
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.settings_outlined),
               ),
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: CustomScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            slivers: [
-                              CupertinoSliverRefreshControl(
-                                onRefresh: onRefresh,
+            ],
+          ),
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: CustomScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          slivers: [
+                            CupertinoSliverRefreshControl(
+                              onRefresh: onRefresh,
+                            ),
+                            SliverList(
+                              delegate: SliverChildListDelegate.fixed(
+                                [
+                                  const SizedBox(height: 20),
+                                  AppPadding(
+                                    child:
+                                        buildHeader(context, snapshot.data?[0]),
+                                  ),
+                                  const SizedBox(height: 25),
+                                  AppPadding(
+                                    child: buildDetails(
+                                        context, snapshot.data?[0]),
+                                  ),
+                                  const SizedBox(height: 60),
+                                  buildMembers(context, snapshot.data?[0],
+                                      snapshot.data?[1]),
+                                  const SizedBox(height: 50),
+                                  AppPadding(
+                                    child:
+                                        buildPulse(context, snapshot.data?[0]),
+                                  ),
+                                  const SizedBox(height: 90),
+                                ],
                               ),
-                              SliverList(
-                                delegate: SliverChildListDelegate.fixed(
-                                  [
-                                    const SizedBox(height: 20),
-                                    AppPadding(
-                                      child: buildHeader(
-                                          context, snapshot.data?[0]),
-                                    ),
-                                    const SizedBox(height: 25),
-                                    AppPadding(
-                                      child: buildDetails(
-                                          context, snapshot.data?[0]),
-                                    ),
-                                    const SizedBox(height: 60),
-                                    buildMembers(context, snapshot.data?[0],
-                                        snapshot.data?[1]),
-                                    const SizedBox(height: 50),
-                                    AppPadding(
-                                      child: buildPulse(
-                                          context, snapshot.data?[0]),
-                                    ),
-                                    const SizedBox(height: 90),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 10),
-                        Positioned(
-                          bottom: 30,
-                          left: 0,
-                          right: 0,
-                          child: Center(
-                            child: SizedBox(
-                              width: 290,
-                              child: ElevatedButton(
-                                onPressed: isLoading ||
-                                        widget.member.role ==
-                                            MemberRole.Investor
-                                    ? null
-                                    : handleStartContributingPressed,
-                                child: isLoading
-                                    ? const Center(
-                                        child: CircularProgressIndicator
-                                            .adaptive())
-                                    : const Text('Start Contributing'),
-                              ),
+                      ),
+                      const SizedBox(height: 10),
+                      Positioned(
+                        bottom: 30,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: SizedBox(
+                            width: 290,
+                            child: ElevatedButton(
+                              onPressed: isLoading ||
+                                      widget.member.role == MemberRole.Investor
+                                  ? null
+                                  : handleStartContributingPressed,
+                              child: isLoading
+                                  ? const Center(
+                                      child:
+                                          CircularProgressIndicator.adaptive())
+                                  : const Text('Start Contributing'),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          }),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
@@ -219,13 +220,14 @@ class ContributionDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: COLOR_WHITE,
-        appBar: AppBar(
-          title: const Text('Contribution'),
-        ),
-        body: Padding(
+    return Scaffold(
+      backgroundColor: APP_BODY_BG,
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        title: const Text('Contribution'),
+      ),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

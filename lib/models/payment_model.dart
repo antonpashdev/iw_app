@@ -1,3 +1,5 @@
+import 'package:iw_app/utils/numbers.dart';
+
 class Payment {
   dynamic org;
   double? amount;
@@ -7,7 +9,7 @@ class Payment {
 
   Payment.fromJson(Map<String, dynamic> json) {
     org = json['org'];
-    amount = json['amount'];
+    amount = intToDouble(json['amount']);
     cpPaymentUrl = json['cpPaymentUrl'];
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_model.dart';
@@ -105,8 +106,9 @@ class _CreateOrgSettingsScreenState extends State<CreateOrgSettingsScreen> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: COLOR_WHITE,
+        backgroundColor: APP_BODY_BG,
         appBar: AppBar(
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
           title: Text(
             AppLocalizations.of(context)!.createOrgSettingsScreen_title,
           ),

@@ -8,6 +8,7 @@ import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -350,7 +351,7 @@ class _OfferScreenState extends State<OfferScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: ListView(
+                  child: KeyboardDismissableListView(
                     children: [
                       buildOrganizationSection(context, snapshot.data!),
                       const SizedBox(height: 20),

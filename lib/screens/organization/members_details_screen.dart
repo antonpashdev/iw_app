@@ -45,7 +45,7 @@ class MemberDeitails extends StatelessWidget {
   Widget build(BuildContext context) {
     final User user = memeberWithEquity.member!.user;
     String? memberAvatar = user.avatar;
-    bool isMemeberRoleInvestor =
+    bool isMemberRoleInvestor =
         memeberWithEquity.member!.role == MemberRole.Investor;
     Widget avatar = memberAvatar == null
         ? const Icon(Icons.man_2_rounded)
@@ -89,7 +89,7 @@ class MemberDeitails extends StatelessWidget {
                                   fontWeight: FontWeight.w500,
                                   fontSize: 16)),
                           Text(
-                            ' / ${memeberWithEquity.member!.occupation}',
+                            ' / ${isMemberRoleInvestor ? "Investor" : memeberWithEquity.member!.occupation}',
                             style: const TextStyle(
                                 color: COLOR_GRAY,
                                 fontWeight: FontWeight.w400,
@@ -104,16 +104,16 @@ class MemberDeitails extends StatelessWidget {
                         DetailDataItem(
                             title: 'Contr.',
                             data: Text(
-                                isMemeberRoleInvestor
-                                    ? '\$${memeberWithEquity.member!.contributed!.toStringAsFixed(2)}'
+                                isMemberRoleInvestor
+                                    ? '\$${memeberWithEquity.member!.investorSettings!.investmentAmount!.toStringAsFixed(2)}'
                                     : '${memeberWithEquity.member!.contributed!.toStringAsFixed(2)}h',
                                 style: defaultDetailDataItemTextStyle)),
                         DetailDataItem(
                             title:
-                                isMemeberRoleInvestor ? 'Allocation' : 'Ratio',
+                                isMemberRoleInvestor ? 'Allocation' : 'Ratio',
                             data: Text(
-                                isMemeberRoleInvestor
-                                    ? '${memeberWithEquity.member!.investorSettings!.equityAllocation}'
+                                isMemberRoleInvestor
+                                    ? '${memeberWithEquity.member!.investorSettings!.equityAllocation}%'
                                     : '${memeberWithEquity.member!.impactRatio}x',
                                 style: defaultDetailDataItemTextStyle)),
                         DetailDataItem(

@@ -1,6 +1,7 @@
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/utils/common.dart';
+import 'package:iw_app/utils/numbers.dart';
 
 enum MemberRole {
   Member,
@@ -43,14 +44,14 @@ class OrganizationMember {
     id = json['_id'];
     occupation = json['occupation'];
     role = CommonUtils.stringToEnum(json['role'], MemberRole.values);
-    impactRatio = json['impactRatio'];
+    impactRatio = intToDouble(json['impactRatio']);
     isMonthlyCompensated = json['isMonthlyCompensated'];
-    monthlyCompensation = json['monthlyCompensation'];
+    monthlyCompensation = intToDouble(json['monthlyCompensation']);
     isAutoContributing = json['isAutoContributing'];
-    hoursPerWeek = json['hoursPerWeek'];
+    hoursPerWeek = intToDouble(json['hoursPerWeek']);
     user = json['user'] is Map ? User.fromJson(json['user']) : json['user'];
     org = json['org'] is Map ? Organization.fromJson(json['org']) : json['org'];
-    contributed = json['contributed'];
+    contributed = intToDouble(json['contributed']);
     lamportsEarned = json['lamportsEarned'];
     investorSettings = json['investorSettings'] is Map
         ? InvestorSettings.fromJson(json['investorSettings'])
@@ -140,8 +141,8 @@ class InvestorSettings {
   });
 
   InvestorSettings.fromJson(Map<String, dynamic> json) {
-    investmentAmount = json['investmentAmount'];
-    equityAllocation = json['equityAllocation'];
+    investmentAmount = intToDouble(json['investmentAmount']);
+    equityAllocation = intToDouble(json['equityAllocation']);
   }
 
   Map<String, dynamic> toJson() {

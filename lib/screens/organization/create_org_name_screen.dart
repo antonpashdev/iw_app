@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/organization/create_org_settings_screen.dart';
@@ -144,8 +145,9 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: COLOR_WHITE,
+        backgroundColor: APP_BODY_BG,
         appBar: AppBar(
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
           title: Text(AppLocalizations.of(context)!.createOrgNameScreen_title),
         ),
         body: Column(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/screens/send_money/send_money_success_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class SendMoneyPreviewScreen<T extends Widget> extends StatefulWidget {
@@ -98,7 +99,7 @@ class _SendMoneyPreviewScreenState extends State<SendMoneyPreviewScreen> {
         child: Stack(
           children: [
             Positioned.fill(
-              child: ListView(
+              child: KeyboardDismissableListView(
                 children: [
                   const SizedBox(height: 20),
                   Center(

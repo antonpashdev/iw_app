@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
@@ -75,15 +76,16 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: COLOR_WHITE,
-        appBar: AppBar(
-          title: Text(
-            AppLocalizations.of(context)!.createOrgMemberScreen_title,
-          ),
+    return Scaffold(
+      backgroundColor: APP_BODY_BG,
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        title: Text(
+          AppLocalizations.of(context)!.createOrgMemberScreen_title,
         ),
-        body: Column(
+      ),
+      body: SafeArea(
+        child: Column(
           children: [
             Expanded(
               child: KeyboardDismissableListView(

@@ -5,6 +5,7 @@ import 'package:iw_app/screens/offer/offer_preview_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class OfferInvestorScreen extends StatefulWidget {
@@ -109,7 +110,7 @@ class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: ListView(
+            child: KeyboardDismissableListView(
               children: [
                 buildForm(),
               ],
