@@ -6,6 +6,7 @@ import 'package:iw_app/screens/nickname_screen.dart';
 import 'package:iw_app/screens/restore_account.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
+import 'package:iw_app/widgets/utils/app_padding.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -15,21 +16,19 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: APP_BODY_BG,
       appBar: AppBar(
+        toolbarHeight: 0,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 50),
+        child: AppPadding(
           child: Column(
             children: [
-              Flexible(
-                flex: 1,
-                child: Center(
-                  child: SvgPicture.asset('assets/images/logo_with_text.svg'),
-                ),
+              const SizedBox(height: 30),
+              Center(
+                child: SvgPicture.asset('assets/images/logo_with_text.svg'),
               ),
               Expanded(
-                flex: 6,
+                flex: 2,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -57,7 +56,7 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
               Flexible(
-                flex: 3,
+                flex: 1,
                 child: Container(
                   constraints: const BoxConstraints(maxWidth: 300),
                   width: double.infinity,
