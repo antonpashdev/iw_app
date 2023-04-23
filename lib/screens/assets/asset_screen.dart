@@ -185,7 +185,7 @@ class _AssetScreenState extends State<AssetScreen> {
       BuildContext context, TxnHistoryItem item, TxnHistoryItem? prevItem) {
     final sign = item.amount != null && item.amount! < 0 ? '-' : '+';
     final amount = item.amount != null
-        ? '$sign ${(item.amount!.abs() / LAMPORTS_IN_SOL).toStringAsFixed(2)} iS'
+        ? '$sign ${(item.amount!.abs() / LAMPORTS_IN_SOL).toStringAsFixed(3)} iS'
         : '-';
     final title = item.addressOrUsername!.length == 44
         ? item.addressOrUsername!.replaceRange(4, 40, '...')

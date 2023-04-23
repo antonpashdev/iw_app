@@ -105,7 +105,7 @@ class OrgMemberCard extends StatelessWidget {
 
     final contributed = member!.role == MemberRole.Investor
         ? '\$${NumberFormat.compact().format(member!.investorSettings!.investmentAmount)}'
-        : '${member!.contributed!.toStringAsFixed(2)}h';
+        : '${member!.contributed!.toStringAsFixed(3)}h';
     final ratioOrAllocation = member!.role == MemberRole.Investor
         ? '${member!.investorSettings!.equityAllocation}%'
         : '${member!.impactRatio}x';

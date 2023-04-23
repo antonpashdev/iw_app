@@ -102,11 +102,11 @@ class MemberDeitails extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         DetailDataItem(
-                            title: 'Contr.',
+                            title: 'Contributed',
                             data: Text(
                                 isMemberRoleInvestor
                                     ? '\$${memeberWithEquity.member!.investorSettings!.investmentAmount!.toStringAsFixed(2)}'
-                                    : '${memeberWithEquity.member!.contributed!.toStringAsFixed(2)}h',
+                                    : '${memeberWithEquity.member!.contributed!.toStringAsFixed(3)}h',
                                 style: defaultDetailDataItemTextStyle)),
                         DetailDataItem(
                             title:
