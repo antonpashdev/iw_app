@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iw_app/api/orgs_api.dart';
+import 'package:iw_app/app_home.dart';
 import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/screens/contribution/contribution_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
@@ -169,6 +170,17 @@ class _ContributionScreenState extends State<ContributionScreen> {
         final stoppedContribution =
             Contribution.fromJson(error.response!.data['contribution']);
         navigateToDetails(stoppedContribution);
+      } else {
+        final message = error.response!.data['message'];
+        if (message != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+              duration: const Duration(milliseconds: 3000),
+              backgroundColor: COLOR_RED,
+            ),
+          );
+        }
       }
     } catch (error) {
       print(error);
