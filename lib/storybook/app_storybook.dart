@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/storybook/app_buttons.dart';
+import 'package:iw_app/storybook/app_screens.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
@@ -19,9 +20,10 @@ class AppStorybook extends StatelessWidget {
       plugins: initializePlugins(
         contentsSidePanel: true,
         enableThemeMode: false,
-        knobsSidePanel: true,
+        knobsSidePanel: false,
       ),
       stories: [
+        ...appScreens(),
         ...appButtons(),
       ],
     );
