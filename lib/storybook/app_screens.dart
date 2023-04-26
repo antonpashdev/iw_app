@@ -19,6 +19,7 @@ List<Story> appScreens() {
             wallet: '3RfZBjYzpuLfuMfR7fPAdAzMr39VRyLrHJGAW3B3kEfw',
           );
           org.settings = OrganizationSettings(treasury: 20);
+          org.id = '6448c3faca4ad8218c87787f';
           final member = OrganizationMember(
               hoursPerWeek: 40,
               impactRatio: 7,
