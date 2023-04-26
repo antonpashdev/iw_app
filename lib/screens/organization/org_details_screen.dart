@@ -23,11 +23,13 @@ import 'package:url_launcher/url_launcher.dart';
 class OrgDetailsScreen extends StatefulWidget {
   final String orgId;
   final OrganizationMember member;
+  final bool isPreviewMode;
 
   const OrgDetailsScreen({
     Key? key,
     required this.orgId,
     required this.member,
+    this.isPreviewMode = false,
   }) : super(key: key);
 
   @override
@@ -120,25 +122,33 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                         ?.copyWith(fontWeight: FontWeight.bold),
                   );
                 }),
-            const SizedBox(height: 15),
+            const SizedBox(height: 5),
+            Text(
+              'Treasury ${org.settings.treasury}%',
+              style: const TextStyle(
+                  fontSize: 14, fontWeight: FontWeight.w400, color: COLOR_GRAY),
+            ),
+            const SizedBox(height: 7),
             Row(
               children: [
                 ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => SendMoneyRecipientScreen(
-                          senderWallet: org.wallet!,
-                          onSendMoney: (SendMoneyData data) =>
-                              orgsApi.sendMoney(widget.orgId, data),
-                          originScreenFactory: () => OrgDetailsScreen(
-                            orgId: widget.orgId,
-                            member: widget.member,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+                  onPressed: widget.isPreviewMode
+                      ? null
+                      : () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => SendMoneyRecipientScreen(
+                                senderWallet: org.wallet!,
+                                onSendMoney: (SendMoneyData data) =>
+                                    orgsApi.sendMoney(widget.orgId, data),
+                                originScreenFactory: () => OrgDetailsScreen(
+                                  orgId: widget.orgId,
+                                  member: widget.member,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                   icon: SvgPicture.asset('assets/icons/arrow_up_box.svg'),
                   label: const Text('Send'),
                   style: ElevatedButton.styleFrom(
@@ -152,13 +162,16 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                 ),
                 const SizedBox(width: 5),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ReceiveMoneyPaymentTypeScreen(
-                                organization: org)));
-                  },
+                  onPressed: widget.isPreviewMode
+                      ? null
+                      : () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      ReceiveMoneyPaymentTypeScreen(
+                                          organization: org)));
+                        },
                   icon: SvgPicture.asset('assets/icons/arrow_down_box.svg'),
                   label: const Text('Receive'),
                   style: ElevatedButton.styleFrom(
@@ -345,14 +358,16 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                         customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        onTap: () => {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => OfferNewMemberScreen(
-                                        organization: org,
-                                      )))
-                        },
+                        onTap: widget.isPreviewMode
+                            ? null
+                            : () => {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => OfferNewMemberScreen(
+                                                organization: org,
+                                              )))
+                                },
                         child: const Icon(
                           CupertinoIcons.add,
                           size: 35,
@@ -489,15 +504,17 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
             title: Text('@${snapshot.data?[0].username}'),
             actions: [
               IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => OrgSettingsScreen(
-                        organization: snapshot.data![0],
-                      ),
-                    ),
-                  );
-                },
+                onPressed: widget.isPreviewMode
+                    ? null
+                    : () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => OrgSettingsScreen(
+                              organization: snapshot.data![0],
+                            ),
+                          ),
+                        );
+                      },
                 icon: const Icon(Icons.settings_outlined),
               ),
             ],
@@ -554,7 +571,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                             width: 290,
                             child: ElevatedButton(
                               onPressed: isLoading ||
-                                      widget.member.role == MemberRole.Investor
+                                      widget.member.role ==
+                                          MemberRole.Investor ||
+                                      widget.isPreviewMode
                                   ? null
                                   : handleStartContributingPressed,
                               child: isLoading
