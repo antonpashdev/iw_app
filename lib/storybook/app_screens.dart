@@ -8,7 +8,7 @@ import 'package:iw_app/screens/offer/offer_preview_screen.dart';
 List<Story> appScreens() {
   return [
     Story(
-        name: 'Sreecns/User Offer',
+        name: 'Screens/User Offer',
         builder: (context) {
           final org = Organization(
             description: 'My test organization',
