@@ -34,6 +34,7 @@ class Organization {
     logo = json['logo'];
     wallet = json['wallet'];
     lamportsMinted = intToDouble(json['lamportsMinted']);
+    settings = OrganizationSettings.fromJson(json['settings']);
   }
 
   @override
@@ -77,6 +78,10 @@ class OrganizationSettings {
   int treasury = 0;
 
   OrganizationSettings({this.treasury = 0});
+
+  OrganizationSettings.fromJson(Map<String, dynamic> json) {
+    treasury = json['treasury'];
+  }
 
   @override
   String toString() {
