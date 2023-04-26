@@ -6,6 +6,7 @@ import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
+import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
@@ -51,53 +52,69 @@ class _OfferScreenState extends State<OfferScreen> {
   }
 
   buildOrganizationSection(BuildContext context, Offer offer) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 90,
-          height: 90,
-          decoration: BoxDecoration(
-            color: COLOR_GRAY,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: FittedBox(
-            fit: BoxFit.cover,
-            child: NetworkImageAuth(
-              imageUrl: '${orgsApi.baseUrl}${offer.org.logo!}',
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => OrgDetailsScreen(
+              orgId: widget.orgId,
+              isPreviewMode: true,
             ),
           ),
-        ),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                offer.memberProspect!.role == MemberRole.Investor
-                    ? 'Invest to'
-                    : 'From',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: COLOR_GRAY,
-                      fontWeight: FontWeight.w500,
-                    ),
+        );
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 90,
+            height: 90,
+            decoration: BoxDecoration(
+              color: COLOR_GRAY,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: NetworkImageAuth(
+                imageUrl: '${orgsApi.baseUrl}${offer.org.logo!}',
               ),
-              const SizedBox(height: 10),
-              Text(
-                '${offer.org.name}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              Text(
-                '@${offer.org.username}',
-                style: const TextStyle(color: COLOR_GRAY),
-              ),
-            ],
+            ),
           ),
-        ),
-      ],
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  offer.memberProspect!.role == MemberRole.Investor
+                      ? 'Invest to'
+                      : 'From',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: COLOR_GRAY,
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  '${offer.org.name}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                Text(
+                  '@${offer.org.username}',
+                  style: const TextStyle(color: COLOR_GRAY),
+                ),
+              ],
+            ),
+          ),
+          const Icon(
+            Icons.chevron_right_rounded,
+            color: COLOR_ALMOST_BLACK,
+          ),
+        ],
+      ),
     );
   }
 

@@ -7,7 +7,6 @@ import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
-import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
@@ -87,20 +86,6 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
             ],
           ),
         ),
-        IconButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => OrgDetailsScreen(
-                    member: widget.member,
-                    orgId: widget.organization.id!,
-                    isPreviewMode: true,
-                  ),
-                ),
-              );
-            },
-            icon: const Icon(Icons.chevron_right_rounded,
-                color: COLOR_ALMOST_BLACK))
       ],
     );
   }

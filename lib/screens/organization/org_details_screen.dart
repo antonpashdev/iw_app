@@ -27,13 +27,13 @@ RegExp trimZeroesRegExp = RegExp(r'([.]*0+)(?!.*\d)');
 
 class OrgDetailsScreen extends StatefulWidget {
   final String orgId;
-  final OrganizationMember member;
+  final OrganizationMember? member;
   final bool isPreviewMode;
 
   const OrgDetailsScreen({
     Key? key,
     required this.orgId,
-    required this.member,
+    this.member,
     this.isPreviewMode = false,
   }) : super(key: key);
 
@@ -519,7 +519,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     });
     try {
       final response =
-          await orgsApi.startContribution(widget.orgId, widget.member.id!);
+          await orgsApi.startContribution(widget.orgId, widget.member!.id!);
       final contribution = Contribution.fromJson(response.data);
       if (context.mounted) {
         Navigator.of(context).pushAndRemoveUntil(
@@ -697,9 +697,8 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                             width: 290,
                             child: ElevatedButton(
                               onPressed: isLoading ||
-                                      widget.member.role ==
-                                          MemberRole.Investor ||
-                                      widget.isPreviewMode
+                                      widget.isPreviewMode ||
+                                      widget.member!.role == MemberRole.Investor
                                   ? null
                                   : handleStartContributingPressed,
                               child: isLoading
