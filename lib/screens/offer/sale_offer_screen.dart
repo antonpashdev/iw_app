@@ -7,6 +7,8 @@ import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/buttons/secondary_button.dart';
+import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -239,18 +241,59 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
     }
   }
 
-  handleBuyPressed(SaleOffer offer) async {
+  handleBuyPressed(SaleOffer offer) {
+    showBottomInfoSheet(
+      context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Confirm to send money.',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Gilroy',
+            ),
+          ),
+          const SizedBox(height: 15),
+          Text(
+            'By signing this transaction you will get ${offer.tokensAmount} Impact Shares of ${offer.org.name}.\n\nThis transaction will be recorded on blockchain.',
+            style: const TextStyle(
+              fontFamily: 'Gilroy',
+            ),
+          ),
+          const SizedBox(height: 35),
+          SecondaryButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              acceptOffer(offer);
+            },
+            child: Text(
+              'Send \$${offer.price}',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  acceptOffer(SaleOffer offer) async {
     setState(() {
       isLoading = true;
     });
 
     try {
-      final response =
-          await offersApi.acceptDeclineSaleOffer(offer.id!, 'accepted');
-      setState(() {
-        payment = Payment.fromJson(response.data!);
-      });
-      openPaymentLink(payment!.cpPaymentUrl!);
+      await offersApi.acceptDeclineSaleOffer(offer.id!, 'accepted');
+      if (context.mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      }
     } catch (err) {
       print(err);
     } finally {
