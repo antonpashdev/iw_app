@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,6 +10,7 @@ import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
+import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -34,6 +36,7 @@ class _OfferScreenState extends State<OfferScreen> {
   bool isLoading = false;
   Future<Offer?>? futureOffer;
   Payment? payment;
+  String? offerError;
 
   @override
   initState() {
@@ -296,22 +299,77 @@ class _OfferScreenState extends State<OfferScreen> {
     }
   }
 
-  handlePressed(Offer offer, String status) async {
+  confirmInvesting(Offer offer, String status) {
+    showBottomInfoSheet(
+      context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Confirm to send money.',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Gilroy',
+            ),
+          ),
+          const SizedBox(height: 15),
+          const Text(
+            'By signing this transaction You will get 10% of equity allocation.\n\nThis transaction will be recorded on blockchain.',
+            style: TextStyle(
+              fontFamily: 'Gilroy',
+            ),
+          ),
+          const SizedBox(height: 35),
+          SecondaryButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              acceptDeclineOffer(offer, status);
+            },
+            child: Text(
+              'Send \$${offer.memberProspect!.investorSettings!.investmentAmount}',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  acceptDeclineOffer(Offer offer, String status,
+      {bool isConfirmed = true}) async {
+    if (!isConfirmed) {
+      confirmInvesting(offer, status);
+      return;
+    }
     setState(() {
       isLoading = true;
     });
 
     try {
-      final response = await orgsApi.acceptDeclineOffer(
+      await orgsApi.acceptDeclineOffer(
         offer.org.id,
         offer.id!,
         status,
       );
-      if (offer.memberProspect!.role == MemberRole.Investor) {
-        setState(() {
-          payment = Payment.fromJson(response.data!);
-        });
-        openPaymentLink(payment!.cpPaymentUrl!);
+      if (context.mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      }
+    } on DioError catch (err) {
+      final message = err.response!.data['message'];
+      if (message != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: COLOR_RED,
+          ),
+        );
       }
     } catch (err) {
       print(err);
@@ -319,10 +377,6 @@ class _OfferScreenState extends State<OfferScreen> {
       setState(() {
         isLoading = false;
       });
-      if (offer.memberProspect!.role != MemberRole.Investor &&
-          context.mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-      }
     }
   }
 
@@ -455,15 +509,20 @@ class _OfferScreenState extends State<OfferScreen> {
                                 if (snapshot.data!.memberProspect!.role !=
                                     MemberRole.Investor)
                                   SecondaryButton(
-                                    onPressed: () => handlePressed(
+                                    onPressed: () => acceptDeclineOffer(
                                         snapshot.data!, 'declined'),
                                     child: const Text('Decline Offer'),
                                   ),
                                 const SizedBox(height: 10),
                                 if (payment == null)
                                   ElevatedButton(
-                                    onPressed: () => handlePressed(
-                                        snapshot.data!, 'accepted'),
+                                    onPressed: () => acceptDeclineOffer(
+                                      snapshot.data!,
+                                      'accepted',
+                                      isConfirmed:
+                                          snapshot.data!.memberProspect!.role !=
+                                              MemberRole.Investor,
+                                    ),
                                     child: Text(
                                       snapshot.data!.memberProspect!.role ==
                                               MemberRole.Investor

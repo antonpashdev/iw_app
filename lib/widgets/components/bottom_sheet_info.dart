@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 class _CustomBottomSheet extends StatelessWidget {
-  final String title;
-  final String description;
+  final String? title;
+  final String? description;
+  final Widget? child;
 
   const _CustomBottomSheet({
     Key? key,
-    required this.title,
-    required this.description,
+    this.title,
+    this.description,
+    this.child,
   }) : super(key: key);
 
   @override
@@ -22,54 +24,55 @@ class _CustomBottomSheet extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(35, 35, 35, 50),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Row(
-              children: [
-                const Icon(
-                  Icons.info_outline_rounded,
-                  color: Colors.grey,
-                  size: 25,
+        child: child ??
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.info_outline_rounded,
+                      color: Colors.grey,
+                      size: 25,
+                    ),
+                    const SizedBox(width: 12.0),
+                    Text(
+                      title!,
+                      style: const TextStyle(
+                        color: Color(0xFF222222),
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12.0),
+                const SizedBox(height: 20),
                 Text(
-                  title,
+                  description!,
                   style: const TextStyle(
                     color: Color(0xFF222222),
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w500,
                   ),
+                ),
+                const SizedBox(height: 35),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 330,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Got it'),
+                      ),
+                    )
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            Text(
-              description,
-              style: const TextStyle(
-                color: Color(0xFF222222),
-                fontSize: 16.0,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 35),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 330,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Got it'),
-                  ),
-                )
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -78,8 +81,9 @@ class _CustomBottomSheet extends StatelessWidget {
 // define function to show modal bottom sheet
 void showBottomInfoSheet(
   BuildContext context, {
-  required String title,
-  required String description,
+  String? title,
+  String? description,
+  Widget? child,
 }) {
   showModalBottomSheet(
     context: context,
@@ -88,6 +92,7 @@ void showBottomInfoSheet(
       return _CustomBottomSheet(
         title: title,
         description: description,
+        child: child,
       );
     },
   );
