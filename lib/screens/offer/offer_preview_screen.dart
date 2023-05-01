@@ -396,29 +396,28 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                         ),
                       ),
                       const SizedBox(height: 25),
-                      if (widget.member.role != MemberRole.Investor)
-                        Center(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 300),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width * 0.75,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 5))
-                                  ]),
-                              child: QRCodeWidget(
-                                url: offerUrl,
-                                orgLogo:
-                                    '${orgsApi.baseUrl}${widget.organization.logo!}',
-                              ),
+                      Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 300),
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.75,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 5))
+                                ]),
+                            child: QRCodeWidget(
+                              url: offerUrl,
+                              orgLogo:
+                                  '${orgsApi.baseUrl}${widget.organization.logo!}',
                             ),
                           ),
                         ),
+                      ),
                     ],
                   ),
                 const SizedBox(height: 25),

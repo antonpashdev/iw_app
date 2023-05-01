@@ -441,7 +441,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     final stopDate = DateTime.parse(item.stoppedAt!);
     final diff = stopDate.difference(startDate);
     return (diff.inMilliseconds / 1000 / 60 / 60)
-        .toStringAsFixed(2)
+        .toStringAsFixed(3)
         .replaceAll(trimZeroesRegExp, '');
   }
 
