@@ -325,6 +325,17 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     );
   }
 
+  onViewDetailsPressed(List<OrganizationMemberWithEquity> members) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OrgMemebersDetails(
+          memebersWithEquity: members,
+        ),
+      ),
+    );
+  }
+
   buildMembers(
     BuildContext context,
     Organization org,
@@ -336,6 +347,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
         AppPadding(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 '${members.length} Members',
@@ -344,20 +356,16 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                     .bodyLarge
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
-              InkWell(
-                child: const Text('View Details',
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: COLOR_BLUE,
-                        fontWeight: FontWeight.w600)),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => OrgMemebersDetails(
-                                memebersWithEquity: members,
-                              )));
-                },
+              CupertinoButton(
+                onPressed: () => onViewDetailsPressed(members),
+                child: const Text(
+                  'View Details',
+                  style: TextStyle(
+                      fontFamily: 'SF Pro Display',
+                      fontSize: 14,
+                      color: COLOR_BLUE,
+                      fontWeight: FontWeight.w600),
+                ),
               )
             ],
           ),
@@ -419,7 +427,10 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                         i,
                         Row(
                           children: [
-                            buildMember(member),
+                            GestureDetector(
+                              onTap: () => onViewDetailsPressed(members),
+                              child: buildMember(member),
+                            ),
                             if (i != members.length - 1)
                               const SizedBox(width: 10),
                             if (i == members.length - 1)

@@ -5,6 +5,7 @@ import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/components/url_qr_code.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -16,6 +17,8 @@ class SaleOfferPreviewScreen extends StatelessWidget {
 
   const SaleOfferPreviewScreen({Key? key, required this.saleOffer})
       : super(key: key);
+
+  String get offerUrl => 'app.impactwallet.xyz/saleoffer?i=${saleOffer.id}';
 
   buildHeader(BuildContext context) {
     return Row(
@@ -161,7 +164,7 @@ class SaleOfferPreviewScreen extends StatelessWidget {
   handleCopyPressed(BuildContext context) async {
     Clipboard.setData(
       ClipboardData(
-        text: 'app.impactwallet.xyz/saleoffer?i=${saleOffer.id}',
+        text: offerUrl,
       ),
     );
     callSnackBar(context);
@@ -198,7 +201,7 @@ class SaleOfferPreviewScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'app.impactwallet.xyz/saleoffer?i=${saleOffer.id}',
+                  offerUrl,
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: COLOR_GRAY),
                 ),
@@ -210,6 +213,29 @@ class SaleOfferPreviewScreen extends StatelessWidget {
                     child: const Text('Copy Link to this Offer'),
                   ),
                 ),
+                const SizedBox(height: 25),
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 300),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.75,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5))
+                          ]),
+                      child: QRCodeWidget(
+                        url: offerUrl,
+                        orgLogo: '${orgsApi.baseUrl}${saleOffer.org.logo!}',
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 25),
               ],
             ),
           ],
