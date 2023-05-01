@@ -57,8 +57,15 @@ class _OrgsApi extends BaseApi {
     return client.post('/orgs/$orgId/contributions', data: body);
   }
 
-  Future<Response> stopContribution(String orgId, String contributionId) {
-    return client.delete('/orgs/$orgId/contributions/$contributionId');
+  Future<Response> stopContribution(
+      String orgId, String contributionId, String? memo) {
+    final body = {
+      'memo': memo,
+    };
+    return client.patch(
+      '/orgs/$orgId/contributions/$contributionId',
+      data: body,
+    );
   }
 
   Future<Response> createOffer(

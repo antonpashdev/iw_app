@@ -186,6 +186,7 @@ enum AppTextFormSize {
 class AppTextFormFieldBordered extends StatelessWidget {
   final TextAlign textAlign;
   final Widget? label;
+  final String? labelText;
   final Widget? prefix;
   final Widget? suffix;
   final Function(String value)? onChanged;
@@ -208,6 +209,7 @@ class AppTextFormFieldBordered extends StatelessWidget {
     Key? key,
     this.textAlign = TextAlign.start,
     this.label,
+    this.labelText,
     this.prefix,
     this.suffix,
     this.onChanged,
@@ -256,6 +258,13 @@ class AppTextFormFieldBordered extends StatelessWidget {
         errorStyle: errorStyle,
         floatingLabelBehavior: FloatingLabelBehavior.never,
         label: label,
+        labelText: labelText,
+        alignLabelWithHint: true,
+        labelStyle: const TextStyle(
+          fontWeight: FontWeight.w400,
+          color: COLOR_GRAY2,
+          fontSize: 15,
+        ),
         prefix: prefix,
         suffix: suffix,
         contentPadding: contentPadding,
