@@ -8,6 +8,7 @@ import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/components/url_qr_code.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -31,6 +32,10 @@ class OfferPreviewScreen extends StatefulWidget {
 class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
   bool isLoading = false;
   Offer? offer;
+
+  String get offerUrl {
+    return 'app.impactwallet.xyz/offer?i=${offer!.id}&oi=${widget.organization.id}';
+  }
 
   @override
   initState() {
@@ -310,9 +315,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
   }
 
   handleCopyPressed() async {
-    Clipboard.setData(ClipboardData(
-        text:
-            'app.impactwallet.xyz/offer?i=${offer!.id}&oi=${widget.organization.id}'));
+    Clipboard.setData(ClipboardData(text: offerUrl));
     callSnackBar(context);
   }
 
@@ -380,7 +383,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'app.impactwallet.xyz/offer?i=${offer!.id}&oi=${widget.organization.id}',
+                        offerUrl,
                         textAlign: TextAlign.center,
                         style: const TextStyle(color: COLOR_GRAY),
                       ),
@@ -392,8 +395,33 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                           child: const Text('Copy Link to this Offer'),
                         ),
                       ),
+                      const SizedBox(height: 25),
+                      if (widget.member.role != MemberRole.Investor)
+                        Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 300),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.75,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5))
+                                  ]),
+                              child: QRCodeWidget(
+                                url: offerUrl,
+                                orgLogo:
+                                    '${orgsApi.baseUrl}${widget.organization.logo!}',
+                              ),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
+                const SizedBox(height: 25),
               ],
             ),
           ),
