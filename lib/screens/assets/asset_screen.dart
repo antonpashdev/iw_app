@@ -5,7 +5,7 @@ import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
 import 'package:iw_app/screens/assets/sell_asset_screen.dart';
-import 'package:iw_app/screens/assets/send/receiver_screen.dart';
+import 'package:iw_app/screens/assets/send/send_type_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/widgets/list/generic_list_tile.dart';
@@ -355,15 +355,16 @@ class _AssetScreenState extends State<AssetScreen> {
                                 ? null
                                 : () {
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => ReceiverScreen(
-                                                organization: widget
-                                                    .memberWithEquity
-                                                    .member!
-                                                    .org,
-                                                member: widget.memberWithEquity
-                                                    .member!)));
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => SendTypeScreen(
+                                          organization: widget
+                                              .memberWithEquity.member!.org,
+                                          member:
+                                              widget.memberWithEquity.member!,
+                                        ),
+                                      ),
+                                    );
                                   },
                             child: const Text('Send Asset'),
                           ),

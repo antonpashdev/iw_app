@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iw_app/constants/send_asset_type.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -6,13 +7,18 @@ import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 class SuccessScreen extends StatelessWidget {
   final double sharesSent;
   final String orgName;
-  final String receiverNickName;
+  final String? receiverNickName;
+  final String? receiverAddress;
+  final SendAssetType sendAssetType;
 
-  const SuccessScreen(
-      {super.key,
-      required this.sharesSent,
-      required this.orgName,
-      required this.receiverNickName});
+  const SuccessScreen({
+    super.key,
+    required this.sharesSent,
+    required this.orgName,
+    required this.receiverNickName,
+    required this.receiverAddress,
+    required this.sendAssetType,
+  });
 
   handleDone(BuildContext context) {
     Navigator.pushAndRemoveUntil(
@@ -43,12 +49,14 @@ class SuccessScreen extends StatelessWidget {
                         fontSize: 24)),
                 const SizedBox(height: 20),
                 Text(
-                    'Impact Shares of $orgName have been successfully sent to @$receiverNickName',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        color: COLOR_GRAY,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18)),
+                  'Impact Shares of $orgName have been successfully sent to ${sendAssetType == SendAssetType.ToUser ? '@$receiverNickName' : receiverAddress!.replaceRange(4, 40, '...')}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: COLOR_GRAY,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                  ),
+                ),
                 const SizedBox(height: 100),
                 SizedBox(
                   width: 290,

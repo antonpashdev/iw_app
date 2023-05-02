@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
+import 'package:iw_app/constants/send_asset_type.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/user_model.dart';
@@ -17,13 +18,17 @@ final _debouncer = Debouncer(duration: const Duration(milliseconds: 1000));
 class NumberOfSharesScreen extends StatefulWidget {
   final Organization organization;
   final OrganizationMember member;
-  final User receiver;
+  final User? receiver;
+  final String? receiverAddress;
+  final SendAssetType sendAssetType;
 
   const NumberOfSharesScreen({
     super.key,
     required this.member,
     required this.receiver,
     required this.organization,
+    required this.receiverAddress,
+    required this.sendAssetType,
   });
 
   @override
@@ -38,7 +43,7 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
   double? tokensAmount;
 
   OrganizationMember get member => widget.member;
-  User get receiver => widget.receiver;
+  User? get receiver => widget.receiver;
 
   fetchEquity() async {
     _debouncer.debounce(() async {
@@ -67,14 +72,18 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
     }
 
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => PreviewScreen(
-                  organization: widget.organization,
-                  member: member,
-                  tokens: tokensAmount!,
-                  receiver: receiver,
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (_) => PreviewScreen(
+          organization: widget.organization,
+          member: member,
+          tokens: tokensAmount!,
+          receiver: receiver,
+          receiverAddress: widget.receiverAddress,
+          sendAssetType: widget.sendAssetType,
+        ),
+      ),
+    );
   }
 
   @override

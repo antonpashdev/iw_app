@@ -103,9 +103,17 @@ class _UsersApi extends BaseApi {
     return userResponse;
   }
 
-  Future<Response> sendAssets(String orgId, String recipientId, double amount) {
-    return client.post('/users/assets/$orgId/send',
-        data: {'recipientId': recipientId, 'amount': amount});
+  Future<Response> sendAssets(
+    String orgId,
+    double amount, {
+    String? recipientId,
+    String? recipientAddress,
+  }) {
+    return client.post('/users/assets/$orgId/send', data: {
+      'recipientId': recipientId,
+      'recipientAddress': recipientAddress,
+      'amount': amount,
+    });
   }
 
   Future<Response> getUsdcHistory() {
