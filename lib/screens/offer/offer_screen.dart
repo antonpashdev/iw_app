@@ -314,9 +314,9 @@ class _OfferScreenState extends State<OfferScreen> {
             ),
           ),
           const SizedBox(height: 15),
-          const Text(
-            'By signing this transaction You will get 10% of equity allocation.\n\nThis transaction will be recorded on blockchain.',
-            style: TextStyle(
+          Text(
+            'By signing this transaction You will get ${offer.memberProspect?.investorSettings?.equityAllocation}% of equity allocation.\n\nThis transaction will be recorded on blockchain.',
+            style: const TextStyle(
               fontFamily: 'Gilroy',
             ),
           ),
