@@ -21,6 +21,7 @@ class _OrgsApi extends BaseApi {
   Future<Response> createOrg(
     Organization organization,
     OrganizationMember member,
+    bool isLite,
   ) {
     final orgMap = organization.toMap(member);
     orgMap['logo'] = MultipartFile.fromBytes(
@@ -30,6 +31,9 @@ class _OrgsApi extends BaseApi {
 
     final body = FormData.fromMap(orgMap);
 
+    if (isLite) {
+      return client.post('/lite/orgs', data: body);
+    }
     return client.post('/orgs', data: body);
   }
 
