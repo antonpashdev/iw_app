@@ -1,18 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:iw_app/api/config_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/screens/nickname_screen.dart';
 import 'package:iw_app/screens/restore_account.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
+import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
+  onLogoPressed(Config config, BuildContext context) async {
+    if (config.mode == Mode.Lite) {
+      config.mode = Mode.Pro;
+    } else {
+      config.mode = Mode.Lite;
+    }
+    try {
+      await configApi.updateConfig(config);
+      if (context.mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    Config config = ConfigState.of(context).config;
+    String slogan = config.mode == Mode.Lite
+        ? 'Manage your equity like never before'
+        : AppLocalizations.of(context)!.loginScreen_slogan;
     return Scaffold(
       backgroundColor: APP_BODY_BG,
       appBar: AppBar(
@@ -25,7 +48,19 @@ class LoginScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 30),
               Center(
-                child: SvgPicture.asset('assets/images/logo_with_text.svg'),
+                child: Stack(
+                  children: [
+                    SvgPicture.asset('assets/images/logo_with_text.svg'),
+                    GestureDetector(
+                      onTap: () => onLogoPressed(config, context),
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        color: Colors.transparent,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Expanded(
                 flex: 2,
@@ -42,7 +77,7 @@ class LoginScreen extends StatelessWidget {
                     SizedBox(
                       width: 180,
                       child: Text(
-                        AppLocalizations.of(context)!.loginScreen_slogan,
+                        slogan,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontFamily: 'Gilroy',
