@@ -2,15 +2,24 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
+import 'package:iw_app/screens/generic_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/validation.dart';
+import 'package:iw_app/widgets/components/app_select.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
+import 'package:iw_app/widgets/form/modal_form_field.dart';
 
 class NewMemberFormLite extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final OrganizationMember member;
   final String title;
+  final timeframeOptions = const [
+    {'value': '1', 'title': 'days'},
+    {'value': '2', 'title': 'weeks'},
+    {'value': '3', 'title': 'months'},
+    {'value': '4', 'title': 'years'},
+  ];
 
   const NewMemberFormLite({
     Key? key,
@@ -204,22 +213,19 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: AppTextFormFieldBordered(
-                enabled: widget.member.isMonthlyCompensated!,
-                prefix: const Text('\$'),
-                validator: widget.member.isMonthlyCompensated!
-                    ? multiValidate([
-                        requiredField(
-                          AppLocalizations.of(context)!
-                              .createOrgMemberScreen_monthlyCompensationLabel,
-                        ),
-                        numberField(
-                          AppLocalizations.of(context)!
-                              .createOrgMemberScreen_monthlyCompensationLabel,
-                        ),
-                      ])
-                    : (_) => null,
-                onChanged: onMonthlyCompensationChanged,
+              child: ModalFormField<Map>(
+                screenFactory: (value) => GenericScreen(
+                  title: 'Select',
+                  child: AppSelect(
+                    value,
+                    options: widget.timeframeOptions,
+                    onChanged: (value) {
+                      Navigator.of(context).pop(value);
+                    },
+                  ),
+                ),
+                valueToText: (value) => value?['title'],
+                labelText: 'timeframe',
               ),
             ),
           ],
@@ -378,22 +384,19 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: AppTextFormFieldBordered(
-                enabled: widget.member.isMonthlyCompensated!,
-                prefix: const Text('\$'),
-                validator: widget.member.isMonthlyCompensated!
-                    ? multiValidate([
-                        requiredField(
-                          AppLocalizations.of(context)!
-                              .createOrgMemberScreen_monthlyCompensationLabel,
-                        ),
-                        numberField(
-                          AppLocalizations.of(context)!
-                              .createOrgMemberScreen_monthlyCompensationLabel,
-                        ),
-                      ])
-                    : (_) => null,
-                onChanged: onMonthlyCompensationChanged,
+              child: ModalFormField<Map>(
+                screenFactory: (value) => GenericScreen(
+                  title: 'Select',
+                  child: AppSelect(
+                    value,
+                    options: widget.timeframeOptions,
+                    onChanged: (value) {
+                      Navigator.of(context).pop(value);
+                    },
+                  ),
+                ),
+                valueToText: (value) => value?['title'],
+                labelText: 'timeframe',
               ),
             ),
           ],
