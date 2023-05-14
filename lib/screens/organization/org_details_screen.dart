@@ -336,6 +336,17 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     );
   }
 
+  onAddMemberPressed(Organization org) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OfferNewMemberScreen(
+          organization: org,
+        ),
+      ),
+    );
+  }
+
   buildMembers(
     BuildContext context,
     Organization org,
@@ -394,14 +405,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                         ),
                         onTap: widget.isPreviewMode
                             ? null
-                            : () => {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => OfferNewMemberScreen(
-                                                organization: org,
-                                              )))
-                                },
+                            : () => onAddMemberPressed(org),
                         child: const Icon(
                           CupertinoIcons.add,
                           size: 35,

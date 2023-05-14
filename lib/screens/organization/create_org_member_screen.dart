@@ -12,7 +12,7 @@ import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/new_member_form.dart';
-import 'package:iw_app/widgets/components/new_member_form_lite.dart';
+import 'package:iw_app/widgets/components/new_owner_member_form_lite.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/state/config.dart';
 
@@ -38,7 +38,7 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
   buildForm() {
     Config config = ConfigState.of(context).config;
     if (config.mode == Mode.Lite) {
-      return NewMemberFormLite(
+      return NewOwnerMemberFormLite(
         formKey: formKey,
         member: member,
         title: AppLocalizations.of(context)!.createOrgMemberScreen_description,

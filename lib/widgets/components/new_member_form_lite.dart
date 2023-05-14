@@ -5,23 +5,27 @@ import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
-import 'package:iw_app/widgets/components/new_member_form.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 
-class NewMemberFormLite extends NewMemberForm {
+class NewMemberFormLite extends StatefulWidget {
+  final GlobalKey<FormState> formKey;
+  final OrganizationMember member;
+  final String title;
+
   const NewMemberFormLite({
-    super.key,
-    required super.formKey,
-    required super.member,
-    required super.title,
-  });
+    Key? key,
+    required this.formKey,
+    required this.member,
+    required this.title,
+  }) : super(key: key);
 
   @override
   State<NewMemberFormLite> createState() => _NewMemberFormLiteState();
 }
 
 class _NewMemberFormLiteState extends State<NewMemberFormLite> {
-  final compensationCtrl = TextEditingController();
+  int? equityType;
+  int? compensationType;
 
   OrganizationMember get member => widget.member;
   String get title => widget.title;
@@ -42,6 +46,360 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
     setState(() {
       member.isMonthlyCompensated = value;
     });
+  }
+
+  onAutoContributionChanged(bool value) {
+    setState(() {
+      member.isAutoContributing = value;
+    });
+  }
+
+  buildEquitySection() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Give Equity',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            CupertinoSwitch(
+              value: widget.member.isMonthlyCompensated!,
+              activeColor: COLOR_GREEN,
+              onChanged: (bool? value) {
+                onIsMonthlyCompensatedChanged(value!);
+              },
+            ),
+          ],
+        ),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Row(
+            children: [
+              const Text('Immediately'),
+              IconButton(
+                onPressed: () {
+                  showBottomInfoSheet(
+                    context,
+                    title: 'Give Equity Immediately',
+                    description:
+                        'A member will get allocated percent of equity right after signing an offer',
+                  );
+                },
+                icon: const Icon(Icons.info_outline_rounded),
+                iconSize: 16,
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                color: COLOR_GRAY,
+              ),
+            ],
+          ),
+          minLeadingWidth: 0,
+          leading: Radio(
+            activeColor: Colors.black,
+            value: 1,
+            groupValue: equityType,
+            onChanged: (int? type) {
+              setState(() {
+                equityType = type!;
+              });
+            },
+          ),
+        ),
+        AppTextFormFieldBordered(
+          enabled: widget.member.isMonthlyCompensated!,
+          prefix: const Text('%'),
+          inputType: const TextInputType.numberWithOptions(decimal: true),
+          validator: widget.member.isMonthlyCompensated!
+              ? multiValidate([
+                  requiredField(
+                    AppLocalizations.of(context)!
+                        .createOrgMemberScreen_monthlyCompensationLabel,
+                  ),
+                  numberField(
+                    AppLocalizations.of(context)!
+                        .createOrgMemberScreen_monthlyCompensationLabel,
+                  ),
+                ])
+              : (_) => null,
+          onChanged: onMonthlyCompensationChanged,
+        ),
+        const SizedBox(height: 10),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Row(
+            children: [
+              const Text('During the period'),
+              IconButton(
+                onPressed: () {
+                  showBottomInfoSheet(
+                    context,
+                    title: 'Give Equity During the Period',
+                    description:
+                        'Percent of equity will be broken down equally into amount of days. Every day during the period a member will get a part of allocated equity. For example: 10% during 100 days. It means that a member will get 0,1% every day during 100 days.',
+                  );
+                },
+                icon: const Icon(Icons.info_outline_rounded),
+                iconSize: 16,
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                color: COLOR_GRAY,
+              ),
+            ],
+          ),
+          minLeadingWidth: 0,
+          leading: Radio(
+            activeColor: Colors.black,
+            value: 2,
+            groupValue: equityType,
+            onChanged: (int? type) {
+              setState(() {
+                equityType = type!;
+              });
+            },
+          ),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: AppTextFormFieldBordered(
+                enabled: widget.member.isMonthlyCompensated!,
+                prefix: const Text('%'),
+                inputType: const TextInputType.numberWithOptions(decimal: true),
+                validator: widget.member.isMonthlyCompensated!
+                    ? multiValidate([
+                        requiredField(
+                          AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                        ),
+                        numberField(
+                          AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                        ),
+                      ])
+                    : (_) => null,
+                onChanged: onMonthlyCompensationChanged,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: AppTextFormFieldBordered(
+                enabled: widget.member.isMonthlyCompensated!,
+                labelText: 'period',
+                validator: widget.member.isMonthlyCompensated!
+                    ? multiValidate([
+                        requiredField(
+                          AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                        ),
+                        numberField(
+                          AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                        ),
+                      ])
+                    : (_) => null,
+                onChanged: onMonthlyCompensationChanged,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: AppTextFormFieldBordered(
+                enabled: widget.member.isMonthlyCompensated!,
+                prefix: const Text('\$'),
+                validator: widget.member.isMonthlyCompensated!
+                    ? multiValidate([
+                        requiredField(
+                          AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                        ),
+                        numberField(
+                          AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                        ),
+                      ])
+                    : (_) => null,
+                onChanged: onMonthlyCompensationChanged,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  buildCompensationSection() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Compensation',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            CupertinoSwitch(
+              value: widget.member.isMonthlyCompensated!,
+              activeColor: COLOR_GREEN,
+              onChanged: (bool? value) {
+                onIsMonthlyCompensatedChanged(value!);
+              },
+            ),
+          ],
+        ),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Row(
+            children: [
+              const Text('Paycheck per month'),
+              IconButton(
+                onPressed: () {
+                  showBottomInfoSheet(
+                    context,
+                    title: 'Paycheck per month',
+                    description:
+                        'The sum that will be sent to the member’s wallet from the organization’s wallet on the first of every month. (That is why Organization needs Treasury)',
+                  );
+                },
+                icon: const Icon(Icons.info_outline_rounded),
+                iconSize: 16,
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                color: COLOR_GRAY,
+              ),
+            ],
+          ),
+          minLeadingWidth: 0,
+          leading: Radio(
+            activeColor: Colors.black,
+            value: 1,
+            groupValue: compensationType,
+            onChanged: (int? type) {
+              setState(() {
+                compensationType = type!;
+              });
+            },
+          ),
+        ),
+        AppTextFormFieldBordered(
+          enabled: widget.member.isMonthlyCompensated!,
+          prefix: const Text('\$'),
+          inputType: const TextInputType.numberWithOptions(decimal: true),
+          validator: widget.member.isMonthlyCompensated!
+              ? multiValidate([
+                  requiredField(
+                    AppLocalizations.of(context)!
+                        .createOrgMemberScreen_monthlyCompensationLabel,
+                  ),
+                  numberField(
+                    AppLocalizations.of(context)!
+                        .createOrgMemberScreen_monthlyCompensationLabel,
+                  ),
+                ])
+              : (_) => null,
+          onChanged: onMonthlyCompensationChanged,
+        ),
+        const SizedBox(height: 10),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Row(
+            children: [
+              const Text('One-time payment'),
+              IconButton(
+                onPressed: () {
+                  showBottomInfoSheet(
+                    context,
+                    title: 'One-time payment',
+                    description:
+                        'This sum will be broken down equally into amount of days. Every day during the period a member will get a part of this sum. For example: \$100 during 100 days. It means that a member will get \$1 every day during 100 days.',
+                  );
+                },
+                icon: const Icon(Icons.info_outline_rounded),
+                iconSize: 16,
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                color: COLOR_GRAY,
+              ),
+            ],
+          ),
+          minLeadingWidth: 0,
+          leading: Radio(
+            activeColor: Colors.black,
+            value: 2,
+            groupValue: compensationType,
+            onChanged: (int? type) {
+              setState(() {
+                compensationType = type!;
+              });
+            },
+          ),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: AppTextFormFieldBordered(
+                enabled: widget.member.isMonthlyCompensated!,
+                prefix: const Text('\$'),
+                inputType: const TextInputType.numberWithOptions(decimal: true),
+                validator: widget.member.isMonthlyCompensated!
+                    ? multiValidate([
+                        requiredField(
+                          AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                        ),
+                        numberField(
+                          AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                        ),
+                      ])
+                    : (_) => null,
+                onChanged: onMonthlyCompensationChanged,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: AppTextFormFieldBordered(
+                enabled: widget.member.isMonthlyCompensated!,
+                labelText: 'period',
+                validator: widget.member.isMonthlyCompensated!
+                    ? multiValidate([
+                        requiredField(
+                          AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                        ),
+                        numberField(
+                          AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                        ),
+                      ])
+                    : (_) => null,
+                onChanged: onMonthlyCompensationChanged,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: AppTextFormFieldBordered(
+                enabled: widget.member.isMonthlyCompensated!,
+                prefix: const Text('\$'),
+                validator: widget.member.isMonthlyCompensated!
+                    ? multiValidate([
+                        requiredField(
+                          AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                        ),
+                        numberField(
+                          AppLocalizations.of(context)!
+                              .createOrgMemberScreen_monthlyCompensationLabel,
+                        ),
+                      ])
+                    : (_) => null,
+                onChanged: onMonthlyCompensationChanged,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   buildForm(BuildContext context) {
@@ -67,88 +425,9 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
             onChanged: onOccupationChanged,
           ),
           const SizedBox(height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  const Text(
-                    'Equity',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showBottomInfoSheet(
-                        context,
-                        title: 'Equity',
-                        description:
-                            'The first member is an owner of organization and get 100% of equity by default',
-                      );
-                    },
-                    icon: const Icon(Icons.info_outline_rounded),
-                    iconSize: 16,
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    color: COLOR_GRAY,
-                  ),
-                ],
-              ),
-              const Text(
-                '100%',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  const Text(
-                    'Paycheck per month',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showBottomInfoSheet(
-                        context,
-                        title: 'Paycheck per month',
-                        description:
-                            'The sum that will be sent to the member’s wallet from the organization’s wallet on the first of every month. (That is why Organization needs Treasury)',
-                      );
-                    },
-                    icon: const Icon(Icons.info_outline_rounded),
-                    iconSize: 16,
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    color: COLOR_GRAY,
-                  ),
-                ],
-              ),
-              CupertinoSwitch(
-                value: widget.member.isMonthlyCompensated!,
-                activeColor: COLOR_GREEN,
-                onChanged: (bool? value) {
-                  compensationCtrl.clear();
-                  onIsMonthlyCompensatedChanged(value!);
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          AppTextFormFieldBordered(
-            controller: compensationCtrl,
-            enabled: widget.member.isMonthlyCompensated!,
-            prefix: const Text('\$'),
-            validator: widget.member.isMonthlyCompensated!
-                ? multiValidate([
-                    requiredField('Paycheck per month'),
-                    numberField('Paycheck per month'),
-                  ])
-                : (_) => null,
-            onChanged: onMonthlyCompensationChanged,
-          ),
+          buildEquitySection(),
+          const SizedBox(height: 30),
+          buildCompensationSection(),
         ],
       ),
     );
