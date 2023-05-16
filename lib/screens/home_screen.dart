@@ -6,6 +6,7 @@ import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/account/account_details_screen.dart';
@@ -15,8 +16,10 @@ import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/screens/settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/org_member_card.dart';
+import 'package:iw_app/widgets/components/org_member_card_lite.dart';
 import 'package:iw_app/widgets/list/assets_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
+import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
@@ -107,23 +110,40 @@ class _HomeScreenState extends State<HomeScreen> {
     bool isFirst,
     bool isLast,
   ) {
+    Config config = ConfigState.of(context).config;
+    final card = config.mode == Mode.Pro
+        ? OrgMemberCard(
+            member: member,
+            futureOtherMembers: futureOtherMembers,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => OrgDetailsScreen(
+                    orgId: member.org.id,
+                    member: member,
+                  ),
+                ),
+              );
+            },
+          )
+        : OrgMemberCardLite(
+            member: member,
+            futureOtherMembers: futureOtherMembers,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => OrgDetailsScreen(
+                    orgId: member.org.id,
+                    member: member,
+                  ),
+                ),
+              );
+            },
+          );
     return Row(
       children: [
         const SizedBox(width: 20),
-        OrgMemberCard(
-          member: member,
-          futureOtherMembers: futureOtherMembers,
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => OrgDetailsScreen(
-                  orgId: member.org.id,
-                  member: member,
-                ),
-              ),
-            );
-          },
-        ),
+        card,
         if (isLast) const SizedBox(width: 20),
       ],
     );
@@ -147,16 +167,24 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   buildAsset(OrganizationMemberWithOtherMembers omm) {
+    Config config = ConfigState.of(context).config;
     return FutureBuilder(
-      future: omm.futureEquity,
+      future: config.mode == Mode.Pro
+          ? omm.futureEquity
+          : Future.value(MemberEquity()),
       builder: (_, snapshot) {
         if (!snapshot.hasData) {
           return Container();
         }
-        final tokensAmount = (snapshot.data!.lamportsEarned! / LAMPORTS_IN_SOL)
-            .toStringAsFixed(4)
-            .replaceAll(trimZeroesRegExp, '');
-        final equity = (snapshot.data!.equity! * 100).toStringAsFixed(1);
+        String? tokensAmount;
+        if (config.mode == Mode.Pro) {
+          tokensAmount = (snapshot.data!.lamportsEarned! / LAMPORTS_IN_SOL)
+              .toStringAsFixed(4)
+              .replaceAll(trimZeroesRegExp, '');
+        }
+        final equity = config.mode == Mode.Pro
+            ? (snapshot.data!.equity! * 100).toStringAsFixed(1)
+            : (omm.member!.equity!.amount!).toStringAsFixed(1);
         return InkWell(
           onTap: () {
             Navigator.push(
@@ -217,9 +245,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   buildAssets(List<OrganizationMemberWithOtherMembers> members) {
+    Config config = ConfigState.of(context).config;
+    List<OrganizationMemberWithOtherMembers> assets = members;
+    if (config.mode == Mode.Lite) {
+      assets = members.where((m) => m.member!.equity != null).toList();
+    }
     return Column(
       children: [
-        ...members.map((m) => buildAsset(m)).toList(),
+        ...assets.map((m) => buildAsset(m)).toList(),
       ],
     );
   }
@@ -374,9 +407,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   borderRadius: BorderRadius.circular(30),
                                   onTap: () {
                                     Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                const CreateOrgScreen()));
+                                      MaterialPageRoute(
+                                        builder: (_) => const CreateOrgScreen(),
+                                      ),
+                                    );
                                   },
                                   child: SvgPicture.asset(
                                       'assets/icons/add_circle.svg'),

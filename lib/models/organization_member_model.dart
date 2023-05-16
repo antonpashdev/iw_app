@@ -113,6 +113,7 @@ class OrganizationMember {
   int? lamportsEarned;
   Equity? equity;
   Compensation? compensation;
+  String? createdAt;
 
   OrganizationMember({
     this.occupation,
@@ -149,6 +150,7 @@ class OrganizationMember {
     compensation = json['compensation'] is Map
         ? Compensation.fromJson(json['compensation'])
         : json['compensation'];
+    createdAt = json['createdAt'];
   }
 
   @override

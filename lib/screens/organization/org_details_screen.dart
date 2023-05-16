@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/models/org_events_history_item_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
@@ -20,6 +21,7 @@ import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/utils/numbers.dart';
 import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
+import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -257,6 +259,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   }
 
   buildMember(OrganizationMemberWithEquity data) {
+    Config config = ConfigState.of(context).config;
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -293,34 +296,39 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
             ),
           ],
         ),
-        FutureBuilder(
-          future: data.futureEquity,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Container();
-            }
-            return Positioned(
-              top: -5,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 3,
+        if (config.mode == Mode.Pro || data.member!.equity != null)
+          FutureBuilder(
+            future: config.mode == Mode.Pro
+                ? data.futureEquity
+                : Future.value(MemberEquity()),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Container();
+              }
+              return Positioned(
+                top: -5,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: COLOR_ALMOST_BLACK,
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                  child: Text(
+                    config.mode == Mode.Pro
+                        ? '${(snapshot.data!.equity! * 100).toStringAsFixed(1)}%'
+                        : '${data.member!.equity!.amount!.toStringAsFixed(1)}%',
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(color: COLOR_WHITE),
+                  ),
                 ),
-                decoration: BoxDecoration(
-                  color: COLOR_ALMOST_BLACK,
-                  borderRadius: BorderRadius.circular(7),
-                ),
-                child: Text(
-                  '${(snapshot.data!.equity! * 100).toStringAsFixed(1)}%',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelMedium
-                      ?.copyWith(color: COLOR_WHITE),
-                ),
-              ),
-            );
-          },
-        ),
+              );
+            },
+          ),
       ],
     );
   }
