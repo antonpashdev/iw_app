@@ -464,8 +464,11 @@ class _OfferScreenState extends State<OfferScreen> {
     );
   }
 
-  acceptDeclineOffer(Offer offer, String status,
-      {bool isConfirmed = true}) async {
+  acceptDeclineOffer(
+    Offer offer,
+    String status, {
+    bool isConfirmed = true,
+  }) async {
     if (!isConfirmed) {
       confirmInvesting(offer, status);
       return;
@@ -473,12 +476,13 @@ class _OfferScreenState extends State<OfferScreen> {
     setState(() {
       isLoading = true;
     });
-
+    Config config = ConfigState.of(context).config;
     try {
       await orgsApi.acceptDeclineOffer(
         offer.org.id,
         offer.id!,
         status,
+        config.mode == Mode.Lite,
       );
       if (context.mounted) {
         Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);

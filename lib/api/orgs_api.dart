@@ -92,10 +92,15 @@ class _OrgsApi extends BaseApi {
     String orgId,
     String offerId,
     String status,
+    bool isLite,
   ) {
     final body = {
       'status': status,
     };
+
+    if (isLite) {
+      return client.patch('/lite/orgs/$orgId/offers/$offerId', data: body);
+    }
 
     return client.patch('/orgs/$orgId/offers/$offerId', data: body);
   }
