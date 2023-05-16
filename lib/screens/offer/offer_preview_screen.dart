@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
@@ -12,6 +13,7 @@ import 'package:iw_app/widgets/components/url_qr_code.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/state/config.dart';
 
 class OfferPreviewScreen extends StatefulWidget {
   final Organization organization;
@@ -166,7 +168,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
     );
   }
 
-  buildMemberDetails(BuildContext context) {
+  buildMemberDetailsPro(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
@@ -223,7 +225,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
               ),
             ],
           ),
-          if (widget.member.isMonthlyCompensated!)
+          if (widget.member.compensation != null)
             Column(
               children: [
                 const SizedBox(height: 10),
@@ -235,7 +237,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      '\$${widget.member.monthlyCompensation}',
+                      '\$${widget.member.compensation?.amount}',
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ],
@@ -266,15 +268,135 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
     );
   }
 
+  buildMemberDetailsLite(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(25),
+      decoration: BoxDecoration(
+        color: COLOR_LIGHT_GRAY,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Role',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              Text(
+                '${widget.member.role?.name}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+          const SizedBox(height: 26),
+          const Divider(
+            color: COLOR_LIGHT_GRAY2,
+            height: 1,
+          ),
+          const SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Occupation',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+              Text(
+                '${widget.member.occupation}',
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+          if (widget.member.equity != null)
+            Column(
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Equity',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      '${widget.member.equity?.amount}%',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                if (widget.member.equity?.type == EquityType.DuringPeriod)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Period to get equity'),
+                      Text(
+                        '${widget.member.equity?.period?.value} ${widget.member.equity?.period?.timeframe?.name.toLowerCase()}',
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          if (widget.member.compensation != null)
+            Column(
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.member.compensation?.type ==
+                              CompensationType.PerMonth
+                          ? 'Paycheck per month'
+                          : 'One-time payment',
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      '\$${widget.member.compensation?.amount}',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                if (widget.member.compensation?.type ==
+                    CompensationType.OneTime)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Period to get payment'),
+                      Text(
+                        '${widget.member.compensation?.period?.value} ${widget.member.compensation?.period?.timeframe?.name.toLowerCase()}',
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  buildMemberDetails(BuildContext context) {
+    Config config = ConfigState.of(context).config;
+    if (config.mode == Mode.Pro) {
+      return buildMemberDetailsPro(context);
+    } else {
+      return buildMemberDetailsLite(context);
+    }
+  }
+
   handleCreatePressed() async {
     setState(() {
       isLoading = true;
     });
-
+    Config config = ConfigState.of(context).config;
     try {
       final response = await orgsApi.createOffer(
         widget.organization.id!,
         widget.member,
+        config.mode == Mode.Lite,
       );
       setState(() {
         offer = Offer.fromJson(response.data);

@@ -24,9 +24,7 @@ List<Story> appScreens() {
               hoursPerWeek: 40,
               impactRatio: 7,
               isAutoContributing: true,
-              isMonthlyCompensated: false,
               occupation: 'Frontend',
-              monthlyCompensation: null,
               org: '6429d40d370950b4635db8b6',
               role: context.knobs
                   .options(label: 'Role', initial: MemberRole.Admin, options: [

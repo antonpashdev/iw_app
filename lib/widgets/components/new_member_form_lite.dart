@@ -14,14 +14,11 @@ class NewMemberFormLite extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final OrganizationMember member;
   final String title;
-  final timeframeOptions = const [
-    {'value': '1', 'title': 'days'},
-    {'value': '2', 'title': 'weeks'},
-    {'value': '3', 'title': 'months'},
-    {'value': '4', 'title': 'years'},
-  ];
+  final timeframeOptions = PeriodType.values
+      .map((e) => ({'value': e, 'title': e.name.toLowerCase()}))
+      .toList();
 
-  const NewMemberFormLite({
+  NewMemberFormLite({
     Key? key,
     required this.formKey,
     required this.member,
@@ -33,8 +30,13 @@ class NewMemberFormLite extends StatefulWidget {
 }
 
 class _NewMemberFormLiteState extends State<NewMemberFormLite> {
-  int? equityType;
-  int? compensationType;
+  final equityController = TextEditingController();
+  final equityPeriodController = TextEditingController();
+  final compensationController = TextEditingController();
+  final compensationPeriodController = TextEditingController();
+
+  bool isWithEquity = false;
+  bool isMonthlyCompensated = false;
 
   OrganizationMember get member => widget.member;
   String get title => widget.title;
@@ -47,19 +49,67 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
 
   onMonthlyCompensationChanged(String value) {
     setState(() {
-      member.monthlyCompensation = double.tryParse(value) ?? 0;
+      member.compensation?.amount = double.tryParse(value) ?? 0;
+    });
+  }
+
+  onEquityChanged(String value) {
+    setState(() {
+      member.equity?.amount = double.tryParse(value) ?? 0;
+    });
+  }
+
+  onEquityPeriodChanged(String value) {
+    setState(() {
+      member.equity?.period?.value = double.tryParse(value) ?? 0;
+    });
+  }
+
+  onCompensationPeriodChanged(String value) {
+    setState(() {
+      member.compensation?.period?.value = double.tryParse(value) ?? 0;
+    });
+  }
+
+  onEquityTimeframeChanged(Map? value) {
+    setState(() {
+      member.equity?.period?.timeframe = value?['value'];
+    });
+  }
+
+  onCompensationTimeframeChanged(Map? value) {
+    setState(() {
+      member.compensation?.period?.timeframe = value?['value'];
     });
   }
 
   onIsMonthlyCompensatedChanged(bool value) {
     setState(() {
-      member.isMonthlyCompensated = value;
+      isMonthlyCompensated = value;
+      compensationController.text = '';
+      if (value) {
+        member.compensation = Compensation(type: CompensationType.PerMonth);
+      } else {
+        member.compensation = null;
+      }
     });
   }
 
   onAutoContributionChanged(bool value) {
     setState(() {
       member.isAutoContributing = value;
+    });
+  }
+
+  onIsWithEquityChanged(bool value) {
+    setState(() {
+      isWithEquity = value;
+      equityController.text = '';
+      if (value) {
+        member.equity = Equity(type: EquityType.Immediately);
+      } else {
+        member.equity = null;
+      }
     });
   }
 
@@ -74,10 +124,10 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             CupertinoSwitch(
-              value: widget.member.isMonthlyCompensated!,
+              value: isWithEquity,
               activeColor: COLOR_GREEN,
               onChanged: (bool? value) {
-                onIsMonthlyCompensatedChanged(value!);
+                onIsWithEquityChanged(value!);
               },
             ),
           ],
@@ -107,32 +157,35 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           minLeadingWidth: 0,
           leading: Radio(
             activeColor: Colors.black,
-            value: 1,
-            groupValue: equityType,
-            onChanged: (int? type) {
-              setState(() {
-                equityType = type!;
-              });
-            },
+            value: EquityType.Immediately,
+            groupValue: member.equity?.type,
+            onChanged: isWithEquity
+                ? (EquityType? type) {
+                    setState(() {
+                      equityPeriodController.text = '';
+                      member.equity?.type = type;
+                      member.equity?.period = null;
+                    });
+                  }
+                : null,
           ),
         ),
         AppTextFormFieldBordered(
-          enabled: widget.member.isMonthlyCompensated!,
+          controller: equityController,
+          enabled:
+              isWithEquity && member.equity?.type == EquityType.Immediately,
           prefix: const Text('%'),
           inputType: const TextInputType.numberWithOptions(decimal: true),
-          validator: widget.member.isMonthlyCompensated!
-              ? multiValidate([
-                  requiredField(
-                    AppLocalizations.of(context)!
-                        .createOrgMemberScreen_monthlyCompensationLabel,
-                  ),
-                  numberField(
-                    AppLocalizations.of(context)!
-                        .createOrgMemberScreen_monthlyCompensationLabel,
-                  ),
-                ])
-              : (_) => null,
-          onChanged: onMonthlyCompensationChanged,
+          validator:
+              isWithEquity && member.equity?.type == EquityType.Immediately
+                  ? multiValidate([
+                      requiredField('Equity'),
+                      numberField('Equity'),
+                      max(100),
+                      min(0),
+                    ])
+                  : (_) => null,
+          onChanged: onEquityChanged,
         ),
         const SizedBox(height: 10),
         ListTile(
@@ -160,60 +213,64 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           minLeadingWidth: 0,
           leading: Radio(
             activeColor: Colors.black,
-            value: 2,
-            groupValue: equityType,
-            onChanged: (int? type) {
-              setState(() {
-                equityType = type!;
-              });
-            },
+            value: EquityType.DuringPeriod,
+            groupValue: member.equity?.type,
+            onChanged: isWithEquity
+                ? (EquityType? type) {
+                    setState(() {
+                      equityPeriodController.text = '';
+                      member.equity?.type = type;
+                      member.equity?.period =
+                          Period(timeframe: PeriodType.Months);
+                    });
+                  }
+                : null,
           ),
         ),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: AppTextFormFieldBordered(
-                enabled: widget.member.isMonthlyCompensated!,
+                controller: equityController,
+                enabled: isWithEquity &&
+                    member.equity?.type == EquityType.DuringPeriod,
                 prefix: const Text('%'),
                 inputType: const TextInputType.numberWithOptions(decimal: true),
-                validator: widget.member.isMonthlyCompensated!
+                validator: isWithEquity &&
+                        member.equity?.type == EquityType.DuringPeriod
                     ? multiValidate([
-                        requiredField(
-                          AppLocalizations.of(context)!
-                              .createOrgMemberScreen_monthlyCompensationLabel,
-                        ),
-                        numberField(
-                          AppLocalizations.of(context)!
-                              .createOrgMemberScreen_monthlyCompensationLabel,
-                        ),
+                        requiredField('Equity'),
+                        numberField('Equity'),
+                        max(100),
+                        min(0),
                       ])
                     : (_) => null,
-                onChanged: onMonthlyCompensationChanged,
+                onChanged: onEquityChanged,
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: AppTextFormFieldBordered(
-                enabled: widget.member.isMonthlyCompensated!,
+                controller: equityPeriodController,
+                enabled: isWithEquity &&
+                    member.equity?.type == EquityType.DuringPeriod,
                 labelText: 'period',
-                validator: widget.member.isMonthlyCompensated!
+                validator: isWithEquity &&
+                        member.equity?.type == EquityType.DuringPeriod
                     ? multiValidate([
-                        requiredField(
-                          AppLocalizations.of(context)!
-                              .createOrgMemberScreen_monthlyCompensationLabel,
-                        ),
-                        numberField(
-                          AppLocalizations.of(context)!
-                              .createOrgMemberScreen_monthlyCompensationLabel,
-                        ),
+                        requiredField('Period'),
+                        numberField('Period'),
                       ])
                     : (_) => null,
-                onChanged: onMonthlyCompensationChanged,
+                onChanged: onEquityPeriodChanged,
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: ModalFormField<Map>(
+                enabled: isWithEquity &&
+                    member.equity?.type == EquityType.DuringPeriod,
                 screenFactory: (value) => GenericScreen(
                   title: 'Select',
                   child: AppSelect(
@@ -226,6 +283,14 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
                 ),
                 valueToText: (value) => value?['title'],
                 labelText: 'timeframe',
+                onChanged: onEquityTimeframeChanged,
+                initialValue: member.equity?.period != null
+                    ? {
+                        'title': member.equity?.period?.timeframe?.name
+                            .toLowerCase(),
+                        'value': member.equity?.period?.timeframe,
+                      }
+                    : null,
               ),
             ),
           ],
@@ -245,7 +310,7 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             CupertinoSwitch(
-              value: widget.member.isMonthlyCompensated!,
+              value: isMonthlyCompensated,
               activeColor: COLOR_GREEN,
               onChanged: (bool? value) {
                 onIsMonthlyCompensatedChanged(value!);
@@ -278,29 +343,30 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           minLeadingWidth: 0,
           leading: Radio(
             activeColor: Colors.black,
-            value: 1,
-            groupValue: compensationType,
-            onChanged: (int? type) {
-              setState(() {
-                compensationType = type!;
-              });
-            },
+            value: CompensationType.PerMonth,
+            groupValue: member.compensation?.type,
+            onChanged: isMonthlyCompensated
+                ? (CompensationType? type) {
+                    setState(() {
+                      compensationPeriodController.text = '';
+                      member.compensation?.type = type;
+                      member.compensation?.period = null;
+                    });
+                  }
+                : null,
           ),
         ),
         AppTextFormFieldBordered(
-          enabled: widget.member.isMonthlyCompensated!,
+          controller: compensationController,
+          enabled: isMonthlyCompensated &&
+              member.compensation?.type == CompensationType.PerMonth,
           prefix: const Text('\$'),
           inputType: const TextInputType.numberWithOptions(decimal: true),
-          validator: widget.member.isMonthlyCompensated!
+          validator: isMonthlyCompensated &&
+                  member.compensation?.type == CompensationType.PerMonth
               ? multiValidate([
-                  requiredField(
-                    AppLocalizations.of(context)!
-                        .createOrgMemberScreen_monthlyCompensationLabel,
-                  ),
-                  numberField(
-                    AppLocalizations.of(context)!
-                        .createOrgMemberScreen_monthlyCompensationLabel,
-                  ),
+                  requiredField('Compensation'),
+                  numberField('Compensation'),
                 ])
               : (_) => null,
           onChanged: onMonthlyCompensationChanged,
@@ -331,32 +397,36 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           minLeadingWidth: 0,
           leading: Radio(
             activeColor: Colors.black,
-            value: 2,
-            groupValue: compensationType,
-            onChanged: (int? type) {
-              setState(() {
-                compensationType = type!;
-              });
-            },
+            value: CompensationType.OneTime,
+            groupValue: member.compensation?.type,
+            onChanged: isMonthlyCompensated
+                ? (CompensationType? type) {
+                    setState(() {
+                      compensationPeriodController.text = '';
+                      member.compensation?.type = type;
+                      member.compensation?.period = Period(
+                        timeframe: PeriodType.Months,
+                      );
+                    });
+                  }
+                : null,
           ),
         ),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: AppTextFormFieldBordered(
-                enabled: widget.member.isMonthlyCompensated!,
+                controller: compensationController,
+                enabled: isMonthlyCompensated &&
+                    member.compensation?.type == CompensationType.OneTime,
                 prefix: const Text('\$'),
                 inputType: const TextInputType.numberWithOptions(decimal: true),
-                validator: widget.member.isMonthlyCompensated!
+                validator: isMonthlyCompensated &&
+                        member.compensation?.type == CompensationType.OneTime
                     ? multiValidate([
-                        requiredField(
-                          AppLocalizations.of(context)!
-                              .createOrgMemberScreen_monthlyCompensationLabel,
-                        ),
-                        numberField(
-                          AppLocalizations.of(context)!
-                              .createOrgMemberScreen_monthlyCompensationLabel,
-                        ),
+                        requiredField('Compensation'),
+                        numberField('Compensation'),
                       ])
                     : (_) => null,
                 onChanged: onMonthlyCompensationChanged,
@@ -365,26 +435,25 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
             const SizedBox(width: 10),
             Expanded(
               child: AppTextFormFieldBordered(
-                enabled: widget.member.isMonthlyCompensated!,
+                controller: compensationPeriodController,
+                enabled: isMonthlyCompensated &&
+                    member.compensation?.type == CompensationType.OneTime,
                 labelText: 'period',
-                validator: widget.member.isMonthlyCompensated!
+                validator: isMonthlyCompensated &&
+                        member.compensation?.type == CompensationType.OneTime
                     ? multiValidate([
-                        requiredField(
-                          AppLocalizations.of(context)!
-                              .createOrgMemberScreen_monthlyCompensationLabel,
-                        ),
-                        numberField(
-                          AppLocalizations.of(context)!
-                              .createOrgMemberScreen_monthlyCompensationLabel,
-                        ),
+                        requiredField('Period'),
+                        numberField('Period'),
                       ])
                     : (_) => null,
-                onChanged: onMonthlyCompensationChanged,
+                onChanged: onCompensationPeriodChanged,
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: ModalFormField<Map>(
+                enabled: isMonthlyCompensated &&
+                    member.compensation?.type == CompensationType.OneTime,
                 screenFactory: (value) => GenericScreen(
                   title: 'Select',
                   child: AppSelect(
@@ -397,6 +466,14 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
                 ),
                 valueToText: (value) => value?['title'],
                 labelText: 'timeframe',
+                initialValue: member.compensation?.period != null
+                    ? {
+                        'title': member.compensation?.period?.timeframe?.name
+                            .toLowerCase(),
+                        'value': member.compensation?.period?.timeframe,
+                      }
+                    : null,
+                onChanged: onCompensationTimeframeChanged,
               ),
             ),
           ],

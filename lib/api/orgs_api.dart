@@ -75,10 +75,15 @@ class _OrgsApi extends BaseApi {
   Future<Response> createOffer(
     String orgId,
     OrganizationMember member,
+    bool isLite,
   ) {
     final body = {
       'memberProspect': member.toMap(),
     };
+
+    if (isLite) {
+      return client.post('/lite/orgs/$orgId/offers', data: body);
+    }
 
     return client.post('/orgs/$orgId/offers', data: body);
   }

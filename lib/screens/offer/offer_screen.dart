@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
@@ -14,6 +15,7 @@ import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/state/config.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OfferScreen extends StatefulWidget {
@@ -192,7 +194,7 @@ class _OfferScreenState extends State<OfferScreen> {
     );
   }
 
-  buildMemberDetails(BuildContext context, Offer offer) {
+  buildMemberDetailsPro(BuildContext context, Offer offer) {
     return Container(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
@@ -249,7 +251,7 @@ class _OfferScreenState extends State<OfferScreen> {
               ),
             ],
           ),
-          if (offer.memberProspect!.isMonthlyCompensated!)
+          if (offer.memberProspect!.compensation != null)
             Column(
               children: [
                 const SizedBox(height: 10),
@@ -261,7 +263,7 @@ class _OfferScreenState extends State<OfferScreen> {
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      '\$${offer.memberProspect!.monthlyCompensation}',
+                      '\$${offer.memberProspect!.compensation?.amount}',
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ],
@@ -290,6 +292,126 @@ class _OfferScreenState extends State<OfferScreen> {
         ],
       ),
     );
+  }
+
+  buildMemberDetailsLite(BuildContext context, Offer offer) {
+    return Container(
+      padding: const EdgeInsets.all(25),
+      decoration: BoxDecoration(
+        color: COLOR_LIGHT_GRAY,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Role',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              Text(
+                '${offer.memberProspect?.role?.name}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+          const SizedBox(height: 26),
+          const Divider(
+            color: COLOR_LIGHT_GRAY2,
+            height: 1,
+          ),
+          const SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Occupation',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+              Text(
+                '${offer.memberProspect?.occupation}',
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+          if (offer.memberProspect?.equity != null)
+            Column(
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Equity',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      '${offer.memberProspect?.equity?.amount}%',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                if (offer.memberProspect?.equity?.type ==
+                    EquityType.DuringPeriod)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Period to get equity'),
+                      Text(
+                        '${offer.memberProspect?.equity?.period?.value} ${offer.memberProspect?.equity?.period?.timeframe?.name.toLowerCase()}',
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          if (offer.memberProspect?.compensation != null)
+            Column(
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      offer.memberProspect?.compensation?.type ==
+                              CompensationType.PerMonth
+                          ? 'Paycheck per month'
+                          : 'One-time payment',
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      '\$${offer.memberProspect?.compensation?.amount}',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                if (offer.memberProspect?.compensation?.type ==
+                    CompensationType.OneTime)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Period to get payment'),
+                      Text(
+                        '${offer.memberProspect?.compensation?.period?.value} ${offer.memberProspect?.compensation?.period?.timeframe?.name.toLowerCase()}',
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  buildMemberDetails(BuildContext context, Offer offer) {
+    Config config = ConfigState.of(context).config;
+    if (config.mode == Mode.Pro) {
+      return buildMemberDetailsPro(context, offer);
+    } else {
+      return buildMemberDetailsLite(context, offer);
+    }
   }
 
   Future<void> openPaymentLink(String link) async {

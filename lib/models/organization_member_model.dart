@@ -10,13 +10,100 @@ enum MemberRole {
   Investor,
 }
 
+enum PeriodType {
+  Days,
+  Weeks,
+  Months,
+  Years,
+}
+
+enum EquityType { Immediately, DuringPeriod }
+
+enum CompensationType { PerMonth, OneTime }
+
+class Period {
+  double? value;
+  PeriodType? timeframe;
+
+  Period({
+    this.value,
+    this.timeframe,
+  });
+
+  Period.fromJson(Map<String, dynamic> json) {
+    value = intToDouble(json['value']);
+    timeframe = CommonUtils.stringToEnum(json['timeframe'], PeriodType.values);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'value': value,
+      'timeframe': timeframe?.name,
+    };
+  }
+}
+
+class Equity {
+  double? amount;
+  EquityType? type;
+  Period? period;
+
+  Equity({
+    this.amount,
+    this.type,
+    this.period,
+  });
+
+  Equity.fromJson(Map<String, dynamic> json) {
+    amount = intToDouble(json['amount']);
+    type = CommonUtils.stringToEnum(json['type'], EquityType.values);
+    period = json['period'] is Map
+        ? Period.fromJson(json['period'])
+        : json['period'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'amount': amount,
+      'type': type?.name,
+      'period': period?.toJson(),
+    };
+  }
+}
+
+class Compensation {
+  double? amount;
+  CompensationType? type;
+  Period? period;
+
+  Compensation({
+    this.amount,
+    this.type,
+    this.period,
+  });
+
+  Compensation.fromJson(Map<String, dynamic> json) {
+    amount = intToDouble(json['amount']);
+    type = CommonUtils.stringToEnum(json['type'], CompensationType.values);
+    period = json['period'] is Map
+        ? Period.fromJson(json['period'])
+        : json['period'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'amount': amount,
+      'type': type?.name,
+      'period': period?.toJson(),
+    };
+  }
+}
+
 class OrganizationMember {
   String? id;
   String? occupation;
   MemberRole? role;
   double? impactRatio;
-  bool? isMonthlyCompensated;
-  double? monthlyCompensation;
   bool? isAutoContributing;
   double? hoursPerWeek;
   dynamic user;
@@ -24,13 +111,13 @@ class OrganizationMember {
   double? contributed;
   InvestorSettings? investorSettings;
   int? lamportsEarned;
+  Equity? equity;
+  Compensation? compensation;
 
   OrganizationMember({
     this.occupation,
     this.role,
     this.impactRatio = 1,
-    this.isMonthlyCompensated = true,
-    this.monthlyCompensation,
     this.isAutoContributing = false,
     this.hoursPerWeek = 40,
     this.user,
@@ -38,6 +125,8 @@ class OrganizationMember {
     this.contributed = 0,
     this.investorSettings,
     this.lamportsEarned,
+    this.equity,
+    this.compensation,
   });
 
   OrganizationMember.fromJson(Map<String, dynamic> json) {
@@ -45,8 +134,6 @@ class OrganizationMember {
     occupation = json['occupation'];
     role = CommonUtils.stringToEnum(json['role'], MemberRole.values);
     impactRatio = intToDouble(json['impactRatio']);
-    isMonthlyCompensated = json['isMonthlyCompensated'];
-    monthlyCompensation = intToDouble(json['monthlyCompensation']);
     isAutoContributing = json['isAutoContributing'];
     hoursPerWeek = intToDouble(json['hoursPerWeek']);
     user = json['user'] is Map ? User.fromJson(json['user']) : json['user'];
@@ -56,6 +143,12 @@ class OrganizationMember {
     investorSettings = json['investorSettings'] is Map
         ? InvestorSettings.fromJson(json['investorSettings'])
         : json['investorSettings'];
+    equity = json['equity'] is Map
+        ? Equity.fromJson(json['equity'])
+        : json['equity'];
+    compensation = json['compensation'] is Map
+        ? Compensation.fromJson(json['compensation'])
+        : json['compensation'];
   }
 
   @override
@@ -64,8 +157,6 @@ class OrganizationMember {
 ${super.toString()}
 occupation: $occupation
 impactRatio: $impactRatio
-isMonthlyCompensated: $isMonthlyCompensated
-monthlyCompensation: $monthlyCompensation
 isAutoContributing: $isAutoContributing
 hoursPerWeek: $hoursPerWeek
 ''';
@@ -76,13 +167,13 @@ hoursPerWeek: $hoursPerWeek
       'occupation': occupation,
       'role': role?.name,
       'impactRatio': impactRatio,
-      'isMonthlyCompensated': isMonthlyCompensated,
-      'monthlyCompensation': monthlyCompensation,
       'isAutoContributing': isAutoContributing,
       'hoursPerWeek': hoursPerWeek,
       'user': user,
       'org': org,
       'investorSettings': investorSettings?.toJson(),
+      'equity': equity?.toJson(),
+      'compensation': compensation?.toJson(),
     };
   }
 }
