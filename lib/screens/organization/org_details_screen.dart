@@ -12,6 +12,7 @@ import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
+import 'package:iw_app/screens/organization/members_details_lite_screen.dart';
 import 'package:iw_app/screens/organization/members_details_screen.dart';
 import 'package:iw_app/screens/organization/org_settings_screen.dart';
 import 'package:iw_app/screens/organization/receive_money_payment_type_screen.dart';
@@ -334,12 +335,17 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   }
 
   onViewDetailsPressed(List<OrganizationMemberWithEquity> members) {
+    Config config = ConfigState.of(context).config;
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => OrgMemebersDetails(
-          memebersWithEquity: members,
-        ),
+        builder: (_) => config.mode == Mode.Pro
+            ? OrgMemebersDetails(
+                memebersWithEquity: members,
+              )
+            : OrgMemebersDetailsLite(
+                memebersWithEquity: members,
+              ),
       ),
     );
   }
