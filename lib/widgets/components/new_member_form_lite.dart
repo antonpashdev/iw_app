@@ -30,9 +30,7 @@ class NewMemberFormLite extends StatefulWidget {
 }
 
 class _NewMemberFormLiteState extends State<NewMemberFormLite> {
-  final equityController = TextEditingController();
   final equityPeriodController = TextEditingController();
-  final compensationController = TextEditingController();
   final compensationPeriodController = TextEditingController();
 
   bool isWithEquity = false;
@@ -86,7 +84,6 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
   onIsMonthlyCompensatedChanged(bool value) {
     setState(() {
       isMonthlyCompensated = value;
-      compensationController.text = '';
       if (value) {
         member.compensation = Compensation(type: CompensationType.PerMonth);
       } else {
@@ -104,7 +101,6 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
   onIsWithEquityChanged(bool value) {
     setState(() {
       isWithEquity = value;
-      equityController.text = '';
       if (value) {
         member.equity = Equity(type: EquityType.Immediately);
       } else {
@@ -171,7 +167,6 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           ),
         ),
         AppTextFormFieldBordered(
-          controller: equityController,
           enabled:
               isWithEquity && member.equity?.type == EquityType.Immediately,
           prefix: const Text('%'),
@@ -232,7 +227,6 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           children: [
             Expanded(
               child: AppTextFormFieldBordered(
-                controller: equityController,
                 enabled: isWithEquity &&
                     member.equity?.type == EquityType.DuringPeriod,
                 prefix: const Text('%'),
@@ -357,7 +351,6 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           ),
         ),
         AppTextFormFieldBordered(
-          controller: compensationController,
           enabled: isMonthlyCompensated &&
               member.compensation?.type == CompensationType.PerMonth,
           prefix: const Text('\$'),
@@ -417,7 +410,6 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           children: [
             Expanded(
               child: AppTextFormFieldBordered(
-                controller: compensationController,
                 enabled: isMonthlyCompensated &&
                     member.compensation?.type == CompensationType.OneTime,
                 prefix: const Text('\$'),
