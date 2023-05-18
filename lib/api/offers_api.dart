@@ -21,10 +21,18 @@ class _OffersApi extends BaseApi {
     return client.get('/offers/sale/$offerId');
   }
 
-  Future<Response> acceptDeclineSaleOffer(String offerId, String status) {
+  Future<Response> acceptDeclineSaleOffer(
+    String offerId,
+    String status,
+    bool isLite,
+  ) {
     final body = {
       'status': status,
     };
+
+    if (isLite) {
+      return client.patch('/lite/offers/sale/$offerId', data: body);
+    }
 
     return client.patch('/offers/sale/$offerId', data: body);
   }

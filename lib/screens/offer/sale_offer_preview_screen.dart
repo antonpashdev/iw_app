@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
@@ -9,6 +10,7 @@ import 'package:iw_app/widgets/components/url_qr_code.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/state/config.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
 
@@ -67,6 +69,7 @@ class SaleOfferPreviewScreen extends StatelessWidget {
   }
 
   buildDetails(BuildContext context) {
+    Config config = ConfigState.of(context).config;
     final equity = ((saleOffer.tokensAmount! * LAMPORTS_IN_SOL) /
             saleOffer.org.lamportsMinted *
             100)
@@ -86,27 +89,26 @@ class SaleOfferPreviewScreen extends StatelessWidget {
             height: 1,
           ),
           const SizedBox(height: 20),
+          if (config.mode == Mode.Pro)
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Number of Impact Shares'),
+                    Text(
+                      '${saleOffer.tokensAmount}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+              ],
+            ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Number of Impact Shares',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-              Text(
-                '${saleOffer.tokensAmount}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Equity to Date',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
+              Text(config.mode == Mode.Pro ? 'Equity to Date' : 'Equity'),
               Text(
                 '$equity%',
                 style: const TextStyle(
