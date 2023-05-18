@@ -36,6 +36,9 @@ class LoginScreen extends StatelessWidget {
     String slogan = config.mode == Mode.Lite
         ? 'Manage your equity like never before'
         : AppLocalizations.of(context)!.loginScreen_slogan;
+    String logoPath = config.mode == Mode.Lite
+        ? 'assets/images/logo_with_text_lite.svg'
+        : 'assets/images/logo_with_text.svg';
     return Scaffold(
       backgroundColor: APP_BODY_BG,
       appBar: AppBar(
@@ -50,7 +53,7 @@ class LoginScreen extends StatelessWidget {
               Center(
                 child: Stack(
                   children: [
-                    SvgPicture.asset('assets/images/logo_with_text.svg'),
+                    SvgPicture.asset(logoPath),
                     GestureDetector(
                       onTap: () => onLogoPressed(config, context),
                       child: Container(

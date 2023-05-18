@@ -150,6 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   buildAssetExample() {
+    Config config = ConfigState.of(context).config;
     return AssetsListTile(
       leading: Container(
         width: 60,
@@ -161,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       name: AppLocalizations.of(context)!.homeScreen_assetsExampleTitle,
       account: '@orgs_account',
-      tokensAmount: '-',
+      tokensAmount: config.mode == Mode.Pro ? '-' : null,
       equity: '-',
     );
   }
