@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/constants/send_asset_type.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/user_model.dart';
@@ -11,6 +12,7 @@ import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/state/config.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
 final _debouncer = Debouncer(duration: const Duration(milliseconds: 1000));
@@ -88,8 +90,11 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Config config = ConfigState.of(context).config;
     return ScreenScaffold(
-      title: 'Number of Impact Shares',
+      title: config.mode == Mode.Pro
+          ? 'Number of Impact Shares'
+          : 'Percent of Equity',
       child: Form(
         key: formGlobalKey,
         child: Column(
@@ -97,47 +102,55 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
             Expanded(
               child: KeyboardDismissableListView(
                 children: [
-                  const Text(
-                    'Enter number of Impact Shares you want to send',
-                    style: TextStyle(
+                  Text(
+                    config.mode == Mode.Pro
+                        ? 'Enter number of Impact Shares you want to send'
+                        : 'Enter percent of equity you want to send',
+                    style: const TextStyle(
                         color: COLOR_GRAY,
                         fontSize: 16,
                         fontWeight: FontWeight.w500),
                   ),
                   const SizedBox(height: 55),
-                  const Text('Number of Impact Shares'),
-                  const SizedBox(height: 15),
-                  AppTextFormFieldBordered(
-                    controller: amountController,
-                    validator: multiValidate([
-                      requiredField('Number of Impact Shares'),
-                      numberField('Number of Impact Shares'),
-                      max(member.lamportsEarned! / LAMPORTS_IN_SOL),
-                    ]),
-                    suffix: InkWell(
-                      onTap: () {
-                        setState(() {
-                          tokensAmount =
-                              widget.member.lamportsEarned! / LAMPORTS_IN_SOL;
-                        });
-                        amountController.text = tokensAmount.toString();
-                        fetchEquity();
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text(
-                          'Max',
-                          style: Theme.of(context).textTheme.bodySmall!,
+                  if (config.mode == Mode.Pro)
+                    Column(
+                      children: [
+                        const Text('Number of Impact Shares'),
+                        const SizedBox(height: 15),
+                        AppTextFormFieldBordered(
+                          controller: amountController,
+                          validator: multiValidate([
+                            requiredField('Number of Impact Shares'),
+                            numberField('Number of Impact Shares'),
+                            max(member.lamportsEarned! / LAMPORTS_IN_SOL),
+                          ]),
+                          suffix: InkWell(
+                            onTap: () {
+                              setState(() {
+                                tokensAmount = widget.member.lamportsEarned! /
+                                    LAMPORTS_IN_SOL;
+                              });
+                              amountController.text = tokensAmount.toString();
+                              fetchEquity();
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                'Max',
+                                style: Theme.of(context).textTheme.bodySmall!,
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            tokensAmount = double.tryParse(value);
+                            fetchEquity();
+                          },
                         ),
-                      ),
+                        const SizedBox(height: 30),
+                      ],
                     ),
-                    onChanged: (value) {
-                      tokensAmount = double.tryParse(value);
-                      fetchEquity();
-                    },
-                  ),
-                  const SizedBox(height: 30),
-                  const Text('Equity to date'),
+                  Text(config.mode == Mode.Pro ? 'Equity to date' : 'Equity'),
                   const SizedBox(height: 15),
                   AppTextFormFieldBordered(
                     controller: equityController,
@@ -160,7 +173,11 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
                       ),
                     ),
                     onChanged: (value) {
-                      equityController.text = equity ?? '';
+                      if (config.mode == Mode.Pro) {
+                        equityController.text = equity ?? '';
+                      } else {
+                        tokensAmount = double.tryParse(value);
+                      }
                     },
                   ),
                 ],

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/constants/send_asset_type.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/state/config.dart';
 
 class SuccessScreen extends StatelessWidget {
   final double sharesSent;
@@ -29,6 +31,7 @@ class SuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Config config = ConfigState.of(context).config;
     return ScreenScaffold(
         title: '',
         child: Center(
@@ -42,14 +45,19 @@ class SuccessScreen extends StatelessWidget {
                   color: COLOR_GREEN,
                 ),
                 const SizedBox(height: 30),
-                Text('$sharesSent Impact Shares Sent',
+                Text(
+                    config.mode == Mode.Pro
+                        ? '$sharesSent Impact Shares Sent'
+                        : '$sharesSent% of equity sent!',
                     style: const TextStyle(
                         color: COLOR_ALMOST_BLACK,
                         fontWeight: FontWeight.w600,
                         fontSize: 24)),
                 const SizedBox(height: 20),
                 Text(
-                  'Impact Shares of $orgName have been successfully sent to ${sendAssetType == SendAssetType.ToUser ? '@$receiverNickName' : receiverAddress!.replaceRange(4, 40, '...')}',
+                  config.mode == Mode.Pro
+                      ? 'Impact Shares of $orgName have been successfully sent to ${sendAssetType == SendAssetType.ToUser ? '@$receiverNickName' : receiverAddress!.replaceRange(4, 40, '...')}'
+                      : 'Equity of $orgName has been successfully sent to ${sendAssetType == SendAssetType.ToUser ? '@$receiverNickName' : receiverAddress!.replaceRange(4, 40, '...')}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: COLOR_GRAY,

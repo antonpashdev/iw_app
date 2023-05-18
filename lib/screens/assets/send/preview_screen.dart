@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/constants/send_asset_type.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/user_model.dart';
@@ -10,6 +11,7 @@ import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/state/config.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
 
@@ -123,10 +125,12 @@ class _PreviewScreenState extends State<PreviewScreen> {
   }
 
   buildInfoCard(BuildContext context) {
-    final equity = ((widget.tokens * LAMPORTS_IN_SOL) /
+    Config config = ConfigState.of(context).config;
+    final equity = config.mode == Mode.Pro
+        ? ((widget.tokens * LAMPORTS_IN_SOL) /
             widget.organization.lamportsMinted! *
             100)
-        .toStringAsFixed(1);
+        : widget.tokens.toStringAsFixed(1);
     return Container(
       decoration: BoxDecoration(
         color: COLOR_LIGHT_GRAY,
@@ -159,34 +163,28 @@ class _PreviewScreenState extends State<PreviewScreen> {
             const SizedBox(height: 15),
             const Divider(),
             const SizedBox(height: 15),
+            if (config.mode == Mode.Pro)
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Number of Impact Shares'),
+                      Text(
+                        widget.tokens.toString(),
+                        style: const TextStyle(
+                            color: COLOR_ALMOST_BLACK,
+                            fontWeight: FontWeight.w700),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                ],
+              ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Number of Impact Shares',
-                  style: TextStyle(
-                      color: COLOR_ALMOST_BLACK,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14),
-                ),
-                Text(
-                  widget.tokens.toString(),
-                  style: const TextStyle(
-                      color: COLOR_ALMOST_BLACK, fontWeight: FontWeight.w700),
-                )
-              ],
-            ),
-            const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Equity to Date',
-                  style: TextStyle(
-                      color: COLOR_ALMOST_BLACK,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14),
-                ),
+                Text(config.mode == Mode.Pro ? 'Equity to Date' : 'Equity'),
                 Text(
                   '$equity%',
                   style: const TextStyle(
@@ -204,10 +202,12 @@ class _PreviewScreenState extends State<PreviewScreen> {
     setState(() {
       _isLoading = true;
     });
+    Config config = ConfigState.of(context).config;
     try {
       await usersApi.sendAssets(
         widget.member.org.id,
         widget.tokens,
+        config.mode == Mode.Lite,
         recipientId: widget.receiver?.id!,
         recipientAddress: widget.receiverAddress,
       );

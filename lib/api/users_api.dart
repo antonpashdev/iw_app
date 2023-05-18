@@ -105,10 +105,19 @@ class _UsersApi extends BaseApi {
 
   Future<Response> sendAssets(
     String orgId,
-    double amount, {
+    double amount,
+    bool isLite, {
     String? recipientId,
     String? recipientAddress,
   }) {
+    if (isLite) {
+      return client.post('/lite/users/assets/$orgId/send', data: {
+        'recipientId': recipientId,
+        'recipientAddress': recipientAddress,
+        'amount': amount,
+      });
+    }
+
     return client.post('/users/assets/$orgId/send', data: {
       'recipientId': recipientId,
       'recipientAddress': recipientAddress,
