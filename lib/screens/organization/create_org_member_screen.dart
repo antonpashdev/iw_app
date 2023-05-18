@@ -31,6 +31,7 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
   final compensationCtrl = TextEditingController();
 
   OrganizationMember member = OrganizationMember(
+    occupation: 'Founder',
     role: MemberRole.CoOwner,
   );
   bool isLoading = false;

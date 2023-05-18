@@ -22,10 +22,17 @@ class NewOwnerMemberFormLite extends NewMemberForm {
 
 class _NewMemberFormLiteState extends State<NewOwnerMemberFormLite> {
   final compensationCtrl = TextEditingController();
+  final occupationCtrl = TextEditingController();
   bool isMonthlyCompensated = false;
 
   OrganizationMember get member => widget.member;
   String get title => widget.title;
+
+  @override
+  initState() {
+    occupationCtrl.text = member.occupation ?? '';
+    super.initState();
+  }
 
   onOccupationChanged(String value) {
     setState(() {
@@ -64,6 +71,8 @@ class _NewMemberFormLiteState extends State<NewOwnerMemberFormLite> {
           ),
           const SizedBox(height: 40),
           AppTextFormField(
+            controller: occupationCtrl,
+            autofocus: true,
             floatingLabelBehavior: FloatingLabelBehavior.never,
             labelText: AppLocalizations.of(context)!
                 .createOrgMemberScreen_occupationLabel,
