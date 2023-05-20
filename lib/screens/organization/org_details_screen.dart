@@ -501,13 +501,14 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
       size: 12,
     );
     final title = item.user?.nickname;
-    final date =
-        item.date != null ? DateTime.parse(item.date!) : DateTime.now();
+    final date = item.date != null
+        ? DateTime.parse(item.date!).toLocal()
+        : DateTime.now();
     final processedAtStr = getFormattedDate(date);
     bool shouldDisplayDate = true;
     if (prevItem != null) {
       final prevDate = prevItem.date != null
-          ? DateTime.parse(prevItem.date!)
+          ? DateTime.parse(prevItem.date!).toLocal()
           : DateTime.now();
       final prevProcessedAtStr = getFormattedDate(prevDate);
       shouldDisplayDate = prevProcessedAtStr != processedAtStr;

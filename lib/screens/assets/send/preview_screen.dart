@@ -40,6 +40,18 @@ class PreviewScreen extends StatefulWidget {
 class _PreviewScreenState extends State<PreviewScreen> {
   bool _isLoading = false;
 
+  Config get config {
+    return ConfigState.of(context).config;
+  }
+
+  get equity {
+    return config.mode == Mode.Pro
+        ? ((widget.tokens * LAMPORTS_IN_SOL) /
+            widget.organization.lamportsMinted! *
+            100)
+        : widget.tokens.toStringAsFixed(1);
+  }
+
   _buildDetails(double imageSize, double imageRaduis, String? imageUrl,
       Widget title, Widget description) {
     return Row(
@@ -125,12 +137,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
   }
 
   buildInfoCard(BuildContext context) {
-    Config config = ConfigState.of(context).config;
-    final equity = config.mode == Mode.Pro
-        ? ((widget.tokens * LAMPORTS_IN_SOL) /
-            widget.organization.lamportsMinted! *
-            100)
-        : widget.tokens.toStringAsFixed(1);
     return Container(
       decoration: BoxDecoration(
         color: COLOR_LIGHT_GRAY,
@@ -264,7 +270,11 @@ class _PreviewScreenState extends State<PreviewScreen> {
                     onPressed: _isLoading ? null : () => sendAssets(context),
                     child: _isLoading
                         ? const CircularProgressIndicator.adaptive()
-                        : const Text('Send Impact Shares'),
+                        : Text(
+                            config.mode == Mode.Pro
+                                ? 'Send Impact Shares'
+                                : 'Send $equity% Equity',
+                          ),
                   ),
                 ),
               ),

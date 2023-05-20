@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
 import 'package:iw_app/screens/assets/sell_asset_screen.dart';
@@ -10,6 +11,7 @@ import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
+import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
@@ -26,8 +28,9 @@ class AssetScreen extends StatefulWidget {
 
 class _AssetScreenState extends State<AssetScreen> {
   late Future<MemberEquity?> futureEquity;
-
   late Future<List<TxnHistoryItem>> futureHistory;
+
+  Config get config => ConfigState.of(context).config;
 
   @override
   initState() {
@@ -158,16 +161,23 @@ class _AssetScreenState extends State<AssetScreen> {
     final equityStr = (memberEquity.equity! * 100).toStringAsFixed(1);
     return Row(
       children: [
-        Expanded(
-          child: buildAmount(
-            context,
-            'Impact Shares',
-            tokensAmount,
-            COLOR_BLUE,
-            COLOR_LIGHT_GRAY,
+        if (config.mode == Mode.Pro)
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: buildAmount(
+                    context,
+                    'Impact Shares',
+                    tokensAmount,
+                    COLOR_BLUE,
+                    COLOR_LIGHT_GRAY,
+                  ),
+                ),
+                const SizedBox(width: 10),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(width: 10),
         Expanded(
           child: buildAmount(
             context,
@@ -184,8 +194,9 @@ class _AssetScreenState extends State<AssetScreen> {
   buildHistoryItem(
       BuildContext context, TxnHistoryItem item, TxnHistoryItem? prevItem) {
     final sign = item.amount != null && item.amount! < 0 ? '-' : '+';
+    final unit = config.mode == Mode.Pro ? ' iS' : '%';
     final amount = item.amount != null
-        ? '$sign ${(item.amount!.abs() / LAMPORTS_IN_SOL).toStringAsFixed(3)} iS'
+        ? '$sign ${(item.amount!.abs() / LAMPORTS_IN_SOL).toStringAsFixed(3)}$unit'
         : '-';
     final title = item.addressOrUsername!.length == 44
         ? item.addressOrUsername!.replaceRange(4, 40, '...')

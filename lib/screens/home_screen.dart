@@ -268,6 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Config config = ConfigState.of(context).config;
     return Scaffold(
       backgroundColor: APP_BODY_BG,
       appBar: AppBar(
@@ -366,6 +367,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   return const CircularProgressIndicator
                                       .adaptive();
                                 }
+                                final decimals = snapshot.data! < 0.01 ? 3 : 2;
+                                final balance =
+                                    '\$${snapshot.data!.toStringAsFixed(decimals)}';
                                 return InkWell(
                                   onTap: () {
                                     Navigator.of(context).push(
@@ -377,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        '\$${snapshot.data!.toStringAsFixed(2)}',
+                                        balance,
                                         style: Theme.of(context)
                                             .textTheme
                                             .headlineMedium,
@@ -398,8 +402,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                AppLocalizations.of(context)!
-                                    .homeScreen_organizationsTitle,
+                                config.mode == Mode.Lite
+                                    ? 'Orgs & Projects'
+                                    : AppLocalizations.of(context)!
+                                        .homeScreen_organizationsTitle,
                                 style:
                                     Theme.of(context).textTheme.headlineLarge,
                               ),
@@ -457,6 +463,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
+                        const SizedBox(height: 40),
                       ],
                     ),
                   ),

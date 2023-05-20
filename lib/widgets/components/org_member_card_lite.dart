@@ -102,7 +102,7 @@ class OrgMemberCardLite extends StatelessWidget {
         ),
       );
     }
-    final createdAt = DateTime.parse(member!.createdAt!);
+    final createdAt = DateTime.parse(member!.createdAt!).toLocal();
     final createdAtStr = getFormattedDate(createdAt);
     final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
           fontWeight: FontWeight.w500,

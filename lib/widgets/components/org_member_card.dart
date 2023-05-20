@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
+import 'package:iw_app/widgets/state/config.dart';
 
 class OrgMemberCard extends StatelessWidget {
   final Function()? onTap;
@@ -38,9 +40,12 @@ class OrgMemberCard extends StatelessWidget {
   }
 
   buildOrgName(BuildContext context) {
+    Config config = ConfigState.of(context).config;
     if (member == null) {
       return Text(
-        AppLocalizations.of(context)!.homeScreen_createNewOrgTitle,
+        config.mode == Mode.Lite
+            ? 'Create Organization or Project'
+            : AppLocalizations.of(context)!.homeScreen_createNewOrgTitle,
         style: Theme.of(context).textTheme.headlineSmall,
       );
     }
