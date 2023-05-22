@@ -528,7 +528,7 @@ class _OfferScreenState extends State<OfferScreen> {
   }
 
   handleCopyPressed(BuildContext context) {
-    Clipboard.setData(ClipboardData(text: payment!.cpPaymentUrl));
+    Clipboard.setData(ClipboardData(text: payment!.cpPaymentUrl!));
     callSnackBar(context);
   }
 

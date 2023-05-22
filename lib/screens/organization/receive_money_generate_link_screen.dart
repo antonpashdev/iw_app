@@ -41,7 +41,7 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
   }
 
   handleCopyPressed(BuildContext context) {
-    Clipboard.setData(ClipboardData(text: payment.cpPaymentUrl));
+    Clipboard.setData(ClipboardData(text: payment.cpPaymentUrl!));
     callSnackBar(
       context,
       AppLocalizations.of(context)!.common_link_copied,
