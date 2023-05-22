@@ -72,6 +72,16 @@ class _OrgsApi extends BaseApi {
     );
   }
 
+  Future<Response> recordContribution(String orgId, String? memo) {
+    final body = {
+      'memo': memo,
+    };
+    return client.post(
+      '/lite/orgs/$orgId/contributions',
+      data: body,
+    );
+  }
+
   Future<Response> createOffer(
     String orgId,
     OrganizationMember member,

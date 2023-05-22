@@ -10,6 +10,7 @@ import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/models/org_events_history_item_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/screens/contribution/contribution_memo_screen.dart';
 import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
 import 'package:iw_app/screens/organization/members_details_lite_screen.dart';
@@ -616,7 +617,20 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     );
   }
 
-  handleStartContributingPressed() async {
+  handleStartContributingPressed(Organization org) async {
+    Config config = ConfigState.of(context).config;
+    if (config.mode == Mode.Lite) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ContributionMemoScreen(
+            contribution: Contribution(
+              org: org,
+            ),
+          ),
+        ),
+      );
+      return;
+    }
     setState(() {
       isLoading = true;
     });
@@ -646,6 +660,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Config config = ConfigState.of(context).config;
     return FutureBuilder<List<dynamic>>(
       future: Future.wait([
         futureOrg,
@@ -804,12 +819,16 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                       widget.isPreviewMode ||
                                       widget.member!.role == MemberRole.Investor
                                   ? null
-                                  : handleStartContributingPressed,
+                                  : () => handleStartContributingPressed(
+                                        snapshot.data![0],
+                                      ),
                               child: isLoading
                                   ? const Center(
                                       child:
                                           CircularProgressIndicator.adaptive())
-                                  : const Text('Start Contributing'),
+                                  : Text(config.mode == Mode.Pro
+                                      ? 'Start Contributing'
+                                      : 'Tell what you\'ve done'),
                             ),
                           ),
                         ),
