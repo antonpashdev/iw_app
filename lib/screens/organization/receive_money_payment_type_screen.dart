@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:iw_app/consrants/payment_type.dart';
+import 'package:iw_app/constants/payment_type.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/organization/receive_money_screen.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';

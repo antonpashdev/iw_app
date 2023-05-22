@@ -64,11 +64,17 @@ $settings
       orgMap['member[occupation]'] = member.occupation;
       orgMap['member[role]'] = member.role?.name;
       orgMap['member[impactRatio]'] = member.impactRatio;
-      orgMap['member[isMonthlyCompensated]'] = member.isMonthlyCompensated;
-      orgMap['member[monthlyCompensation]'] = member.monthlyCompensation;
       orgMap['member[isAutoContributing]'] = member.isAutoContributing;
       orgMap['member[hoursPerWeek]'] = member.hoursPerWeek;
       orgMap['member[user]'] = member.user;
+      if (member.compensation != null) {
+        orgMap['member[compensation][amount]'] = member.compensation!.amount;
+        orgMap['member[compensation][type]'] = member.compensation!.type?.name;
+        orgMap['member[compensation][period][value]'] =
+            member.compensation!.period?.value;
+        orgMap['member[compensation][period][timeframe]'] =
+            member.compensation!.period?.timeframe?.name;
+      }
     }
     return orgMap;
   }

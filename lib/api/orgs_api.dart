@@ -21,6 +21,7 @@ class _OrgsApi extends BaseApi {
   Future<Response> createOrg(
     Organization organization,
     OrganizationMember member,
+    bool isLite,
   ) {
     final orgMap = organization.toMap(member);
     orgMap['logo'] = MultipartFile.fromBytes(
@@ -30,6 +31,9 @@ class _OrgsApi extends BaseApi {
 
     final body = FormData.fromMap(orgMap);
 
+    if (isLite) {
+      return client.post('/lite/orgs', data: body);
+    }
     return client.post('/orgs', data: body);
   }
 
@@ -57,17 +61,29 @@ class _OrgsApi extends BaseApi {
     return client.post('/orgs/$orgId/contributions', data: body);
   }
 
-  Future<Response> stopContribution(String orgId, String contributionId) {
-    return client.delete('/orgs/$orgId/contributions/$contributionId');
+  Future<Response> stopContribution(
+      String orgId, String contributionId, String? memo) {
+    final body = {
+      'memo': memo,
+    };
+    return client.patch(
+      '/orgs/$orgId/contributions/$contributionId',
+      data: body,
+    );
   }
 
   Future<Response> createOffer(
     String orgId,
     OrganizationMember member,
+    bool isLite,
   ) {
     final body = {
       'memberProspect': member.toMap(),
     };
+
+    if (isLite) {
+      return client.post('/lite/orgs/$orgId/offers', data: body);
+    }
 
     return client.post('/orgs/$orgId/offers', data: body);
   }
@@ -76,10 +92,15 @@ class _OrgsApi extends BaseApi {
     String orgId,
     String offerId,
     String status,
+    bool isLite,
   ) {
     final body = {
       'status': status,
     };
+
+    if (isLite) {
+      return client.patch('/lite/orgs/$orgId/offers/$offerId', data: body);
+    }
 
     return client.patch('/orgs/$orgId/offers/$offerId', data: body);
   }
@@ -127,6 +148,10 @@ class _OrgsApi extends BaseApi {
       'amount': data.amount,
     };
     return client.post('/orgs/$orgId/usdc/send', data: body);
+  }
+
+  Future<Response> getOrgEventsHistory(String orgId) {
+    return client.get('/orgs/$orgId/history');
   }
 }
 

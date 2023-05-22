@@ -46,7 +46,7 @@ class _NicknameScreen extends State<NicknameScreen> {
       isLoading = true;
     });
     try {
-      bool isNickNameExists = await usersApi.isUserExists(user.nickname);
+      bool isNickNameExists = await usersApi.isUserExists(user.nickname!);
 
       setState(() {
         userAlreadyExists = isNickNameExists;

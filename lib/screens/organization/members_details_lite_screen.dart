@@ -3,15 +3,16 @@ import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
 
-class OrgMemebersDetails extends StatelessWidget {
+class OrgMemebersDetailsLite extends StatelessWidget {
   final List<OrganizationMemberWithEquity> memebersWithEquity;
 
-  const OrgMemebersDetails({super.key, required this.memebersWithEquity});
+  const OrgMemebersDetailsLite({super.key, required this.memebersWithEquity});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class OrgMemebersDetails extends StatelessWidget {
             itemBuilder: (context, index) {
               final item = memebersWithEquity[index];
               final bool isLast = memebersWithEquity.length == index;
-              return MemberDeitails(
+              return MemberDeitailsLite(
                 memeberWithEquity: item,
                 isLast: isLast,
               );
@@ -34,11 +35,11 @@ class OrgMemebersDetails extends StatelessWidget {
   }
 }
 
-class MemberDeitails extends StatelessWidget {
+class MemberDeitailsLite extends StatelessWidget {
   final OrganizationMemberWithEquity memeberWithEquity;
   final bool isLast;
 
-  const MemberDeitails(
+  const MemberDeitailsLite(
       {super.key, required this.memeberWithEquity, required this.isLast});
 
   @override
@@ -66,6 +67,14 @@ class MemberDeitails extends StatelessWidget {
           );
     const TextStyle defaultDetailDataItemTextStyle = TextStyle(
         color: COLOR_ALMOST_BLACK, fontSize: 16, fontWeight: FontWeight.w500);
+    final createdAt = DateTime.parse(memeberWithEquity.member!.createdAt!);
+    final daysInCompany = (calculateDiffWithNow(createdAt) * -1).toInt();
+    final compensationStr = memeberWithEquity.member!.compensation != null
+        ? '\$${memeberWithEquity.member!.compensation!.amount} ${memeberWithEquity.member!.compensation!.type == CompensationType.PerMonth ? 'per month' : 'for ${memeberWithEquity.member!.compensation!.period!.value} ${memeberWithEquity.member!.compensation!.period!.timeframe!.name.toLowerCase()}'}'
+        : '-';
+    final equityStr = memeberWithEquity.member!.equity != null
+        ? '${memeberWithEquity.member!.equity!.amount}%'
+        : '-';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 25),
@@ -102,44 +111,27 @@ class MemberDeitails extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         DetailDataItem(
-                            title: 'Contributed',
+                            title: 'Contr.',
                             data: Text(
                                 isMemberRoleInvestor
                                     ? '\$${memeberWithEquity.member!.investorSettings!.investmentAmount!.toStringAsFixed(2)}'
-                                    : '${memeberWithEquity.member!.contributed!.toStringAsFixed(3)}h',
+                                    : '${daysInCompany}d',
                                 style: defaultDetailDataItemTextStyle)),
                         DetailDataItem(
-                            title:
-                                isMemberRoleInvestor ? 'Allocation' : 'Ratio',
-                            data: Text(
-                                isMemberRoleInvestor
-                                    ? '${memeberWithEquity.member!.investorSettings!.equityAllocation}%'
-                                    : '${memeberWithEquity.member!.impactRatio}x',
+                            title: 'Compensation',
+                            data: Text(compensationStr,
                                 style: defaultDetailDataItemTextStyle)),
                         DetailDataItem(
-                            title: 'iShares',
-                            data: Text(
-                                (memeberWithEquity.member!.lamportsEarned! /
-                                        LAMPORTS_IN_SOL)
-                                    .toStringAsFixed(4),
-                                style: defaultDetailDataItemTextStyle)),
-                        DetailDataItem(
-                            title: 'Equity',
-                            data: FutureBuilder(
-                              future: memeberWithEquity.futureEquity,
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return Container();
-                                }
-
-                                return Text(
-                                    '${(snapshot.data!.equity! * 100).toStringAsFixed(1)}%',
-                                    style: const TextStyle(
-                                        color: COLOR_GREEN,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500));
-                              },
-                            ))
+                          title: 'Equity',
+                          data: Text(
+                            equityStr,
+                            style: const TextStyle(
+                              color: COLOR_GREEN,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
                       ]),
                   const SizedBox(height: 20),
                   if (!isLast) const Divider()

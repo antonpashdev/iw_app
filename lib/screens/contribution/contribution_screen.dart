@@ -1,12 +1,10 @@
-import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/contribution_model.dart';
-import 'package:iw_app/screens/contribution/contribution_details_screen.dart';
+import 'package:iw_app/screens/contribution/contribution_memo_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 
@@ -25,8 +23,6 @@ class ContributionScreen extends StatefulWidget {
 }
 
 class _ContributionScreenState extends State<ContributionScreen> {
-  bool isLoading = false;
-
   @override
   initState() {
     super.initState();
@@ -141,42 +137,15 @@ class _ContributionScreenState extends State<ContributionScreen> {
     );
   }
 
-  navigateToDetails(Contribution contribution) {
-    if (context.mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (_) => ContributionDetailsScreen(contribution: contribution),
+  handleStopContributionPressed(BuildContext context) {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => ContributionMemoScreen(
+          contribution: widget.contribution,
         ),
-        (route) => false,
-      );
-    }
-  }
-
-  handleStopContributionPressed(BuildContext context) async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      final response = await orgsApi.stopContribution(
-        widget.contribution.org.id,
-        widget.contribution.id!,
-      );
-      final stoppedContribution = Contribution.fromJson(response.data);
-      navigateToDetails(stoppedContribution);
-    } on DioError catch (error) {
-      print(error);
-      if (error.response!.statusCode == HttpStatus.forbidden) {
-        final stoppedContribution =
-            Contribution.fromJson(error.response!.data['contribution']);
-        navigateToDetails(stoppedContribution);
-      }
-    } catch (error) {
-      print(error);
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
+      ),
+      (route) => false,
+    );
   }
 
   @override
@@ -201,22 +170,9 @@ class _ContributionScreenState extends State<ContributionScreen> {
                 ),
               ),
               ElevatedButton(
-                onPressed: isLoading
-                    ? null
-                    : () => handleStopContributionPressed(context),
+                onPressed: () => handleStopContributionPressed(context),
                 style: ElevatedButton.styleFrom(backgroundColor: COLOR_RED),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (isLoading)
-                      const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator.adaptive(),
-                      ),
-                    const Text('Stop Contributing'),
-                  ],
-                ),
+                child: const Text('Stop Contributing'),
               ),
               const SizedBox(height: 60),
             ],

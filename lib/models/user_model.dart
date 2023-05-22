@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 class User {
-  String nickname = '';
-  String name = '';
+  String? nickname = '';
+  String? name = '';
   String? avatar;
   String? id;
   String? wallet;

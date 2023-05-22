@@ -1,16 +1,21 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
+import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
+import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/state/config.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OfferScreen extends StatefulWidget {
@@ -33,6 +38,7 @@ class _OfferScreenState extends State<OfferScreen> {
   bool isLoading = false;
   Future<Offer?>? futureOffer;
   Payment? payment;
+  String? offerError;
 
   @override
   initState() {
@@ -51,53 +57,69 @@ class _OfferScreenState extends State<OfferScreen> {
   }
 
   buildOrganizationSection(BuildContext context, Offer offer) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 90,
-          height: 90,
-          decoration: BoxDecoration(
-            color: COLOR_GRAY,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: FittedBox(
-            fit: BoxFit.cover,
-            child: NetworkImageAuth(
-              imageUrl: '${orgsApi.baseUrl}${offer.org.logo!}',
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => OrgDetailsScreen(
+              orgId: widget.orgId,
+              isPreviewMode: true,
             ),
           ),
-        ),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                offer.memberProspect!.role == MemberRole.Investor
-                    ? 'Invest to'
-                    : 'From',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: COLOR_GRAY,
-                      fontWeight: FontWeight.w500,
-                    ),
+        );
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 90,
+            height: 90,
+            decoration: BoxDecoration(
+              color: COLOR_GRAY,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: NetworkImageAuth(
+                imageUrl: '${orgsApi.baseUrl}${offer.org.logo!}',
               ),
-              const SizedBox(height: 10),
-              Text(
-                '${offer.org.name}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              Text(
-                '@${offer.org.username}',
-                style: const TextStyle(color: COLOR_GRAY),
-              ),
-            ],
+            ),
           ),
-        ),
-      ],
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  offer.memberProspect!.role == MemberRole.Investor
+                      ? 'Invest to'
+                      : 'From',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: COLOR_GRAY,
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  '${offer.org.name}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                Text(
+                  '@${offer.org.username}',
+                  style: const TextStyle(color: COLOR_GRAY),
+                ),
+              ],
+            ),
+          ),
+          const Icon(
+            Icons.chevron_right_rounded,
+            color: COLOR_ALMOST_BLACK,
+          ),
+        ],
+      ),
     );
   }
 
@@ -172,7 +194,7 @@ class _OfferScreenState extends State<OfferScreen> {
     );
   }
 
-  buildMemberDetails(BuildContext context, Offer offer) {
+  buildMemberDetailsPro(BuildContext context, Offer offer) {
     return Container(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
@@ -229,7 +251,7 @@ class _OfferScreenState extends State<OfferScreen> {
               ),
             ],
           ),
-          if (offer.memberProspect!.isMonthlyCompensated!)
+          if (offer.memberProspect!.compensation != null)
             Column(
               children: [
                 const SizedBox(height: 10),
@@ -241,7 +263,7 @@ class _OfferScreenState extends State<OfferScreen> {
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      '\$${offer.memberProspect!.monthlyCompensation}',
+                      '\$${offer.memberProspect!.compensation?.amount}',
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ],
@@ -272,6 +294,126 @@ class _OfferScreenState extends State<OfferScreen> {
     );
   }
 
+  buildMemberDetailsLite(BuildContext context, Offer offer) {
+    return Container(
+      padding: const EdgeInsets.all(25),
+      decoration: BoxDecoration(
+        color: COLOR_LIGHT_GRAY,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Role',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              Text(
+                '${offer.memberProspect?.role?.name}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+          const SizedBox(height: 26),
+          const Divider(
+            color: COLOR_LIGHT_GRAY2,
+            height: 1,
+          ),
+          const SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Occupation',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+              Text(
+                '${offer.memberProspect?.occupation}',
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+          if (offer.memberProspect?.equity != null)
+            Column(
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Equity',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      '${offer.memberProspect?.equity?.amount}%',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                if (offer.memberProspect?.equity?.type ==
+                    EquityType.DuringPeriod)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Period to get equity'),
+                      Text(
+                        '${offer.memberProspect?.equity?.period?.value} ${offer.memberProspect?.equity?.period?.timeframe?.name.toLowerCase()}',
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          if (offer.memberProspect?.compensation != null)
+            Column(
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      offer.memberProspect?.compensation?.type ==
+                              CompensationType.PerMonth
+                          ? 'Paycheck per month'
+                          : 'One-time payment',
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    Text(
+                      '\$${offer.memberProspect?.compensation?.amount}',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                if (offer.memberProspect?.compensation?.type ==
+                    CompensationType.OneTime)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Period to get payment'),
+                      Text(
+                        '${offer.memberProspect?.compensation?.period?.value} ${offer.memberProspect?.compensation?.period?.timeframe?.name.toLowerCase()}',
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  buildMemberDetails(BuildContext context, Offer offer) {
+    Config config = ConfigState.of(context).config;
+    if (config.mode == Mode.Pro) {
+      return buildMemberDetailsPro(context, offer);
+    } else {
+      return buildMemberDetailsLite(context, offer);
+    }
+  }
+
   Future<void> openPaymentLink(String link) async {
     final url = Uri.parse(link);
     if (!await launchUrl(url)) {
@@ -279,22 +421,81 @@ class _OfferScreenState extends State<OfferScreen> {
     }
   }
 
-  handlePressed(Offer offer, String status) async {
+  confirmInvesting(Offer offer, String status) {
+    showBottomInfoSheet(
+      context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Confirm to send money.',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Gilroy',
+            ),
+          ),
+          const SizedBox(height: 15),
+          Text(
+            'By signing this transaction You will get ${offer.memberProspect?.investorSettings?.equityAllocation}% of equity allocation.\n\nThis transaction will be recorded on blockchain.',
+            style: const TextStyle(
+              fontFamily: 'Gilroy',
+            ),
+          ),
+          const SizedBox(height: 35),
+          SecondaryButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              acceptDeclineOffer(offer, status);
+            },
+            child: Text(
+              'Send \$${offer.memberProspect!.investorSettings!.investmentAmount}',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  acceptDeclineOffer(
+    Offer offer,
+    String status, {
+    bool isConfirmed = true,
+  }) async {
+    if (!isConfirmed) {
+      confirmInvesting(offer, status);
+      return;
+    }
     setState(() {
       isLoading = true;
     });
-
+    Config config = ConfigState.of(context).config;
     try {
-      final response = await orgsApi.acceptDeclineOffer(
+      await orgsApi.acceptDeclineOffer(
         offer.org.id,
         offer.id!,
         status,
+        config.mode == Mode.Lite,
       );
-      if (offer.memberProspect!.role == MemberRole.Investor) {
-        setState(() {
-          payment = Payment.fromJson(response.data!);
-        });
-        openPaymentLink(payment!.cpPaymentUrl!);
+      if (context.mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      }
+    } on DioError catch (err) {
+      final message = err.response!.data['message'];
+      if (message != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: COLOR_RED,
+          ),
+        );
       }
     } catch (err) {
       print(err);
@@ -302,10 +503,6 @@ class _OfferScreenState extends State<OfferScreen> {
       setState(() {
         isLoading = false;
       });
-      if (offer.memberProspect!.role != MemberRole.Investor &&
-          context.mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-      }
     }
   }
 
@@ -438,15 +635,20 @@ class _OfferScreenState extends State<OfferScreen> {
                                 if (snapshot.data!.memberProspect!.role !=
                                     MemberRole.Investor)
                                   SecondaryButton(
-                                    onPressed: () => handlePressed(
+                                    onPressed: () => acceptDeclineOffer(
                                         snapshot.data!, 'declined'),
                                     child: const Text('Decline Offer'),
                                   ),
                                 const SizedBox(height: 10),
                                 if (payment == null)
                                   ElevatedButton(
-                                    onPressed: () => handlePressed(
-                                        snapshot.data!, 'accepted'),
+                                    onPressed: () => acceptDeclineOffer(
+                                      snapshot.data!,
+                                      'accepted',
+                                      isConfirmed:
+                                          snapshot.data!.memberProspect!.role !=
+                                              MemberRole.Investor,
+                                    ),
                                     child: Text(
                                       snapshot.data!.memberProspect!.role ==
                                               MemberRole.Investor

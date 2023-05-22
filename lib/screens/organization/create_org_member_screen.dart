@@ -6,12 +6,15 @@ import 'package:flutter/services.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/new_member_form.dart';
+import 'package:iw_app/widgets/components/new_owner_member_form_lite.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
+import 'package:iw_app/widgets/state/config.dart';
 
 class CreateOrgMemberScreen extends StatefulWidget {
   final Organization organization;
@@ -28,11 +31,20 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
   final compensationCtrl = TextEditingController();
 
   OrganizationMember member = OrganizationMember(
+    occupation: 'Founder',
     role: MemberRole.CoOwner,
   );
   bool isLoading = false;
 
   buildForm() {
+    Config config = ConfigState.of(context).config;
+    if (config.mode == Mode.Lite) {
+      return NewOwnerMemberFormLite(
+        formKey: formKey,
+        member: member,
+        title: AppLocalizations.of(context)!.createOrgMemberScreen_description,
+      );
+    }
     return NewMemberForm(
       formKey: formKey,
       member: member,
@@ -51,12 +63,17 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
 
   handleNextPressed() async {
     if (formKey.currentState!.validate()) {
+      Config config = ConfigState.of(context).config;
       setState(() {
         isLoading = true;
       });
       try {
         member.user = await authApi.userId;
-        await orgsApi.createOrg(widget.organization, member);
+        await orgsApi.createOrg(
+          widget.organization,
+          member,
+          config.mode == Mode.Lite,
+        );
 
         navigateToHome();
       } on DioError catch (err) {

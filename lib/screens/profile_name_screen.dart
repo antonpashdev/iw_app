@@ -45,8 +45,8 @@ class _CreateProfile extends State<CreateProfile> {
 
     try {
       final data = await usersApi.createUser(
-        user.name,
-        user.nickname,
+        user.name!,
+        user.nickname!,
         user.avatarToSet,
       );
       await appStorage.write('jwt_token', data.token);

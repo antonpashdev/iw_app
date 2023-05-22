@@ -28,6 +28,7 @@ class _NewMemberFormState extends State<NewMemberForm> {
   late final TextEditingController hoursPerWeekCtrl = TextEditingController(
     text: member.hoursPerWeek!.toString(),
   );
+  bool isMonthlyCompensated = false;
 
   OrganizationMember get member => widget.member;
   String get title => widget.title;
@@ -46,7 +47,8 @@ class _NewMemberFormState extends State<NewMemberForm> {
 
   onMonthlyCompensationChanged(String value) {
     setState(() {
-      member.monthlyCompensation = double.tryParse(value) ?? 0;
+      member.compensation?.amount = double.tryParse(value) ?? 0;
+      member.compensation?.type = CompensationType.PerMonth;
     });
   }
 
@@ -58,7 +60,12 @@ class _NewMemberFormState extends State<NewMemberForm> {
 
   onIsMonthlyCompensatedChanged(bool value) {
     setState(() {
-      member.isMonthlyCompensated = value;
+      isMonthlyCompensated = value;
+      if (value) {
+        member.compensation = Compensation();
+      } else {
+        member.compensation = null;
+      }
     });
   }
 
@@ -158,7 +165,7 @@ class _NewMemberFormState extends State<NewMemberForm> {
                 ],
               ),
               CupertinoSwitch(
-                value: widget.member.isMonthlyCompensated!,
+                value: isMonthlyCompensated,
                 activeColor: COLOR_GREEN,
                 onChanged: (bool? value) {
                   compensationCtrl.clear();
@@ -170,9 +177,9 @@ class _NewMemberFormState extends State<NewMemberForm> {
           const SizedBox(height: 10),
           AppTextFormFieldBordered(
             controller: compensationCtrl,
-            enabled: widget.member.isMonthlyCompensated!,
+            enabled: isMonthlyCompensated,
             prefix: const Text('\$'),
-            validator: widget.member.isMonthlyCompensated!
+            validator: isMonthlyCompensated
                 ? multiValidate([
                     requiredField(
                       AppLocalizations.of(context)!

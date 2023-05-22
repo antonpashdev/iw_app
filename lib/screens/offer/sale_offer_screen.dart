@@ -4,12 +4,16 @@ import 'package:iw_app/api/offers_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/buttons/secondary_button.dart';
+import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/state/config.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
@@ -94,6 +98,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
   }
 
   buildDetails(BuildContext context, SaleOffer saleOffer) {
+    Config config = ConfigState.of(context).config;
     final equity = ((saleOffer.tokensAmount! * LAMPORTS_IN_SOL) /
             saleOffer.org.lamportsMinted *
             100)
@@ -113,27 +118,26 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
             height: 1,
           ),
           const SizedBox(height: 20),
+          if (config.mode == Mode.Pro)
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Number of Impact Shares'),
+                    Text(
+                      '${saleOffer.tokensAmount}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+              ],
+            ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Number of Impact Shares',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
-              Text(
-                '${saleOffer.tokensAmount}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Equity to Date',
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
+              Text(config.mode == Mode.Pro ? 'Equity to Date' : 'Equity'),
               Text(
                 '$equity%',
                 style: const TextStyle(
@@ -239,18 +243,66 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
     }
   }
 
-  handleBuyPressed(SaleOffer offer) async {
+  handleBuyPressed(SaleOffer offer) {
+    Config config = ConfigState.of(context).config;
+    showBottomInfoSheet(
+      context,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'Confirm to send money.',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Gilroy',
+            ),
+          ),
+          const SizedBox(height: 15),
+          Text(
+            config.mode == Mode.Lite
+                ? 'By signing this transaction you will get ${offer.tokensAmount}% of equity of @${offer.org.username}.\n\nThis transaction will be recorded on blockchain.'
+                : 'By signing this transaction you will get ${offer.tokensAmount} Impact Shares of ${offer.org.name}.\n\nThis transaction will be recorded on blockchain.',
+            style: const TextStyle(
+              fontFamily: 'Gilroy',
+            ),
+          ),
+          const SizedBox(height: 35),
+          SecondaryButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              acceptOffer(offer);
+            },
+            child: Text(
+              'Send \$${offer.price}',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  acceptOffer(SaleOffer offer) async {
     setState(() {
       isLoading = true;
     });
-
+    Config config = ConfigState.of(context).config;
     try {
-      final response =
-          await offersApi.acceptDeclineSaleOffer(offer.id!, 'accepted');
-      setState(() {
-        payment = Payment.fromJson(response.data!);
-      });
-      openPaymentLink(payment!.cpPaymentUrl!);
+      await offersApi.acceptDeclineSaleOffer(
+        offer.id!,
+        'accepted',
+        config.mode == Mode.Lite,
+      );
+      if (context.mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      }
     } catch (err) {
       print(err);
     } finally {

@@ -20,7 +20,7 @@ class AppStorybook extends StatelessWidget {
       plugins: initializePlugins(
         contentsSidePanel: true,
         enableThemeMode: false,
-        knobsSidePanel: false,
+        knobsSidePanel: true,
       ),
       stories: [
         ...appScreens(),

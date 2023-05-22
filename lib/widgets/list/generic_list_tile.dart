@@ -48,7 +48,7 @@ class GenericListTile extends StatelessWidget {
                             height: 50,
                             decoration: BoxDecoration(
                               color: COLOR_GRAY,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(18),
                             ),
                             clipBehavior: Clip.antiAlias,
                             child: FittedBox(

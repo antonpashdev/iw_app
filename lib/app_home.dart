@@ -64,7 +64,8 @@ class _AppHomeState extends State<AppHome> {
             (snapshot.error as DioError).response!.statusCode == 401) {
           return const LoginScreen();
         }
-        if (!snapshot.hasData) {
+        if (!snapshot.hasData ||
+            (snapshot.data![0] != null && snapshot.data![1] == null)) {
           return const Scaffold(
             backgroundColor: APP_BODY_BG,
             body: Center(

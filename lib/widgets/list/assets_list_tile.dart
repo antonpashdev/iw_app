@@ -7,7 +7,7 @@ class AssetsListTile extends StatelessWidget {
   final Widget? leading;
   final String name;
   final String account;
-  final String tokensAmount;
+  final String? tokensAmount;
   final String equity;
 
   const AssetsListTile({
@@ -15,7 +15,7 @@ class AssetsListTile extends StatelessWidget {
     this.leading,
     required this.name,
     required this.account,
-    required this.tokensAmount,
+    this.tokensAmount,
     required this.equity,
   }) : super(key: key);
 
@@ -61,27 +61,33 @@ class AssetsListTile extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: padding),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: tokensAmount != null
+                          ? MainAxisAlignment.spaceAround
+                          : MainAxisAlignment.end,
                       children: [
-                        Column(
-                          children: [
-                            Text(
-                              'iShares',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(color: COLOR_GRAY),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              tokensAmount,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
+                        if (tokensAmount != null)
+                          Column(
+                            children: [
+                              Text(
+                                'iShares',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(color: COLOR_GRAY),
                               ),
-                            ),
-                          ],
-                        ),
+                              const SizedBox(height: 5),
+                              Text(
+                                tokensAmount!,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                         Column(
+                          crossAxisAlignment: tokensAmount != null
+                              ? CrossAxisAlignment.center
+                              : CrossAxisAlignment.end,
                           children: [
                             Text(
                               AppLocalizations.of(context)!

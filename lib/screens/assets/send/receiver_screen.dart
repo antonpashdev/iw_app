@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/constants/send_asset_type.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/user_model.dart';
@@ -15,11 +16,13 @@ Debouncer _debouncer = Debouncer(duration: const Duration(milliseconds: 500));
 class ReceiverScreen extends StatefulWidget {
   final Organization organization;
   final OrganizationMember member;
+  final SendAssetType sendAssetType;
 
   const ReceiverScreen({
     super.key,
     required this.member,
     required this.organization,
+    required this.sendAssetType,
   });
 
   @override
@@ -31,6 +34,7 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
   bool _isLoading = false;
   bool? _error;
   User? receiver;
+  String? receiverAddress;
 
   OrganizationMember get member => widget.member;
 
@@ -55,29 +59,40 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
     }
   }
 
-  onNicknameChnaged(String? nickname) {
-    _debouncer.debounce(() async {
-      final trimmedNickname = nickname?.trim();
-      setState(() {
-        _disabled = trimmedNickname == null;
-        _isLoading = trimmedNickname != null;
-      });
+  onReceiverChanged(String? receiver) {
+    if (widget.sendAssetType == SendAssetType.ToUser) {
+      _debouncer.debounce(() async {
+        final trimmedNickname = receiver?.trim();
+        setState(() {
+          _disabled = trimmedNickname == null;
+          _isLoading = trimmedNickname != null;
+        });
 
-      if (trimmedNickname != null) {
-        await callFetchUserByNickname(trimmedNickname);
-      }
-    });
+        if (trimmedNickname != null) {
+          await callFetchUserByNickname(trimmedNickname);
+        }
+      });
+    } else {
+      setState(() {
+        _disabled = receiver == null || receiver.isEmpty;
+        receiverAddress = receiver;
+      });
+    }
   }
 
   handleNext() {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => NumberOfSharesScreen(
-                  organization: widget.organization,
-                  member: member,
-                  receiver: receiver!,
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (_) => NumberOfSharesScreen(
+          organization: widget.organization,
+          member: member,
+          receiver: receiver,
+          receiverAddress: receiverAddress,
+          sendAssetType: widget.sendAssetType,
+        ),
+      ),
+    );
   }
 
   getValidationStatusIcon() {
@@ -93,10 +108,15 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
       title: 'Receiver',
       child: Column(
         children: <Widget>[
-          const Text(
-            'Enter username of a person you want to send your Asset',
-            style: TextStyle(
-                color: COLOR_GRAY, fontSize: 16, fontWeight: FontWeight.w500),
+          Text(
+            widget.sendAssetType == SendAssetType.ToUser
+                ? 'Enter Impact Wallet Username of a person you want to send your Asset'
+                : 'Enter Solana Wallet Address of a person you want to send your Asset',
+            style: const TextStyle(
+              color: COLOR_GRAY,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 55),
@@ -105,10 +125,14 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
                 Flexible(
                     flex: 1,
                     child: AppTextFormField(
-                      prefix: '@',
+                      prefix: widget.sendAssetType == SendAssetType.ToUser
+                          ? '@'
+                          : null,
                       inputType: TextInputType.text,
-                      labelText: '@username',
-                      onChanged: onNicknameChnaged,
+                      labelText: widget.sendAssetType == SendAssetType.ToUser
+                          ? '@username'
+                          : 'Solana Wallet Address',
+                      onChanged: onReceiverChanged,
                     )),
                 SizedBox(width: _error != null ? 10 : 0),
                 _error != null

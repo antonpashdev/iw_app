@@ -5,30 +5,38 @@ import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/contribution_model.dart';
+import 'package:iw_app/models/org_events_history_item_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
+import 'package:iw_app/screens/organization/members_details_lite_screen.dart';
 import 'package:iw_app/screens/organization/members_details_screen.dart';
 import 'package:iw_app/screens/organization/org_settings_screen.dart';
 import 'package:iw_app/screens/organization/receive_money_payment_type_screen.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/utils/numbers.dart';
+import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
+import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+RegExp trimZeroesRegExp = RegExp(r'([.]*0+)(?!.*\d)');
+
 class OrgDetailsScreen extends StatefulWidget {
   final String orgId;
-  final OrganizationMember member;
+  final OrganizationMember? member;
   final bool isPreviewMode;
 
   const OrgDetailsScreen({
     Key? key,
     required this.orgId,
-    required this.member,
+    this.member,
     this.isPreviewMode = false,
   }) : super(key: key);
 
@@ -40,6 +48,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   late Future<Organization> futureOrg;
   late Future<List<OrganizationMemberWithEquity>> futureMembers;
   late Future<double> futureBalance;
+  late Future<List<OrgEventsHistoryItem>> futureHistory;
 
   bool isLoading = false;
 
@@ -48,6 +57,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     super.initState();
     futureOrg = fetchOrg();
     futureMembers = fetchMembers();
+    futureHistory = fetchHistory();
   }
 
   Future<Organization> fetchOrg() async {
@@ -68,6 +78,18 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     }).toList();
   }
 
+  Future<List<OrgEventsHistoryItem>> fetchHistory() async {
+    try {
+      final response = await orgsApi.getOrgEventsHistory(widget.orgId);
+      return (response.data as List)
+          .map((itemJson) => OrgEventsHistoryItem.fromJson(itemJson))
+          .toList();
+    } catch (e) {
+      print(e);
+    }
+    return [];
+  }
+
   Future<MemberEquity> fetchMemberEquity(OrganizationMember member) async {
     final response = await orgsApi.getMemberEquity(member.org, member.id!);
     return MemberEquity.fromJson(response.data);
@@ -82,8 +104,15 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     setState(() {
       futureOrg = fetchOrg();
       futureMembers = fetchMembers();
+      futureBalance = fetchBalance(widget.orgId);
+      futureHistory = fetchHistory();
     });
-    return Future.wait([futureOrg, futureMembers, futureBalance]);
+    return Future.wait([
+      futureOrg,
+      futureMembers,
+      futureBalance,
+      futureHistory,
+    ]);
   }
 
   buildHeader(BuildContext context, Organization org) {
@@ -231,6 +260,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   }
 
   buildMember(OrganizationMemberWithEquity data) {
+    Config config = ConfigState.of(context).config;
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -267,35 +297,67 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
             ),
           ],
         ),
-        FutureBuilder(
-          future: data.futureEquity,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Container();
-            }
-            return Positioned(
-              top: -5,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 3,
+        if (config.mode == Mode.Pro || data.member!.equity != null)
+          FutureBuilder(
+            future: config.mode == Mode.Pro
+                ? data.futureEquity
+                : Future.value(MemberEquity()),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Container();
+              }
+              return Positioned(
+                top: -5,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: COLOR_ALMOST_BLACK,
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                  child: Text(
+                    config.mode == Mode.Pro
+                        ? '${(snapshot.data!.equity! * 100).toStringAsFixed(1)}%'
+                        : '${data.member!.equity!.amount!.toStringAsFixed(1)}%',
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium
+                        ?.copyWith(color: COLOR_WHITE),
+                  ),
                 ),
-                decoration: BoxDecoration(
-                  color: COLOR_ALMOST_BLACK,
-                  borderRadius: BorderRadius.circular(7),
-                ),
-                child: Text(
-                  '${(snapshot.data!.equity! * 100).toStringAsFixed(1)}%',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelMedium
-                      ?.copyWith(color: COLOR_WHITE),
-                ),
-              ),
-            );
-          },
-        ),
+              );
+            },
+          ),
       ],
+    );
+  }
+
+  onViewDetailsPressed(List<OrganizationMemberWithEquity> members) {
+    Config config = ConfigState.of(context).config;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => config.mode == Mode.Pro
+            ? OrgMemebersDetails(
+                memebersWithEquity: members,
+              )
+            : OrgMemebersDetailsLite(
+                memebersWithEquity: members,
+              ),
+      ),
+    );
+  }
+
+  onAddMemberPressed(Organization org) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OfferNewMemberScreen(
+          organization: org,
+        ),
+      ),
     );
   }
 
@@ -310,6 +372,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
         AppPadding(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 '${members.length} Members',
@@ -318,20 +381,16 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                     .bodyLarge
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
-              InkWell(
-                child: const Text('View Details',
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: COLOR_BLUE,
-                        fontWeight: FontWeight.w600)),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => OrgMemebersDetails(
-                                memebersWithEquity: members,
-                              )));
-                },
+              CupertinoButton(
+                onPressed: () => onViewDetailsPressed(members),
+                child: const Text(
+                  'View Details',
+                  style: TextStyle(
+                      fontFamily: 'SF Pro Display',
+                      fontSize: 14,
+                      color: COLOR_BLUE,
+                      fontWeight: FontWeight.w600),
+                ),
               )
             ],
           ),
@@ -360,14 +419,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                         ),
                         onTap: widget.isPreviewMode
                             ? null
-                            : () => {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => OfferNewMemberScreen(
-                                                organization: org,
-                                              )))
-                                },
+                            : () => onAddMemberPressed(org),
                         child: const Icon(
                           CupertinoIcons.add,
                           size: 35,
@@ -393,7 +445,10 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                         i,
                         Row(
                           children: [
-                            buildMember(member),
+                            GestureDetector(
+                              onTap: () => onViewDetailsPressed(members),
+                              child: buildMember(member),
+                            ),
                             if (i != members.length - 1)
                               const SizedBox(width: 10),
                             if (i == members.length - 1)
@@ -410,45 +465,151 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     );
   }
 
-  buildPulse(BuildContext context, Organization org) {
+  getContributionDuration(OrgEventsHistoryItem item) {
+    final startDate = DateTime.parse(item.createdAt!);
+    final stopDate = DateTime.parse(item.stoppedAt!);
+    final diff = stopDate.difference(startDate);
+    return (diff.inMilliseconds / 1000 / 60 / 60)
+        .toStringAsFixed(3)
+        .replaceAll(trimZeroesRegExp, '');
+  }
+
+  buildPulseItem(
+    BuildContext context,
+    OrgEventsHistoryItem item,
+    OrgEventsHistoryItem? prevItem,
+  ) {
+    Text? trailingText;
+    final trailingTextStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: COLOR_WHITE,
+        );
+    if (item.action == OrgHistoryItemAction.Contributed) {
+      final duration = getContributionDuration(item);
+      trailingText = Text(
+        '+ ${duration}h',
+        style: trailingTextStyle,
+      );
+    }
+    final primaryColor = item.action == OrgHistoryItemAction.Contributed
+        ? COLOR_ALMOST_BLACK
+        : COLOR_BLUE;
+    final icon = Icon(
+      item.action == OrgHistoryItemAction.Contributed
+          ? CupertinoIcons.clock
+          : Icons.add,
+      color: COLOR_WHITE,
+      size: 12,
+    );
+    final title = item.user?.nickname;
+    final date = item.date != null
+        ? DateTime.parse(item.date!).toLocal()
+        : DateTime.now();
+    final processedAtStr = getFormattedDate(date);
+    bool shouldDisplayDate = true;
+    if (prevItem != null) {
+      final prevDate = prevItem.date != null
+          ? DateTime.parse(prevItem.date!).toLocal()
+          : DateTime.now();
+      final prevProcessedAtStr = getFormattedDate(prevDate);
+      shouldDisplayDate = prevProcessedAtStr != processedAtStr;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Pulse',
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
+        if (shouldDisplayDate)
+          Column(
+            children: [
+              Text(
+                processedAtStr,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: COLOR_GRAY,
+                    ),
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        GenericListTile(
+          title: title,
+          subtitle: item.action!.name,
+          image: item.user?.avatar != null
+              ? NetworkImageAuth(
+                  imageUrl: '${usersApi.baseUrl}${item.user?.avatar}')
+              : Image.asset('assets/images/avatar_placeholder.png'),
+          trailingText: trailingText,
+          primaryColor: primaryColor,
+          icon: icon,
         ),
-        const SizedBox(height: 25),
-        ListTile(
-          contentPadding: const EdgeInsets.all(0),
-          leading: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: COLOR_GRAY,
-              borderRadius: BorderRadius.circular(20),
+      ],
+    );
+  }
+
+  callSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 70,
+          left: 20,
+          right: 20,
+        ),
+        content: const Text('Copied to clipboard',
+            textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+        duration: const Duration(milliseconds: 300),
+        backgroundColor: Colors.black.withOpacity(0.7),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+    );
+  }
+
+  handleCopyPressed(String text) async {
+    Clipboard.setData(ClipboardData(text: text));
+    callSnackBar(context);
+  }
+
+  buildWalletSection(Organization org) {
+    return Column(
+      children: [
+        Center(
+          child: TextButton.icon(
+            onPressed: () => handleCopyPressed(org.wallet!),
+            style: const ButtonStyle(
+              visualDensity: VisualDensity(vertical: 1),
             ),
-          ),
-          title: const Text(
-            '@account',
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
-          subtitle: Text(
-            'Joined',
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: COLOR_GRAY),
-          ),
-          trailing: Text(
-            '2 min ago',
-            style: Theme.of(context)
-                .textTheme
-                .labelMedium
-                ?.copyWith(color: COLOR_GRAY),
+            icon: SvgPicture.asset(
+              'assets/icons/wallet.svg',
+              width: 30,
+            ),
+            label: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Solana Address',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium!
+                      .copyWith(color: COLOR_GRAY, fontWeight: FontWeight.w500),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      org.wallet!.replaceRange(8, 36, '...'),
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    const Icon(
+                      Icons.copy,
+                      size: 12,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -461,7 +622,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     });
     try {
       final response =
-          await orgsApi.startContribution(widget.orgId, widget.member.id!);
+          await orgsApi.startContribution(widget.orgId, widget.member!.id!);
       final contribution = Contribution.fromJson(response.data);
       if (context.mounted) {
         Navigator.of(context).pushAndRemoveUntil(
@@ -533,35 +694,104 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                             CupertinoSliverRefreshControl(
                               onRefresh: onRefresh,
                             ),
-                            SliverList(
-                              delegate: SliverChildListDelegate.fixed(
-                                [
-                                  const SizedBox(height: 20),
-                                  AppPadding(
-                                    child:
-                                        buildHeader(context, snapshot.data?[0]),
+                            SliverPersistentHeader(
+                              pinned: true,
+                              delegate: _HeaderDelegate(
+                                child: Container(
+                                  color: APP_BODY_BG,
+                                  child: Column(
+                                    children: [
+                                      buildWalletSection(snapshot.data?[0]),
+                                      const SizedBox(height: 10),
+                                      AppPadding(
+                                        child: buildHeader(
+                                            context, snapshot.data?[0]),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(height: 25),
+                                ),
+                              ),
+                            ),
+                            SliverToBoxAdapter(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 15),
                                   AppPadding(
                                     child: buildDetails(
                                         context, snapshot.data?[0]),
                                   ),
+                                ],
+                              ),
+                            ),
+                            SliverToBoxAdapter(
+                              child: Column(
+                                children: [
                                   const SizedBox(height: 60),
                                   buildMembers(context, snapshot.data?[0],
                                       snapshot.data?[1]),
-                                  const SizedBox(height: 50),
-                                  AppPadding(
-                                    child:
-                                        buildPulse(context, snapshot.data?[0]),
-                                  ),
-                                  const SizedBox(height: 90),
                                 ],
                               ),
+                            ),
+                            SliverToBoxAdapter(
+                              child: AppPadding(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 40),
+                                    Text(
+                                      'Pulse',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 25),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            FutureBuilder(
+                              future: futureHistory,
+                              builder: (_, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return const SliverToBoxAdapter(
+                                    child: Center(
+                                      child:
+                                          CircularProgressIndicator.adaptive(),
+                                    ),
+                                  );
+                                }
+                                return SliverList(
+                                  delegate: SliverChildBuilderDelegate(
+                                    (context, index) {
+                                      return AppPadding(
+                                        child: Column(
+                                          children: [
+                                            buildPulseItem(
+                                              context,
+                                              snapshot.data![index],
+                                              index > 0
+                                                  ? snapshot.data![index - 1]
+                                                  : null,
+                                            ),
+                                            const SizedBox(height: 20),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                    childCount: snapshot.data!.length,
+                                  ),
+                                );
+                              },
+                            ),
+                            const SliverToBoxAdapter(
+                              child: SizedBox(height: 80),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10),
                       Positioned(
                         bottom: 30,
                         left: 0,
@@ -571,9 +801,8 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                             width: 290,
                             child: ElevatedButton(
                               onPressed: isLoading ||
-                                      widget.member.role ==
-                                          MemberRole.Investor ||
-                                      widget.isPreviewMode
+                                      widget.isPreviewMode ||
+                                      widget.member!.role == MemberRole.Investor
                                   ? null
                                   : handleStartContributingPressed,
                               child: isLoading
@@ -594,5 +823,28 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
         );
       },
     );
+  }
+}
+
+class _HeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _HeaderDelegate({required this.child});
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  double get maxExtent => 180;
+
+  @override
+  double get minExtent => 180;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return true;
   }
 }

@@ -1,20 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
-import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
-import 'package:iw_app/widgets/state/config.dart';
 
-class OrgMemberCard extends StatelessWidget {
+class OrgMemberCardLite extends StatelessWidget {
   final Function()? onTap;
   final OrganizationMember? member;
   final Future<List<OrganizationMember>>? futureOtherMembers;
 
-  const OrgMemberCard({
+  const OrgMemberCardLite({
     Key? key,
     this.onTap,
     this.member,
@@ -40,12 +38,9 @@ class OrgMemberCard extends StatelessWidget {
   }
 
   buildOrgName(BuildContext context) {
-    Config config = ConfigState.of(context).config;
     if (member == null) {
       return Text(
-        config.mode == Mode.Lite
-            ? 'Create Organization or Project'
-            : AppLocalizations.of(context)!.homeScreen_createNewOrgTitle,
+        AppLocalizations.of(context)!.homeScreen_createNewOrgTitle,
         style: Theme.of(context).textTheme.headlineSmall,
       );
     }
@@ -107,13 +102,8 @@ class OrgMemberCard extends StatelessWidget {
         ),
       );
     }
-
-    final contributed = member!.role == MemberRole.Investor
-        ? '\$${NumberFormat.compact().format(member!.investorSettings!.investmentAmount)}'
-        : '${member!.contributed!.toStringAsFixed(3)}h';
-    final ratioOrAllocation = member!.role == MemberRole.Investor
-        ? '${member!.investorSettings!.equityAllocation}%'
-        : '${member!.impactRatio}x';
+    final createdAt = DateTime.parse(member!.createdAt!).toLocal();
+    final createdAtStr = getFormattedDate(createdAt);
     final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
           fontWeight: FontWeight.w500,
         );
@@ -122,9 +112,9 @@ class OrgMemberCard extends StatelessWidget {
         const Spacer(),
         ListTile(
           dense: true,
-          title: Text('You Contributed', style: textStyle),
+          title: Text('Joined', style: textStyle),
           contentPadding: const EdgeInsets.all(0),
-          trailing: Text(contributed, style: textStyle),
+          trailing: Text(createdAtStr, style: textStyle),
           visualDensity:
               const VisualDensity(vertical: VisualDensity.minimumDensity),
         ),
@@ -132,13 +122,11 @@ class OrgMemberCard extends StatelessWidget {
         ListTile(
           dense: true,
           title: Text(
-            member!.role == MemberRole.Investor
-                ? 'Your Equity Allocation'
-                : 'Your Impact Ratio',
+            'Your total earnings',
             style: textStyle,
           ),
           contentPadding: const EdgeInsets.all(0),
-          trailing: Text(ratioOrAllocation, style: textStyle),
+          trailing: Text('WIP', style: textStyle),
           visualDensity:
               const VisualDensity(vertical: VisualDensity.minimumDensity),
         ),

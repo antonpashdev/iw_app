@@ -49,6 +49,17 @@ String? Function(String?) max(double max) {
   };
 }
 
+String? Function(String?) min(double min) {
+  return (value) {
+    if (value != null &&
+        double.tryParse(value) != null &&
+        double.tryParse(value)! < min) {
+      return 'Value must be not less than $min';
+    }
+    return null;
+  };
+}
+
 String? Function(String?) multiValidate(
   List<String? Function(String?)> validators,
 ) {

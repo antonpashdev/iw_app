@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/app_storage.dart';
-import 'package:iw_app/screens/login_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
@@ -9,9 +8,7 @@ class SettingsSreen extends StatelessWidget {
   const SettingsSreen({super.key});
 
   navigateToLogin(BuildContext context) {
-    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
-      return const LoginScreen();
-    }), (route) => false);
+    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
   }
 
   removeToken() async {

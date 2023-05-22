@@ -1,0 +1,4 @@
+enum SendAssetType {
+  ToUser,
+  ToAddress,
+}
