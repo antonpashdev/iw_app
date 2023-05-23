@@ -67,8 +67,8 @@ class _RoleSelectionState extends State<RoleSelectionScreen> {
         color: COLOR_LIGHT_GRAY3,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Column(
-        children: const [
+      child: const Column(
+        children: [
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Icon(Icons.file_upload_outlined),
