@@ -475,8 +475,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     'assets/icons/arrow_up_big.svg'),
                                 const SizedBox(height: 15),
                                 Text(
-                                  AppLocalizations.of(context)!
-                                      .homeScreen_assetsExampleDesc,
+                                  config.mode == Mode.Pro
+                                      ? AppLocalizations.of(context)!
+                                          .homeScreen_assetsExampleDesc
+                                      : 'Your Assets will appear here when you create or join Organization or Project',
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w500,

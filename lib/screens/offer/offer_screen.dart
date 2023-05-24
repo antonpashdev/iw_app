@@ -2,12 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
+import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
@@ -36,14 +38,26 @@ class OfferScreen extends StatefulWidget {
 
 class _OfferScreenState extends State<OfferScreen> {
   bool isLoading = false;
-  Future<Offer?>? futureOffer;
+  late Future<Offer?> futureOffer;
   Payment? payment;
   String? offerError;
+  late Future<User?> futureUser;
 
   @override
   initState() {
     futureOffer = fetchOffer();
+    futureUser = fetchUser();
     super.initState();
+  }
+
+  Future<User?> fetchUser() async {
+    try {
+      final response = await authApi.getMe();
+      return User.fromJson(response.data);
+    } catch (err) {
+      print(err);
+    }
+    return null;
   }
 
   Future<Offer?> fetchOffer() async {
@@ -537,28 +551,32 @@ class _OfferScreenState extends State<OfferScreen> {
     return ScreenScaffold(
       title: 'Offer Preview',
       child: FutureBuilder(
-          future: futureOffer,
+          future: Future.wait([
+            futureOffer,
+            futureUser,
+          ]),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
+            final offer = snapshot.data![0] as Offer;
+            final user = snapshot.data![1] as User;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: KeyboardDismissableListView(
                     children: [
-                      buildOrganizationSection(context, snapshot.data!),
+                      buildOrganizationSection(context, offer),
                       const SizedBox(height: 20),
                       const Divider(
                         color: COLOR_LIGHT_GRAY2,
                         height: 1,
                       ),
                       const SizedBox(height: 20),
-                      if (snapshot.data!.memberProspect!.role !=
-                          MemberRole.Investor)
+                      if (offer.memberProspect!.role != MemberRole.Investor)
                         Align(
                           alignment: Alignment.centerLeft,
                           child: TextButton.icon(
@@ -577,19 +595,16 @@ class _OfferScreenState extends State<OfferScreen> {
                           ),
                         ),
                       const SizedBox(height: 17),
-                      if (snapshot.data!.memberProspect!.role !=
-                          MemberRole.Investor)
+                      if (offer.memberProspect!.role != MemberRole.Investor)
                         const Text(
                           'You are invited to join this Impact Organization under the  following conditions.',
                           style: TextStyle(color: COLOR_GRAY),
                         ),
                       const SizedBox(height: 25),
-                      if (snapshot.data!.memberProspect!.role ==
-                          MemberRole.Investor)
-                        buildInvestorDetails(context, snapshot.data!),
-                      if (snapshot.data!.memberProspect!.role !=
-                          MemberRole.Investor)
-                        buildMemberDetails(context, snapshot.data!),
+                      if (offer.memberProspect!.role == MemberRole.Investor)
+                        buildInvestorDetails(context, offer),
+                      if (offer.memberProspect!.role != MemberRole.Investor)
+                        buildMemberDetails(context, offer),
                     ],
                   ),
                 ),
@@ -632,28 +647,27 @@ class _OfferScreenState extends State<OfferScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                if (snapshot.data!.memberProspect!.role !=
+                                if (offer.memberProspect!.role !=
                                     MemberRole.Investor)
                                   SecondaryButton(
-                                    onPressed: () => acceptDeclineOffer(
-                                        snapshot.data!, 'declined'),
+                                    onPressed: () =>
+                                        acceptDeclineOffer(offer, 'declined'),
                                     child: const Text('Decline Offer'),
                                   ),
                                 const SizedBox(height: 10),
                                 if (payment == null)
                                   ElevatedButton(
                                     onPressed: () => acceptDeclineOffer(
-                                      snapshot.data!,
+                                      offer,
                                       'accepted',
-                                      isConfirmed:
-                                          snapshot.data!.memberProspect!.role !=
-                                              MemberRole.Investor,
+                                      isConfirmed: offer.memberProspect!.role !=
+                                          MemberRole.Investor,
                                     ),
                                     child: Text(
-                                      snapshot.data!.memberProspect!.role ==
+                                      offer.memberProspect!.role ==
                                               MemberRole.Investor
-                                          ? 'Invest'
-                                          : 'Accept Offer',
+                                          ? 'Invest as @${user.nickname}'
+                                          : 'Accept Offer as @${user.nickname}',
                                     ),
                                   ),
                               ],

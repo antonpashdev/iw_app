@@ -231,7 +231,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 5),
-        if (org.link != null)
+        if (org.link != null && org.link!.isNotEmpty)
           Row(
             children: [
               TextButton.icon(

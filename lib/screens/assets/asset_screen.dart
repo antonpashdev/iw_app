@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/constants/send_asset_type.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
@@ -13,6 +14,8 @@ import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
+
+import 'send/receiver_screen.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
 RegExp trimZeroesRegExp = RegExp(r'([.]*0+)(?!.*\d)');
@@ -265,6 +268,31 @@ class _AssetScreenState extends State<AssetScreen> {
     );
   }
 
+  handleSendAssetPressed() {
+    if (config.mode == Mode.Pro) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SendTypeScreen(
+            organization: widget.memberWithEquity.member!.org,
+            member: widget.memberWithEquity.member!,
+          ),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ReceiverScreen(
+            organization: widget.memberWithEquity.member!.org,
+            member: widget.memberWithEquity.member!,
+            sendAssetType: SendAssetType.ToUser,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -364,19 +392,7 @@ class _AssetScreenState extends State<AssetScreen> {
                                         .lamportsEarned ==
                                     0
                                 ? null
-                                : () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => SendTypeScreen(
-                                          organization: widget
-                                              .memberWithEquity.member!.org,
-                                          member:
-                                              widget.memberWithEquity.member!,
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                : handleSendAssetPressed,
                             child: const Text('Send Asset'),
                           ),
                         ),
