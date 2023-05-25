@@ -110,7 +110,7 @@ class OrganizationMember {
   dynamic org;
   double? contributed;
   InvestorSettings? investorSettings;
-  int? lamportsEarned;
+  double? lamportsEarned;
   Equity? equity;
   Compensation? compensation;
   String? createdAt;
@@ -140,7 +140,7 @@ class OrganizationMember {
     user = json['user'] is Map ? User.fromJson(json['user']) : json['user'];
     org = json['org'] is Map ? Organization.fromJson(json['org']) : json['org'];
     contributed = intToDouble(json['contributed']);
-    lamportsEarned = json['lamportsEarned'];
+    lamportsEarned = intToDouble(json['lamportsEarned']);
     investorSettings = json['investorSettings'] is Map
         ? InvestorSettings.fromJson(json['investorSettings'])
         : json['investorSettings'];
@@ -181,7 +181,7 @@ hoursPerWeek: $hoursPerWeek
 }
 
 class MemberEquity {
-  int? lamportsEarned;
+  double? lamportsEarned;
   double? equity;
 
   MemberEquity({
@@ -190,8 +190,8 @@ class MemberEquity {
   });
 
   MemberEquity.fromJson(Map<String, dynamic> json) {
-    lamportsEarned = json['lamportsEarned'];
-    equity = json['equity'];
+    lamportsEarned = intToDouble(json['lamportsEarned']);
+    equity = intToDouble(json['equity']);
   }
 }
 

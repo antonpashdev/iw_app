@@ -27,7 +27,7 @@ import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-RegExp trimZeroesRegExp = RegExp(r'([.]*0+)(?!.*\d)');
+RegExp trimZeroesRegExp = RegExp(r'(\d*[.]0+)(?!.*\d)');
 
 class OrgDetailsScreen extends StatefulWidget {
   final String orgId;
@@ -48,7 +48,7 @@ class OrgDetailsScreen extends StatefulWidget {
 class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   late Future<Organization> futureOrg;
   late Future<List<OrganizationMemberWithEquity>> futureMembers;
-  late Future<double> futureBalance;
+  Future<double>? futureBalance;
   late Future<List<OrgEventsHistoryItem>> futureHistory;
 
   bool isLoading = false;
@@ -64,7 +64,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   Future<Organization> fetchOrg() async {
     final response = await orgsApi.getOrgById(widget.orgId);
     final org = Organization.fromJson(response.data);
-    futureBalance = fetchBalance(org.id!);
+    if (!widget.isPreviewMode) {
+      futureBalance = fetchBalance(org.id!);
+    }
     return org;
   }
 
@@ -105,15 +107,20 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     setState(() {
       futureOrg = fetchOrg();
       futureMembers = fetchMembers();
-      futureBalance = fetchBalance(widget.orgId);
+      if (!widget.isPreviewMode) {
+        futureBalance = fetchBalance(widget.orgId);
+      }
       futureHistory = fetchHistory();
     });
-    return Future.wait([
+    final futures = [
       futureOrg,
       futureMembers,
-      futureBalance,
       futureHistory,
-    ]);
+    ];
+    if (!widget.isPreviewMode) {
+      futures.add(futureBalance!);
+    }
+    return Future.wait(futures);
   }
 
   buildHeader(BuildContext context, Organization org) {
@@ -138,20 +145,21 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            FutureBuilder(
-                future: futureBalance,
-                builder: (_, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const CircularProgressIndicator.adaptive();
-                  }
-                  return Text(
-                    '\$${snapshot.data!.toStringAsFixed(2)}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  );
-                }),
+            if (!widget.isPreviewMode)
+              FutureBuilder(
+                  future: futureBalance,
+                  builder: (_, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const CircularProgressIndicator.adaptive();
+                    }
+                    return Text(
+                      '\$${snapshot.data!.toString().replaceAll(trimZeroesRegExp, '')}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    );
+                  }),
             const SizedBox(height: 5),
             Text(
               'Treasury ${org.settings.treasury}%',
@@ -262,76 +270,82 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
 
   buildMember(OrganizationMemberWithEquity data) {
     Config config = ConfigState.of(context).config;
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Column(
-          children: [
-            Container(
-              width: 90,
-              height: 90,
-              decoration: BoxDecoration(
-                color: const Color(0xffe2e2e8),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: data.member!.user.avatar != null
-                    ? FutureBuilder(
-                        future: usersApi.getAvatar(data.member!.user.avatar),
-                        builder: (_, snapshot) {
-                          if (!snapshot.hasData) return Container();
-                          return Image.memory(snapshot.data!);
-                        },
-                      )
-                    : Container(),
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              data.member!.user.nickname,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        if (config.mode == Mode.Pro || data.member!.equity != null)
-          FutureBuilder(
-            future: config.mode == Mode.Pro
-                ? data.futureEquity
-                : Future.value(MemberEquity()),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return Container();
-              }
-              return Positioned(
-                top: -5,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: COLOR_ALMOST_BLACK,
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  child: Text(
-                    config.mode == Mode.Pro
-                        ? '${(snapshot.data!.equity! * 100).toStringAsFixed(1)}%'
-                        : '${data.member!.equity!.amount!.toStringAsFixed(1)}%',
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelMedium
-                        ?.copyWith(color: COLOR_WHITE),
-                  ),
+    return SizedBox(
+      width: 100,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Column(
+            children: [
+              Container(
+                width: 90,
+                height: 90,
+                decoration: BoxDecoration(
+                  color: const Color(0xffe2e2e8),
+                  borderRadius: BorderRadius.circular(30),
                 ),
-              );
-            },
+                clipBehavior: Clip.antiAlias,
+                child: FittedBox(
+                  fit: BoxFit.cover,
+                  child: data.member!.user.avatar != null
+                      ? FutureBuilder(
+                          future: usersApi.getAvatar(data.member!.user.avatar),
+                          builder: (_, snapshot) {
+                            if (!snapshot.hasData) return Container();
+                            return Image.memory(snapshot.data!);
+                          },
+                        )
+                      : Container(),
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                data.member!.user.nickname,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
-      ],
+          if (config.mode == Mode.Pro || data.member!.equity != null)
+            FutureBuilder(
+              future: config.mode == Mode.Pro
+                  ? data.futureEquity
+                  : Future.value(MemberEquity()),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Container();
+                }
+                return Positioned(
+                  top: -5,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: COLOR_ALMOST_BLACK,
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Text(
+                      config.mode == Mode.Pro
+                          ? '${(snapshot.data!.equity! * 100).toStringAsFixed(1)}%'
+                          : '${data.member!.equity!.amount!.toStringAsFixed(1)}%',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelMedium
+                          ?.copyWith(color: COLOR_WHITE),
+                    ),
+                  ),
+                );
+              },
+            ),
+        ],
+      ),
     );
   }
 

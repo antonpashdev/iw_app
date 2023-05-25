@@ -25,7 +25,7 @@ import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
-RegExp trimZeroesRegExp = RegExp(r'([.]*0+)(?!.*\d)');
+RegExp trimZeroesRegExp = RegExp(r'(\d*[.]0+)(?!.*\d)');
 
 class HomeScreen extends StatefulWidget {
   final bool? isOnboarding;
@@ -389,9 +389,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   return const CircularProgressIndicator
                                       .adaptive();
                                 }
-                                final decimals = snapshot.data! < 0.01 ? 3 : 2;
                                 final balance =
-                                    '\$${snapshot.data!.toStringAsFixed(decimals)}';
+                                    '\$${snapshot.data.toString().replaceAll(trimZeroesRegExp, '')}';
                                 return InkWell(
                                   onTap: () {
                                     Navigator.of(context).push(

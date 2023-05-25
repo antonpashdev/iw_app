@@ -564,7 +564,7 @@ class _OfferScreenState extends State<OfferScreen> {
             final offer = snapshot.data![0] as Offer;
             final user = snapshot.data![1] as User;
             return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
                   child: KeyboardDismissableListView(
@@ -637,43 +637,44 @@ class _OfferScreenState extends State<OfferScreen> {
                       onPressed: () => handleCopyPressed(context),
                     )
                   ]),
-                Align(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: isLoading
-                        ? const CircularProgressIndicator.adaptive()
-                        : SizedBox(
-                            width: 290,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                if (offer.memberProspect!.role !=
-                                    MemberRole.Investor)
-                                  SecondaryButton(
-                                    onPressed: () =>
-                                        acceptDeclineOffer(offer, 'declined'),
-                                    child: const Text('Decline Offer'),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (offer.memberProspect!.role != MemberRole.Investor)
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(minWidth: 290),
+                        child: SecondaryButton(
+                          onPressed: () =>
+                              acceptDeclineOffer(offer, 'declined'),
+                          child: const Text('Decline Offer'),
+                        ),
+                      ),
+                    const SizedBox(height: 10),
+                    if (payment == null)
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(minWidth: 290),
+                        child: ElevatedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () => acceptDeclineOffer(
+                                    offer,
+                                    'accepted',
+                                    isConfirmed: offer.memberProspect!.role !=
+                                        MemberRole.Investor,
                                   ),
-                                const SizedBox(height: 10),
-                                if (payment == null)
-                                  ElevatedButton(
-                                    onPressed: () => acceptDeclineOffer(
-                                      offer,
-                                      'accepted',
-                                      isConfirmed: offer.memberProspect!.role !=
-                                          MemberRole.Investor,
-                                    ),
-                                    child: Text(
-                                      offer.memberProspect!.role ==
-                                              MemberRole.Investor
-                                          ? 'Invest as @${user.nickname}'
-                                          : 'Accept Offer as @${user.nickname}',
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                  ),
+                          child: isLoading
+                              ? const CircularProgressIndicator.adaptive()
+                              : Text(
+                                  offer.memberProspect!.role ==
+                                          MemberRole.Investor
+                                      ? 'Invest as @${user.nickname}'
+                                      : 'Accept Offer as @${user.nickname}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                        ),
+                      ),
+                  ],
                 ),
               ],
             );

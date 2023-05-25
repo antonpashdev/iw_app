@@ -15,6 +15,7 @@ import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 const LAMPORTS_PER_USDC = 1000000;
+RegExp trimZeroesRegExp = RegExp(r'(\d*[.]0+)(?!.*\d)');
 
 class AccountDetailsScreen extends StatefulWidget {
   const AccountDetailsScreen({Key? key}) : super(key: key);
@@ -278,7 +279,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                               amount = snapshot.data!;
                             }
                             return Text(
-                              '\$${amount.toStringAsFixed(2)}',
+                              '\$${amount.toString().replaceAll(trimZeroesRegExp, '')}',
                               style:
                                   const TextStyle(fontWeight: FontWeight.w500),
                             );
@@ -414,7 +415,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                 child: balance == null
                     ? const CircularProgressIndicator.adaptive()
                     : Text(
-                        '\$${balance.toStringAsFixed(2)}',
+                        '\$${balance.toString().replaceAll(trimZeroesRegExp, '')}',
                         style: Theme.of(context).textTheme.headlineLarge,
                       ),
               ),
