@@ -27,8 +27,6 @@ import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-RegExp trimZeroesRegExp = RegExp(r'(\d*[.]0+)(?!.*\d)');
-
 class OrgDetailsScreen extends StatefulWidget {
   final String orgId;
   final OrganizationMember? member;
@@ -153,7 +151,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                       return const CircularProgressIndicator.adaptive();
                     }
                     return Text(
-                      '\$${snapshot.data!.toString().replaceAll(trimZeroesRegExp, '')}',
+                      '\$${snapshot.data!.toStringAsPrecision(3)}',
                       style: Theme.of(context)
                           .textTheme
                           .bodyLarge
@@ -484,9 +482,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     final startDate = DateTime.parse(item.createdAt!);
     final stopDate = DateTime.parse(item.stoppedAt!);
     final diff = stopDate.difference(startDate);
-    return (diff.inMilliseconds / 1000 / 60 / 60)
-        .toStringAsFixed(3)
-        .replaceAll(trimZeroesRegExp, '');
+    return (diff.inMilliseconds / 1000 / 60 / 60).toStringAsPrecision(3);
   }
 
   buildPulseItem(

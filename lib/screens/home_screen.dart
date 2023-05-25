@@ -25,7 +25,6 @@ import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
-RegExp trimZeroesRegExp = RegExp(r'(\d*[.]0+)(?!.*\d)');
 
 class HomeScreen extends StatefulWidget {
   final bool? isOnboarding;
@@ -182,8 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
         String? tokensAmount;
         if (config.mode == Mode.Pro) {
           tokensAmount = (snapshot.data!.lamportsEarned! / LAMPORTS_IN_SOL)
-              .toStringAsFixed(4)
-              .replaceAll(trimZeroesRegExp, '');
+              .toStringAsPrecision(3);
         }
         final equity = config.mode == Mode.Pro
             ? (snapshot.data!.equity! * 100).toStringAsFixed(1)
@@ -390,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       .adaptive();
                                 }
                                 final balance =
-                                    '\$${snapshot.data.toString().replaceAll(trimZeroesRegExp, '')}';
+                                    '\$${snapshot.data!.toStringAsPrecision(3)}';
                                 return InkWell(
                                   onTap: () {
                                     Navigator.of(context).push(

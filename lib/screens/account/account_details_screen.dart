@@ -15,7 +15,6 @@ import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 const LAMPORTS_PER_USDC = 1000000;
-RegExp trimZeroesRegExp = RegExp(r'(\d*[.]0+)(?!.*\d)');
 
 class AccountDetailsScreen extends StatefulWidget {
   const AccountDetailsScreen({Key? key}) : super(key: key);
@@ -279,7 +278,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                               amount = snapshot.data!;
                             }
                             return Text(
-                              '\$${amount.toString().replaceAll(trimZeroesRegExp, '')}',
+                              '\$${amount.toStringAsPrecision(3)}',
                               style:
                                   const TextStyle(fontWeight: FontWeight.w500),
                             );
@@ -329,7 +328,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         ? COLOR_ALMOST_BLACK
         : COLOR_GREEN;
     final amount = item.amount != null
-        ? '$sign \$${(item.amount!.abs() / LAMPORTS_PER_USDC).toStringAsFixed(2)} USDC'
+        ? '$sign \$${(item.amount!.abs() / LAMPORTS_PER_USDC).toStringAsPrecision(2)} USDC'
         : '-';
     final title = item.addressOrUsername!.length == 44
         ? item.addressOrUsername!.replaceRange(4, 40, '...')
@@ -415,7 +414,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                 child: balance == null
                     ? const CircularProgressIndicator.adaptive()
                     : Text(
-                        '\$${balance.toString().replaceAll(trimZeroesRegExp, '')}',
+                        '\$${balance.toStringAsPrecision(3)}',
                         style: Theme.of(context).textTheme.headlineLarge,
                       ),
               ),
