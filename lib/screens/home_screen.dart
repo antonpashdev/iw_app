@@ -15,6 +15,8 @@ import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/screens/settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/components/accounts_list.dart';
+import 'package:iw_app/widgets/components/bottom_sheet_custom.dart';
 import 'package:iw_app/widgets/components/org_member_card.dart';
 import 'package:iw_app/widgets/components/org_member_card_lite.dart';
 import 'package:iw_app/widgets/list/assets_list_tile.dart';
@@ -311,10 +313,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(width: 10),
                     Text(user?.nickname ?? ''),
-                    const Icon(
-                      Icons.keyboard_arrow_down_outlined,
-                      size: 20,
-                    ),
+                    IconButton(
+                        onPressed: () {
+                          showBottomSheetCustom(context,
+                              title: 'Accounts',
+                              child: FutureBuilder(
+                                  future: futureUser,
+                                  builder: (builder, snapshot) {
+                                    if (!snapshot.hasData) return Container();
+                                    return FutureBuilder(
+                                        future: futureMembers,
+                                        builder: (_builder, _snapshot) {
+                                          if (!_snapshot.hasData) {
+                                            return Container();
+                                          }
+                                          return AccountsListWidget(
+                                              currentUser: snapshot.data,
+                                              orgs: _snapshot.data);
+                                        });
+                                  }));
+                        },
+                        icon: const Icon(
+                          Icons.keyboard_arrow_down_outlined,
+                          size: 20,
+                        )),
                   ],
                 ),
               ],

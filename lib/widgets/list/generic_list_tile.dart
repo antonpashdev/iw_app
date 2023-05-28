@@ -11,6 +11,7 @@ class GenericListTile extends StatelessWidget {
   final VoidCallback? trailingOnTap;
   final Color primaryColor;
   final Widget? icon;
+  final bool showMiniIcon;
 
   const GenericListTile({
     Key? key,
@@ -22,6 +23,8 @@ class GenericListTile extends StatelessWidget {
     this.trailingOnTap,
     this.primaryColor = COLOR_GRAY,
     this.icon,
+    this.showMiniIcon = true
+
   }) : super(key: key);
 
   @override
@@ -57,7 +60,7 @@ class GenericListTile extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Positioned(
+                        showMiniIcon ? Positioned(
                           bottom: -5,
                           right: -5,
                           child: Container(
@@ -73,7 +76,7 @@ class GenericListTile extends StatelessWidget {
                             ),
                             child: Center(child: icon),
                           ),
-                        ),
+                        ) : Container(),
                       ],
                     ),
                   ),
