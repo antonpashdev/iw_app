@@ -49,6 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
     futureBalance = fetchBalance();
   }
 
+  Config get config => ConfigState.of(context).config;
+
   Future<User> fetchUser() =>
       authApi.getMe().then((response) => User.fromJson(response.data));
 
@@ -79,8 +81,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<MemberEquity> fetchMemberEquity(String orgId, String memberId,
       OrganizationMemberWithOtherMembers member) async {
-    final response = await orgsApi.getMemberEquity(orgId, memberId);
-    final equity = MemberEquity.fromJson(response.data);
+    MemberEquity equity;
+    if (config.mode == Mode.Lite) {
+      equity = MemberEquity(
+        lamportsEarned: 0,
+        equity: member.member!.equity?.amount ?? 0,
+      );
+    } else {
+      final response = await orgsApi.getMemberEquity(orgId, memberId);
+      equity = MemberEquity.fromJson(response.data);
+    }
     member.equity = equity;
     return equity;
   }

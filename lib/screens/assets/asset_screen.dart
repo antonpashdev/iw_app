@@ -43,6 +43,14 @@ class _AssetScreenState extends State<AssetScreen> {
   }
 
   Future<MemberEquity?> fetchEquity() async {
+    if (config.mode == Mode.Lite) {
+      return Future.value(
+        MemberEquity(
+          lamportsEarned: 0,
+          equity: widget.memberWithEquity.member!.equity?.amount ?? 0,
+        ),
+      );
+    }
     try {
       final response = await orgsApi.getMemberEquity(
         widget.memberWithEquity.member!.org.id,
@@ -161,7 +169,12 @@ class _AssetScreenState extends State<AssetScreen> {
     final tokensAmount = (memberEquity.lamportsEarned! / LAMPORTS_IN_SOL)
         .toStringAsFixed(4)
         .replaceAll(trimZeroesRegExp, '');
-    final equityStr = (memberEquity.equity! * 100).toStringAsFixed(1);
+    String equityStr;
+    if (config.mode == Mode.Lite) {
+      equityStr = memberEquity.equity!.toStringAsFixed(1);
+    } else {
+      equityStr = (memberEquity.equity! * 100).toStringAsFixed(1);
+    }
     return Row(
       children: [
         if (config.mode == Mode.Pro)
@@ -388,9 +401,7 @@ class _AssetScreenState extends State<AssetScreen> {
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: widget.memberWithEquity.equity!
-                                        .lamportsEarned ==
-                                    0
+                            onPressed: snapshot.data!.equity == 0
                                 ? null
                                 : handleSendAssetPressed,
                             child: const Text('Send Asset'),
@@ -399,9 +410,7 @@ class _AssetScreenState extends State<AssetScreen> {
                         const SizedBox(width: 10),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: widget.memberWithEquity.equity!
-                                        .lamportsEarned ==
-                                    0
+                            onPressed: snapshot.data!.equity == 0
                                 ? null
                                 : () {
                                     Navigator.of(context)
