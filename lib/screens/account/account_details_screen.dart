@@ -10,6 +10,7 @@ import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
+import 'package:iw_app/utils/numbers.dart';
 import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
@@ -99,7 +100,8 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   builder: (_, snapshot) {
                     if (!snapshot.hasData) return Container();
                     return Image.memory(snapshot.data!);
-                  },)
+                  },
+                )
               : const Icon(
                   Icons.person,
                   color: Color(0xFFBDBDBD),
@@ -123,8 +125,11 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
           left: 20,
           right: 20,
         ),
-        content: const Text('Copied to clipboard',
-            textAlign: TextAlign.center, style: TextStyle(color: Colors.white),),
+        content: const Text(
+          'Copied to clipboard',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white),
+        ),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -278,7 +283,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                               amount = snapshot.data!;
                             }
                             return Text(
-                              '\$${amount.toStringAsPrecision(3)}',
+                              '\$${trimZeros(amount)}',
                               style:
                                   const TextStyle(fontWeight: FontWeight.w500),
                             );
@@ -322,13 +327,16 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   }
 
   buildHistoryItem(
-      BuildContext context, TxnHistoryItem item, TxnHistoryItem? prevItem,) {
+    BuildContext context,
+    TxnHistoryItem item,
+    TxnHistoryItem? prevItem,
+  ) {
     final sign = item.amount != null && item.amount! < 0 ? '-' : '+';
     final color = item.amount != null && item.amount! < 0
         ? COLOR_ALMOST_BLACK
         : COLOR_GREEN;
     final amount = item.amount != null
-        ? '$sign \$${(item.amount!.abs() / LAMPORTS_PER_USDC).toStringAsPrecision(2)} USDC'
+        ? '$sign \$${trimZeros(item.amount!.abs() / LAMPORTS_PER_USDC)} USDC'
         : '-';
     final title = item.addressOrUsername!.length == 44
         ? item.addressOrUsername!.replaceRange(4, 40, '...')
@@ -414,7 +422,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                 child: balance == null
                     ? const CircularProgressIndicator.adaptive()
                     : Text(
-                        '\$${balance.toStringAsPrecision(3)}',
+                        '\$${trimZeros(balance)}',
                         style: Theme.of(context).textTheme.headlineLarge,
                       ),
               ),
@@ -540,7 +548,10 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent,) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return child;
   }
 

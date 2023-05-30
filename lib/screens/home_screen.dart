@@ -15,6 +15,7 @@ import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/screens/settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/numbers.dart';
 import 'package:iw_app/widgets/components/accounts_list.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_custom.dart';
 import 'package:iw_app/widgets/components/org_member_card.dart';
@@ -79,8 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
         .toList();
   }
 
-  Future<MemberEquity> fetchMemberEquity(String orgId, String memberId,
-      OrganizationMemberWithOtherMembers member,) async {
+  Future<MemberEquity> fetchMemberEquity(
+    String orgId,
+    String memberId,
+    OrganizationMemberWithOtherMembers member,
+  ) async {
     MemberEquity equity;
     if (config.mode == Mode.Lite) {
       equity = MemberEquity(
@@ -107,7 +111,8 @@ class _HomeScreenState extends State<HomeScreen> {
         OrgMemberCard(
           onTap: () {
             Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const CreateOrgScreen()),);
+              MaterialPageRoute(builder: (_) => const CreateOrgScreen()),
+            );
           },
         ),
       ],
@@ -190,8 +195,8 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         String? tokensAmount;
         if (config.mode == Mode.Pro) {
-          tokensAmount = (snapshot.data!.lamportsEarned! / LAMPORTS_IN_SOL)
-              .toStringAsPrecision(3);
+          tokensAmount =
+              trimZeros(snapshot.data!.lamportsEarned! / LAMPORTS_IN_SOL);
         }
         final equity = config.mode == Mode.Pro
             ? (snapshot.data!.equity! * 100).toStringAsFixed(1)
@@ -199,9 +204,11 @@ class _HomeScreenState extends State<HomeScreen> {
         return InkWell(
           onTap: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => AssetScreen(memberWithEquity: omm),),);
+              context,
+              MaterialPageRoute(
+                builder: (_) => AssetScreen(memberWithEquity: omm),
+              ),
+            );
           },
           child: AssetsListTile(
             leading: Container(
@@ -312,7 +319,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 builder: (_, snapshot) {
                                   if (!snapshot.hasData) return Container();
                                   return Image.memory(snapshot.data!);
-                                },)
+                                },
+                              )
                             : const Icon(
                                 Icons.person,
                                 color: Color(0xFFBDBDBD),
@@ -367,9 +375,14 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return const SettingsSreen();
-              },),);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const SettingsSreen();
+                  },
+                ),
+              );
             },
             icon: const Icon(Icons.settings_outlined),
           ),
@@ -377,136 +390,139 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SafeArea(
         child: FutureBuilder(
-            future: futureMembers,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              return CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  CupertinoSliverRefreshControl(
-                    onRefresh: onRefresh,
-                  ),
-                  SliverList(
-                    delegate: SliverChildListDelegate.fixed(
-                      [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: AppPadding(
-                            child: FutureBuilder(
-                              future: futureBalance,
-                              builder: (_, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return const CircularProgressIndicator
-                                      .adaptive();
-                                }
-                                final balance =
-                                    '\$${snapshot.data!.toStringAsPrecision(3)}';
-                                return InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                const AccountDetailsScreen(),),);
-                                  },
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        balance,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headlineMedium,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      const Icon(
-                                          Icons.keyboard_arrow_down_outlined,),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
+          future: futureMembers,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                CupertinoSliverRefreshControl(
+                  onRefresh: onRefresh,
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate.fixed(
+                    [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: AppPadding(
+                          child: FutureBuilder(
+                            future: futureBalance,
+                            builder: (_, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const CircularProgressIndicator
+                                    .adaptive();
+                              }
+                              final balance = '\$${trimZeros(snapshot.data!)}';
+                              return InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const AccountDetailsScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      balance,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineMedium,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    const Icon(
+                                      Icons.keyboard_arrow_down_outlined,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         ),
-                        const SizedBox(height: 45),
-                        AppPadding(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                config.mode == Mode.Lite
-                                    ? 'Orgs & Projects'
-                                    : AppLocalizations.of(context)!
-                                        .homeScreen_organizationsTitle,
-                                style:
-                                    Theme.of(context).textTheme.headlineLarge,
-                              ),
-                              if (members.isNotEmpty)
-                                InkWell(
-                                  borderRadius: BorderRadius.circular(30),
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const CreateOrgScreen(),
-                                      ),
-                                    );
-                                  },
-                                  child: SvgPicture.asset(
-                                      'assets/icons/add_circle.svg',),
+                      ),
+                      const SizedBox(height: 45),
+                      AppPadding(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              config.mode == Mode.Lite
+                                  ? 'Orgs & Projects'
+                                  : AppLocalizations.of(context)!
+                                      .homeScreen_organizationsTitle,
+                              style: Theme.of(context).textTheme.headlineLarge,
+                            ),
+                            if (members.isNotEmpty)
+                              InkWell(
+                                borderRadius: BorderRadius.circular(30),
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const CreateOrgScreen(),
+                                    ),
+                                  );
+                                },
+                                child: SvgPicture.asset(
+                                  'assets/icons/add_circle.svg',
                                 ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        height: 290,
+                        child: buildOrgsMembers(snapshot.data!),
+                      ),
+                      const SizedBox(height: 45),
+                      AppPadding(
+                        child: Text(
+                          AppLocalizations.of(context)!.homeScreen_assetsTitle,
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      AppPadding(
+                        child: snapshot.data!.isEmpty
+                            ? buildAssetExample()
+                            : buildAssets(snapshot.data!),
+                      ),
+                      if (snapshot.data!.isEmpty)
+                        AppPadding(
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 15),
+                              SvgPicture.asset(
+                                'assets/icons/arrow_up_big.svg',
+                              ),
+                              const SizedBox(height: 15),
+                              Text(
+                                config.mode == Mode.Pro
+                                    ? AppLocalizations.of(context)!
+                                        .homeScreen_assetsExampleDesc
+                                    : 'Your Assets will appear here when you create or join Organization or Project',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          height: 290,
-                          child: buildOrgsMembers(snapshot.data!),
-                        ),
-                        const SizedBox(height: 45),
-                        AppPadding(
-                          child: Text(
-                            AppLocalizations.of(context)!
-                                .homeScreen_assetsTitle,
-                            style: Theme.of(context).textTheme.headlineLarge,
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        AppPadding(
-                          child: snapshot.data!.isEmpty
-                              ? buildAssetExample()
-                              : buildAssets(snapshot.data!),
-                        ),
-                        if (snapshot.data!.isEmpty)
-                          AppPadding(
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 15),
-                                SvgPicture.asset(
-                                    'assets/icons/arrow_up_big.svg',),
-                                const SizedBox(height: 15),
-                                Text(
-                                  config.mode == Mode.Pro
-                                      ? AppLocalizations.of(context)!
-                                          .homeScreen_assetsExampleDesc
-                                      : 'Your Assets will appear here when you create or join Organization or Project',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        const SizedBox(height: 40),
-                      ],
-                    ),
+                      const SizedBox(height: 40),
+                    ],
                   ),
-                ],
-              );
-            },),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

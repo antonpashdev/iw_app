@@ -145,24 +145,28 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           children: [
             if (!widget.isPreviewMode)
               FutureBuilder(
-                  future: futureBalance,
-                  builder: (_, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const CircularProgressIndicator.adaptive();
-                    }
-                    return Text(
-                      '\$${snapshot.data!.toStringAsPrecision(3)}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    );
-                  },),
+                future: futureBalance,
+                builder: (_, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const CircularProgressIndicator.adaptive();
+                  }
+                  return Text(
+                    '\$${trimZeros(snapshot.data!)}',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  );
+                },
+              ),
             const SizedBox(height: 5),
             Text(
               'Treasury ${org.settings.treasury}%',
               style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w400, color: COLOR_GRAY,),
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: COLOR_GRAY,
+              ),
             ),
             const SizedBox(height: 7),
             Row(
@@ -202,11 +206,14 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                       ? null
                       : () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      ReceiveMoneyPaymentTypeScreen(
-                                          organization: org,),),);
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ReceiveMoneyPaymentTypeScreen(
+                                organization: org,
+                              ),
+                            ),
+                          );
                         },
                   icon: SvgPicture.asset('assets/icons/arrow_down_box.svg'),
                   label: const Text('Receive'),
@@ -399,10 +406,11 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                 child: const Text(
                   'View Details',
                   style: TextStyle(
-                      fontFamily: 'SF Pro Display',
-                      fontSize: 14,
-                      color: COLOR_BLUE,
-                      fontWeight: FontWeight.w600,),
+                    fontFamily: 'SF Pro Display',
+                    fontSize: 14,
+                    color: COLOR_BLUE,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               )
             ],
@@ -455,19 +463,20 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                   .asMap()
                   .map((i, member) {
                     return MapEntry(
-                        i,
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () => onViewDetailsPressed(members),
-                              child: buildMember(member),
-                            ),
-                            if (i != members.length - 1)
-                              const SizedBox(width: 10),
-                            if (i == members.length - 1)
-                              const SizedBox(width: 20),
-                          ],
-                        ),);
+                      i,
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => onViewDetailsPressed(members),
+                            child: buildMember(member),
+                          ),
+                          if (i != members.length - 1)
+                            const SizedBox(width: 10),
+                          if (i == members.length - 1)
+                            const SizedBox(width: 20),
+                        ],
+                      ),
+                    );
                   })
                   .values
                   .toList(),
@@ -482,7 +491,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     final startDate = DateTime.parse(item.createdAt!);
     final stopDate = DateTime.parse(item.stoppedAt!);
     final diff = stopDate.difference(startDate);
-    return (diff.inMilliseconds / 1000 / 60 / 60).toStringAsPrecision(3);
+    return trimZeros(diff.inMilliseconds / 1000 / 60 / 60);
   }
 
   buildPulseItem(
@@ -544,7 +553,8 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           subtitle: item.action!.name,
           image: item.user?.avatar != null
               ? NetworkImageAuth(
-                  imageUrl: '${usersApi.baseUrl}${item.user?.avatar}',)
+                  imageUrl: '${usersApi.baseUrl}${item.user?.avatar}',
+                )
               : Image.asset('assets/images/avatar_placeholder.png'),
           trailingText: trailingText,
           primaryColor: primaryColor,
@@ -563,8 +573,11 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           left: 20,
           right: 20,
         ),
-        content: const Text('Copied to clipboard',
-            textAlign: TextAlign.center, style: TextStyle(color: Colors.white),),
+        content: const Text(
+          'Copied to clipboard',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white),
+        ),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -730,7 +743,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                       const SizedBox(height: 10),
                                       AppPadding(
                                         child: buildHeader(
-                                            context, snapshot.data?[0],),
+                                          context,
+                                          snapshot.data?[0],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -744,7 +759,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                   const SizedBox(height: 15),
                                   AppPadding(
                                     child: buildDetails(
-                                        context, snapshot.data?[0],),
+                                      context,
+                                      snapshot.data?[0],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -753,8 +770,11 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                               child: Column(
                                 children: [
                                   const SizedBox(height: 60),
-                                  buildMembers(context, snapshot.data?[0],
-                                      snapshot.data?[1],),
+                                  buildMembers(
+                                    context,
+                                    snapshot.data?[0],
+                                    snapshot.data?[1],
+                                  ),
                                 ],
                               ),
                             ),
@@ -770,7 +790,8 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                           .textTheme
                                           .bodyLarge
                                           ?.copyWith(
-                                              fontWeight: FontWeight.bold,),
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
                                     const SizedBox(height: 25),
                                   ],
@@ -835,10 +856,13 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                               child: isLoading
                                   ? const Center(
                                       child:
-                                          CircularProgressIndicator.adaptive(),)
-                                  : Text(config.mode == Mode.Pro
-                                      ? 'Start Contributing'
-                                      : 'Tell what you\'ve done',),
+                                          CircularProgressIndicator.adaptive(),
+                                    )
+                                  : Text(
+                                      config.mode == Mode.Pro
+                                          ? 'Start Contributing'
+                                          : 'Tell what you\'ve done',
+                                    ),
                             ),
                           ),
                         ),
@@ -862,7 +886,10 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent,) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return child;
   }
 
