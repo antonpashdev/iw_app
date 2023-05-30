@@ -32,7 +32,7 @@ List<Story> appScreens() {
                 const Option(label: 'Co Owner', value: MemberRole.CoOwner),
                 const Option(label: 'Investor', value: MemberRole.Investor),
                 const Option(label: 'Member', value: MemberRole.Member)
-              ]),
+              ],),
               user: User(
                   avatar:
                       '/users/avatar/8ed4952c-7d98-4b0c-bfe0-4aeaa5c43932.jpg',
@@ -40,12 +40,12 @@ List<Story> appScreens() {
                   name: 'Test',
                   id: '6429d3bc370950b4635db8a6',
                   nickname: 'Test nuckname',
-                  wallet: '8vmEKTrbDRH2wYQ2g7z3DD5tpRTQ7z2LpEfXQbK5qMMz'));
+                  wallet: '8vmEKTrbDRH2wYQ2g7z3DD5tpRTQ7z2LpEfXQbK5qMMz',),);
 
           return OfferPreviewScreen(
               member: member,
               organization: org,
-              offer: Offer(id: '1', org: org, memberProspect: member));
-        })
+              offer: Offer(id: '1', org: org, memberProspect: member),);
+        },)
   ];
 }

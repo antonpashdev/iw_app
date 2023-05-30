@@ -26,11 +26,11 @@ class AccountsListWidget extends StatelessWidget {
                 subtitle: currentUser?.nickname,
                 showMiniIcon: false,
                 trailing: const Icon(Icons.check_circle_rounded,
-                    color: COLOR_BLUE, size: 25),
+                    color: COLOR_BLUE, size: 25,),
                 image: currentUser?.avatar != null
                     ? NetworkImageAuth(
-                        imageUrl: '${usersApi.baseUrl}${currentUser?.avatar}')
-                    : const Icon(Icons.person, color: Color(0xFFBDBDBD))),
+                        imageUrl: '${usersApi.baseUrl}${currentUser?.avatar}',)
+                    : const Icon(Icons.person, color: Color(0xFFBDBDBD)),),
 
             const Divider(
               color: COLOR_GRAY,
@@ -55,7 +55,7 @@ class AccountsListWidget extends StatelessWidget {
                       showMiniIcon: false,
                       image: NetworkImageAuth(
                           imageUrl:
-                              '${usersApi.baseUrl}${orgs?[index].member?.org.logo}')));
+                              '${usersApi.baseUrl}${orgs?[index].member?.org.logo}',),),);
             },
           ),
         ),

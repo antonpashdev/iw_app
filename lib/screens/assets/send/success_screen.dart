@@ -26,7 +26,7 @@ class SuccessScreen extends StatelessWidget {
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
-        (route) => false);
+        (route) => false,);
   }
 
   @override
@@ -52,7 +52,7 @@ class SuccessScreen extends StatelessWidget {
                     style: const TextStyle(
                         color: COLOR_ALMOST_BLACK,
                         fontWeight: FontWeight.w600,
-                        fontSize: 24)),
+                        fontSize: 24,),),
                 const SizedBox(height: 20),
                 Text(
                   config.mode == Mode.Pro
@@ -70,9 +70,9 @@ class SuccessScreen extends StatelessWidget {
                   width: 290,
                   child: ElevatedButton(
                       onPressed: () => handleDone(context),
-                      child: const Text('Done')),
+                      child: const Text('Done'),),
                 )
-              ]),
-        ));
+              ],),
+        ),);
   }
 }

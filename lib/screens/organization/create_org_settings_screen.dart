@@ -52,7 +52,7 @@ class _CreateOrgSettingsScreenState extends State<CreateOrgSettingsScreen> {
                               title: AppLocalizations.of(context)!
                                   .createOrgSettingsScreen_treasuryLabel,
                               description: AppLocalizations.of(context)!
-                                  .treasury_description);
+                                  .treasury_description,);
                         },
                         icon: const Icon(Icons.info_outline_rounded),
                         iconSize: 16,
@@ -61,7 +61,7 @@ class _CreateOrgSettingsScreenState extends State<CreateOrgSettingsScreen> {
                         color: COLOR_GRAY,
                       ),
                     ],
-                  )),
+                  ),),
               Flexible(
                 flex: 1,
                 child: AppTextFormFieldBordered(

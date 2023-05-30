@@ -30,7 +30,7 @@ class OrgMemebersDetails extends StatelessWidget {
               );
             },
           ),
-        ));
+        ),);
   }
 }
 
@@ -39,7 +39,7 @@ class MemberDeitails extends StatelessWidget {
   final bool isLast;
 
   const MemberDeitails(
-      {super.key, required this.memeberWithEquity, required this.isLast});
+      {super.key, required this.memeberWithEquity, required this.isLast,});
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +65,7 @@ class MemberDeitails extends StatelessWidget {
             ),
           );
     const TextStyle defaultDetailDataItemTextStyle = TextStyle(
-        color: COLOR_ALMOST_BLACK, fontSize: 16, fontWeight: FontWeight.w500);
+        color: COLOR_ALMOST_BLACK, fontSize: 16, fontWeight: FontWeight.w500,);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 25),
@@ -87,15 +87,15 @@ class MemberDeitails extends StatelessWidget {
                               style: const TextStyle(
                                   color: COLOR_ALMOST_BLACK,
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 16)),
+                                  fontSize: 16,),),
                           Text(
                             ' / ${isMemberRoleInvestor ? "Investor" : memeberWithEquity.member!.occupation}',
                             style: const TextStyle(
                                 color: COLOR_GRAY,
                                 fontWeight: FontWeight.w400,
-                                fontSize: 16),
+                                fontSize: 16,),
                           )
-                        ]),
+                        ],),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -107,7 +107,7 @@ class MemberDeitails extends StatelessWidget {
                                 isMemberRoleInvestor
                                     ? '\$${memeberWithEquity.member!.investorSettings!.investmentAmount!.toStringAsFixed(2)}'
                                     : '${memeberWithEquity.member!.contributed!.toStringAsFixed(3)}h',
-                                style: defaultDetailDataItemTextStyle)),
+                                style: defaultDetailDataItemTextStyle,),),
                         DetailDataItem(
                             title:
                                 isMemberRoleInvestor ? 'Allocation' : 'Ratio',
@@ -115,14 +115,14 @@ class MemberDeitails extends StatelessWidget {
                                 isMemberRoleInvestor
                                     ? '${memeberWithEquity.member!.investorSettings!.equityAllocation}%'
                                     : '${memeberWithEquity.member!.impactRatio}x',
-                                style: defaultDetailDataItemTextStyle)),
+                                style: defaultDetailDataItemTextStyle,),),
                         DetailDataItem(
                             title: 'iShares',
                             data: Text(
                                 (memeberWithEquity.member!.lamportsEarned! /
                                         LAMPORTS_IN_SOL)
                                     .toStringAsFixed(4),
-                                style: defaultDetailDataItemTextStyle)),
+                                style: defaultDetailDataItemTextStyle,),),
                         DetailDataItem(
                             title: 'Equity',
                             data: FutureBuilder(
@@ -137,16 +137,16 @@ class MemberDeitails extends StatelessWidget {
                                     style: const TextStyle(
                                         color: COLOR_GREEN,
                                         fontSize: 16,
-                                        fontWeight: FontWeight.w500));
+                                        fontWeight: FontWeight.w500,),);
                               },
-                            ))
-                      ]),
+                            ),)
+                      ],),
                   const SizedBox(height: 20),
                   if (!isLast) const Divider()
-                ]),
+                ],),
           ),
         )
-      ]),
+      ],),
     );
   }
 }
@@ -164,8 +164,8 @@ class DetailDataItem extends StatelessWidget {
       Text(
         title,
         style: const TextStyle(
-            color: COLOR_GRAY, fontSize: 12, fontWeight: FontWeight.w300),
+            color: COLOR_GRAY, fontSize: 12, fontWeight: FontWeight.w300,),
       ),
-    ]);
+    ],);
   }
 }

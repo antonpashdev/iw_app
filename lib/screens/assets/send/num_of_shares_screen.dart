@@ -109,7 +109,7 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
                     style: const TextStyle(
                         color: COLOR_GRAY,
                         fontSize: 16,
-                        fontWeight: FontWeight.w500),
+                        fontWeight: FontWeight.w500,),
                   ),
                   const SizedBox(height: 55),
                   if (config.mode == Mode.Pro)
@@ -187,7 +187,7 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
             SizedBox(
               width: 290,
               child: ElevatedButton(
-                  onPressed: handleNext, child: const Text('Preview')),
+                  onPressed: handleNext, child: const Text('Preview'),),
             )
           ],
         ),

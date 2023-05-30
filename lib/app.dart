@@ -61,7 +61,7 @@ class _AppState extends State<App> {
                 config: config,
                 child: child!,
               );
-            });
+            },);
       },
       routes: {
         AppHome.routeName: (context) => const AppHome(),

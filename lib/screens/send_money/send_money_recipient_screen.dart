@@ -79,6 +79,6 @@ class SendMoneyRecipientScreen<T extends Widget> extends StatelessWidget {
               ),
             ),
           ],
-        ));
+        ),);
   }
 }

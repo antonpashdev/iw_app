@@ -208,7 +208,7 @@ class _AssetScreenState extends State<AssetScreen> {
   }
 
   buildHistoryItem(
-      BuildContext context, TxnHistoryItem item, TxnHistoryItem? prevItem) {
+      BuildContext context, TxnHistoryItem item, TxnHistoryItem? prevItem,) {
     final sign = item.amount != null && item.amount! < 0 ? '-' : '+';
     final unit = config.mode == Mode.Pro ? ' iS' : '%';
     final amount = item.amount != null
@@ -422,7 +422,7 @@ class _AssetScreenState extends State<AssetScreen> {
                                                       .org,
                                                   member: widget
                                                       .memberWithEquity.member!,
-                                                )));
+                                                ),),);
                                   },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: COLOR_BLUE,
@@ -437,7 +437,7 @@ class _AssetScreenState extends State<AssetScreen> {
                   const SizedBox(height: 20),
                 ],
               );
-            }),
+            },),
       ),
     );
   }

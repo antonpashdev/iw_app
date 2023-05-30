@@ -14,7 +14,7 @@ class ReceiveMoneyScreen extends StatefulWidget {
   final PaymentType paymentType;
 
   const ReceiveMoneyScreen(
-      {super.key, required this.organization, required this.paymentType});
+      {super.key, required this.organization, required this.paymentType,});
 
   @override
   State<ReceiveMoneyScreen> createState() => _ReceiveMoneyScreenState();
@@ -71,7 +71,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
     switch (type) {
       case PaymentType.Online:
         return Text(AppLocalizations.of(context)!
-            .receiveMoneyScreen_label_generate_link);
+            .receiveMoneyScreen_label_generate_link,);
       case PaymentType.InStore:
         return const Text('Generate Payment QR-Code');
       default:
@@ -111,7 +111,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   setState(() {
                     _price = double.tryParse(value);
                   });
-                }),
+                },),
             Expanded(
               flex: 1,
               child: Row(

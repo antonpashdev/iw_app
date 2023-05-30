@@ -426,7 +426,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
         ),
         content: Text(AppLocalizations.of(context)!.common_link_copied,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white)),
+            style: const TextStyle(color: Colors.white),),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -471,7 +471,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                         height: 20,
                       ),
                       label: const Text('View Terms',
-                          style: TextStyle(fontSize: 16)),
+                          style: TextStyle(fontSize: 16),),
                       style: TextButton.styleFrom(
                         iconColor: COLOR_BLUE,
                         foregroundColor: COLOR_BLUE,
@@ -530,8 +530,8 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                                   BoxShadow(
                                       color: Colors.black.withOpacity(0.1),
                                       blurRadius: 10,
-                                      offset: const Offset(0, 5))
-                                ]),
+                                      offset: const Offset(0, 5),)
+                                ],),
                             child: QRCodeWidget(
                               url: offerUrl,
                               orgLogo:

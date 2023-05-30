@@ -13,13 +13,13 @@ class DontShowTheLinkScreen extends StatelessWidget {
       return CheckLoginLinkScreen(
         link: link,
       );
-    }));
+    },),);
   }
 
   @override
   Widget build(BuildContext context) {
     const TextStyle textStyle = TextStyle(
-        fontSize: 18, color: Color(0xFFBB3A79), fontWeight: FontWeight.w700);
+        fontSize: 18, color: Color(0xFFBB3A79), fontWeight: FontWeight.w700,);
 
     return ScreenScaffold(
         title: AppLocalizations.of(context)!.dontShowTheLinkScreen_title,
@@ -54,7 +54,7 @@ class DontShowTheLinkScreen extends StatelessWidget {
                       child: ElevatedButton(
                           onPressed: () => handleNext(context),
                           child: Text(AppLocalizations.of(context)!
-                              .dontShowTheLinkScreen_gotIt__button_text)))),
-            ]));
+                              .dontShowTheLinkScreen_gotIt__button_text,),),),),
+            ],),);
   }
 }

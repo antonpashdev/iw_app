@@ -132,6 +132,6 @@ class _SendMoneyPreviewScreenState extends State<SendMoneyPreviewScreen> {
               ),
             ),
           ],
-        ));
+        ),);
   }
 }

@@ -17,7 +17,7 @@ class ReceiveMoneyPaymentTypeScreen extends StatelessWidget {
             builder: (context) => ReceiveMoneyScreen(
                   organization: organization,
                   paymentType: type,
-                )));
+                ),),);
   }
 
   @override
@@ -46,6 +46,6 @@ class ReceiveMoneyPaymentTypeScreen extends StatelessWidget {
               )
             ],
           ),
-        ));
+        ),);
   }
 }

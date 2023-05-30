@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<MemberEquity> fetchMemberEquity(String orgId, String memberId,
-      OrganizationMemberWithOtherMembers member) async {
+      OrganizationMemberWithOtherMembers member,) async {
     MemberEquity equity;
     if (config.mode == Mode.Lite) {
       equity = MemberEquity(
@@ -107,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
         OrgMemberCard(
           onTap: () {
             Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const CreateOrgScreen()));
+                MaterialPageRoute(builder: (_) => const CreateOrgScreen()),);
           },
         ),
       ],
@@ -201,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (_) => AssetScreen(memberWithEquity: omm)));
+                    builder: (_) => AssetScreen(memberWithEquity: omm),),);
           },
           child: AssetsListTile(
             leading: Container(
@@ -312,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 builder: (_, snapshot) {
                                   if (!snapshot.hasData) return Container();
                                   return Image.memory(snapshot.data!);
-                                })
+                                },)
                             : const Icon(
                                 Icons.person,
                                 color: Color(0xFFBDBDBD),
@@ -322,29 +322,35 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: 10),
                     Text(user?.nickname ?? ''),
                     IconButton(
-                        onPressed: () {
-                          showBottomSheetCustom(context,
-                              title: 'Accounts',
-                              child: FutureBuilder(
-                                  future: futureUser,
-                                  builder: (builder, snapshot) {
-                                    if (!snapshot.hasData) return Container();
-                                    return FutureBuilder(
-                                        future: futureMembers,
-                                        builder: (_builder, _snapshot) {
-                                          if (!_snapshot.hasData) {
-                                            return Container();
-                                          }
-                                          return AccountsListWidget(
-                                              currentUser: snapshot.data,
-                                              orgs: _snapshot.data);
-                                        });
-                                  }));
-                        },
-                        icon: const Icon(
-                          Icons.keyboard_arrow_down_outlined,
-                          size: 20,
-                        )),
+                      onPressed: () {
+                        showBottomSheetCustom(
+                          context,
+                          title: 'Accounts',
+                          child: FutureBuilder(
+                            future: futureUser,
+                            builder: (builder, userSnapshot) {
+                              if (!userSnapshot.hasData) return Container();
+                              return FutureBuilder(
+                                future: futureMembers,
+                                builder: (builder, membersSnapshot) {
+                                  if (!snapshot.hasData) {
+                                    return Container();
+                                  }
+                                  return AccountsListWidget(
+                                    currentUser: userSnapshot.data,
+                                    orgs: membersSnapshot.data,
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down_outlined,
+                        size: 20,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -363,7 +369,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return const SettingsSreen();
-              }));
+              },),);
             },
             icon: const Icon(Icons.settings_outlined),
           ),
@@ -404,7 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (_) =>
-                                                const AccountDetailsScreen()));
+                                                const AccountDetailsScreen(),),);
                                   },
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -417,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       const SizedBox(width: 10),
                                       const Icon(
-                                          Icons.keyboard_arrow_down_outlined),
+                                          Icons.keyboard_arrow_down_outlined,),
                                     ],
                                   ),
                                 );
@@ -449,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     );
                                   },
                                   child: SvgPicture.asset(
-                                      'assets/icons/add_circle.svg'),
+                                      'assets/icons/add_circle.svg',),
                                 ),
                             ],
                           ),
@@ -479,7 +485,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 const SizedBox(height: 15),
                                 SvgPicture.asset(
-                                    'assets/icons/arrow_up_big.svg'),
+                                    'assets/icons/arrow_up_big.svg',),
                                 const SizedBox(height: 15),
                                 Text(
                                   config.mode == Mode.Pro
@@ -500,7 +506,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               );
-            }),
+            },),
       ),
     );
   }

@@ -99,7 +99,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   builder: (_, snapshot) {
                     if (!snapshot.hasData) return Container();
                     return Image.memory(snapshot.data!);
-                  })
+                  },)
               : const Icon(
                   Icons.person,
                   color: Color(0xFFBDBDBD),
@@ -124,7 +124,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
           right: 20,
         ),
         content: const Text('Copied to clipboard',
-            textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+            textAlign: TextAlign.center, style: TextStyle(color: Colors.white),),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -322,7 +322,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   }
 
   buildHistoryItem(
-      BuildContext context, TxnHistoryItem item, TxnHistoryItem? prevItem) {
+      BuildContext context, TxnHistoryItem item, TxnHistoryItem? prevItem,) {
     final sign = item.amount != null && item.amount! < 0 ? '-' : '+';
     final color = item.amount != null && item.amount! < 0
         ? COLOR_ALMOST_BLACK
@@ -540,7 +540,7 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+      BuildContext context, double shrinkOffset, bool overlapsContent,) {
     return child;
   }
 

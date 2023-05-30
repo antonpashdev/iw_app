@@ -133,7 +133,7 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
                           ? '@username'
                           : 'Solana Wallet Address',
                       onChanged: onReceiverChanged,
-                    )),
+                    ),),
                 SizedBox(width: _error != null ? 10 : 0),
                 _error != null
                     ? _isLoading == true

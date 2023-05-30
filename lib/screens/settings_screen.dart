@@ -25,7 +25,7 @@ class SettingsSreen extends StatelessWidget {
               const SizedBox(height: 40),
               TextButton.icon(
                   style: const ButtonStyle(
-                      iconColor: MaterialStatePropertyAll(COLOR_RED)),
+                      iconColor: MaterialStatePropertyAll(COLOR_RED),),
                   onPressed: () {
                     removeToken();
                     navigateToLogin(context);
@@ -36,8 +36,8 @@ class SettingsSreen extends StatelessWidget {
                     style: TextStyle(
                         color: COLOR_RED,
                         fontSize: 16,
-                        fontWeight: FontWeight.w600),
-                  ))
-            ]));
+                        fontWeight: FontWeight.w600,),
+                  ),)
+            ],),);
   }
 }

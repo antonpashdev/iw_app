@@ -62,7 +62,7 @@ class _OrgsApi extends BaseApi {
   }
 
   Future<Response> stopContribution(
-      String orgId, String contributionId, String? memo) {
+      String orgId, String contributionId, String? memo,) {
     final body = {
       'memo': memo,
     };

@@ -531,7 +531,7 @@ class _OfferScreenState extends State<OfferScreen> {
         ),
         content: Text(AppLocalizations.of(context)!.common_link_copied,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white)),
+            style: const TextStyle(color: Colors.white),),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -587,7 +587,7 @@ class _OfferScreenState extends State<OfferScreen> {
                               height: 20,
                             ),
                             label: const Text('View Terms',
-                                style: TextStyle(fontSize: 16)),
+                                style: TextStyle(fontSize: 16),),
                             style: TextButton.styleFrom(
                               iconColor: COLOR_BLUE,
                               foregroundColor: COLOR_BLUE,
@@ -623,7 +623,7 @@ class _OfferScreenState extends State<OfferScreen> {
                           },
                           icon: const Icon(Icons.link),
                           label: Text(payment!.cpPaymentUrl!,
-                              overflow: TextOverflow.ellipsis, maxLines: 1),
+                              overflow: TextOverflow.ellipsis, maxLines: 1,),
                           style: TextButton.styleFrom(
                             iconColor: COLOR_BLUE,
                             foregroundColor: COLOR_BLUE,
@@ -636,7 +636,7 @@ class _OfferScreenState extends State<OfferScreen> {
                       icon: const Icon(Icons.copy, size: 12),
                       onPressed: () => handleCopyPressed(context),
                     )
-                  ]),
+                  ],),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -678,7 +678,7 @@ class _OfferScreenState extends State<OfferScreen> {
                 ),
               ],
             );
-          }),
+          },),
     );
   }
 }

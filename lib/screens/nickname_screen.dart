@@ -92,7 +92,7 @@ class _NicknameScreen extends State<NicknameScreen> {
                   labelText: labelText,
                 ),
                 onChanged: onNickNameChanged,
-              )),
+              ),),
           Expanded(
               child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
@@ -110,8 +110,8 @@ class _NicknameScreen extends State<NicknameScreen> {
                             fontSize: 14,
                           ),
                           softWrap: true,
-                        ))
-                      ]))),
+                        ),)
+                      ],),),),
           SizedBox(
             width: 290,
             child: ElevatedButton(

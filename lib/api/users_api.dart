@@ -36,7 +36,7 @@ class _UsersApi extends BaseApi {
     try {
       await client.post('/users/exists', data: {
         'nickname': nickName,
-      });
+      },);
       return true;
     } catch (e) {
       return false;
@@ -48,7 +48,7 @@ class _UsersApi extends BaseApi {
   }
 
   Future<Response> getUserContributions(String userId,
-      {bool? isStopped, String? orgId}) {
+      {bool? isStopped, String? orgId,}) {
     final Map<String, dynamic> params = {};
     if (isStopped != null) {
       params['isStopped'] = isStopped;
@@ -115,14 +115,14 @@ class _UsersApi extends BaseApi {
         'recipientId': recipientId,
         'recipientAddress': recipientAddress,
         'amount': amount,
-      });
+      },);
     }
 
     return client.post('/users/assets/$orgId/send', data: {
       'recipientId': recipientId,
       'recipientAddress': recipientAddress,
       'amount': amount,
-    });
+    },);
   }
 
   Future<Response> getUsdcHistory() {

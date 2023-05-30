@@ -31,7 +31,7 @@ class OrgMemebersDetailsLite extends StatelessWidget {
               );
             },
           ),
-        ));
+        ),);
   }
 }
 
@@ -40,7 +40,7 @@ class MemberDeitailsLite extends StatelessWidget {
   final bool isLast;
 
   const MemberDeitailsLite(
-      {super.key, required this.memeberWithEquity, required this.isLast});
+      {super.key, required this.memeberWithEquity, required this.isLast,});
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +66,7 @@ class MemberDeitailsLite extends StatelessWidget {
             ),
           );
     const TextStyle defaultDetailDataItemTextStyle = TextStyle(
-        color: COLOR_ALMOST_BLACK, fontSize: 16, fontWeight: FontWeight.w500);
+        color: COLOR_ALMOST_BLACK, fontSize: 16, fontWeight: FontWeight.w500,);
     final createdAt = DateTime.parse(memeberWithEquity.member!.createdAt!);
     final daysInCompany = (calculateDiffWithNow(createdAt) * -1).toInt();
     final compensationStr = memeberWithEquity.member!.compensation != null
@@ -96,15 +96,15 @@ class MemberDeitailsLite extends StatelessWidget {
                               style: const TextStyle(
                                   color: COLOR_ALMOST_BLACK,
                                   fontWeight: FontWeight.w500,
-                                  fontSize: 16)),
+                                  fontSize: 16,),),
                           Text(
                             ' / ${isMemberRoleInvestor ? "Investor" : memeberWithEquity.member!.occupation}',
                             style: const TextStyle(
                                 color: COLOR_GRAY,
                                 fontWeight: FontWeight.w400,
-                                fontSize: 16),
+                                fontSize: 16,),
                           )
-                        ]),
+                        ],),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -116,11 +116,11 @@ class MemberDeitailsLite extends StatelessWidget {
                                 isMemberRoleInvestor
                                     ? '\$${memeberWithEquity.member!.investorSettings!.investmentAmount!.toStringAsFixed(2)}'
                                     : '${daysInCompany}d',
-                                style: defaultDetailDataItemTextStyle)),
+                                style: defaultDetailDataItemTextStyle,),),
                         DetailDataItem(
                             title: 'Compensation',
                             data: Text(compensationStr,
-                                style: defaultDetailDataItemTextStyle)),
+                                style: defaultDetailDataItemTextStyle,),),
                         DetailDataItem(
                           title: 'Equity',
                           data: Text(
@@ -132,13 +132,13 @@ class MemberDeitailsLite extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ]),
+                      ],),
                   const SizedBox(height: 20),
                   if (!isLast) const Divider()
-                ]),
+                ],),
           ),
         )
-      ]),
+      ],),
     );
   }
 }
@@ -156,8 +156,8 @@ class DetailDataItem extends StatelessWidget {
       Text(
         title,
         style: const TextStyle(
-            color: COLOR_GRAY, fontSize: 12, fontWeight: FontWeight.w300),
+            color: COLOR_GRAY, fontSize: 12, fontWeight: FontWeight.w300,),
       ),
-    ]);
+    ],);
   }
 }

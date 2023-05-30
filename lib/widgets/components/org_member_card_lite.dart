@@ -197,7 +197,7 @@ class OrgMemberCardLite extends StatelessWidget {
                   ],
                 ),
               );
-            }),
+            },),
       ],
     );
   }

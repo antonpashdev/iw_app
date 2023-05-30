@@ -24,7 +24,7 @@ class _LoginLinkScreen extends State<LoginLinkScreen> {
       return DontShowTheLinkScreen(
         link: link,
       );
-    }));
+    },),);
   }
 
   callSnackBar(BuildContext context) {
@@ -37,12 +37,12 @@ class _LoginLinkScreen extends State<LoginLinkScreen> {
         ),
         content: Text(AppLocalizations.of(context)!.common_link_copied,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white)),
+            style: const TextStyle(color: Colors.white),),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-        )));
+        ),),);
   }
 
   @override
@@ -62,8 +62,8 @@ class _LoginLinkScreen extends State<LoginLinkScreen> {
                     style: const TextStyle(
                         fontSize: 18,
                         color: Color(0xFFBB3A79),
-                        fontWeight: FontWeight.w700),
-                  )),
+                        fontWeight: FontWeight.w700,),
+                  ),),
               const SizedBox(height: 20),
               RichText(
                   textAlign: TextAlign.center,
@@ -71,19 +71,19 @@ class _LoginLinkScreen extends State<LoginLinkScreen> {
                       style: const TextStyle(
                           fontSize: 18,
                           color: Color(0xFFBB3A79),
-                          fontWeight: FontWeight.w700),
+                          fontWeight: FontWeight.w700,),
                       children: <TextSpan>[
                         TextSpan(
                             text: AppLocalizations.of(context)!
-                                .linkIsYourLoginScreen_description_2_1),
+                                .linkIsYourLoginScreen_description_2_1,),
                         TextSpan(
                             text: AppLocalizations.of(context)!
                                 .linkIsYourLoginScreen_description_2_2,
-                            style: const TextStyle(color: Color(0xFF000000))),
+                            style: const TextStyle(color: Color(0xFF000000)),),
                         TextSpan(
                             text: AppLocalizations.of(context)!
-                                .linkIsYourLoginScreen_description_2_3),
-                      ])),
+                                .linkIsYourLoginScreen_description_2_3,),
+                      ],),),
               const SizedBox(height: 20),
               AppTextFormFieldBordered(
                 enabled: false,
@@ -105,15 +105,15 @@ class _LoginLinkScreen extends State<LoginLinkScreen> {
                         });
                       },
                       child: Text(
-                          AppLocalizations.of(context)!.common_copy_the_link),
+                          AppLocalizations.of(context)!.common_copy_the_link,),
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
                         onPressed: _copied ? handleNext : null,
-                        child: Text(AppLocalizations.of(context)!.common_next))
-                  ])
+                        child: Text(AppLocalizations.of(context)!.common_next),)
+                  ],)
             ],
           ),
-        ));
+        ),);
   }
 }

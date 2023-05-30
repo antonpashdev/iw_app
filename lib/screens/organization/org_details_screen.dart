@@ -157,12 +157,12 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                           .bodyLarge
                           ?.copyWith(fontWeight: FontWeight.bold),
                     );
-                  }),
+                  },),
             const SizedBox(height: 5),
             Text(
               'Treasury ${org.settings.treasury}%',
               style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w400, color: COLOR_GRAY),
+                  fontSize: 14, fontWeight: FontWeight.w400, color: COLOR_GRAY,),
             ),
             const SizedBox(height: 7),
             Row(
@@ -206,7 +206,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                               MaterialPageRoute(
                                   builder: (context) =>
                                       ReceiveMoneyPaymentTypeScreen(
-                                          organization: org)));
+                                          organization: org,),),);
                         },
                   icon: SvgPicture.asset('assets/icons/arrow_down_box.svg'),
                   label: const Text('Receive'),
@@ -402,7 +402,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                       fontFamily: 'SF Pro Display',
                       fontSize: 14,
                       color: COLOR_BLUE,
-                      fontWeight: FontWeight.w600),
+                      fontWeight: FontWeight.w600,),
                 ),
               )
             ],
@@ -467,7 +467,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                             if (i == members.length - 1)
                               const SizedBox(width: 20),
                           ],
-                        ));
+                        ),);
                   })
                   .values
                   .toList(),
@@ -544,7 +544,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           subtitle: item.action!.name,
           image: item.user?.avatar != null
               ? NetworkImageAuth(
-                  imageUrl: '${usersApi.baseUrl}${item.user?.avatar}')
+                  imageUrl: '${usersApi.baseUrl}${item.user?.avatar}',)
               : Image.asset('assets/images/avatar_placeholder.png'),
           trailingText: trailingText,
           primaryColor: primaryColor,
@@ -564,7 +564,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           right: 20,
         ),
         content: const Text('Copied to clipboard',
-            textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+            textAlign: TextAlign.center, style: TextStyle(color: Colors.white),),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -730,7 +730,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                       const SizedBox(height: 10),
                                       AppPadding(
                                         child: buildHeader(
-                                            context, snapshot.data?[0]),
+                                            context, snapshot.data?[0],),
                                       ),
                                     ],
                                   ),
@@ -744,7 +744,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                   const SizedBox(height: 15),
                                   AppPadding(
                                     child: buildDetails(
-                                        context, snapshot.data?[0]),
+                                        context, snapshot.data?[0],),
                                   ),
                                 ],
                               ),
@@ -754,7 +754,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                 children: [
                                   const SizedBox(height: 60),
                                   buildMembers(context, snapshot.data?[0],
-                                      snapshot.data?[1]),
+                                      snapshot.data?[1],),
                                 ],
                               ),
                             ),
@@ -770,7 +770,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                           .textTheme
                                           .bodyLarge
                                           ?.copyWith(
-                                              fontWeight: FontWeight.bold),
+                                              fontWeight: FontWeight.bold,),
                                     ),
                                     const SizedBox(height: 25),
                                   ],
@@ -835,10 +835,10 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                               child: isLoading
                                   ? const Center(
                                       child:
-                                          CircularProgressIndicator.adaptive())
+                                          CircularProgressIndicator.adaptive(),)
                                   : Text(config.mode == Mode.Pro
                                       ? 'Start Contributing'
-                                      : 'Tell what you\'ve done'),
+                                      : 'Tell what you\'ve done',),
                             ),
                           ),
                         ),
@@ -862,7 +862,7 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+      BuildContext context, double shrinkOffset, bool overlapsContent,) {
     return child;
   }
 
