@@ -12,7 +12,7 @@ class Organization {
   String? logo;
   String? wallet;
   Uint8List? logoToSet;
-  OrganizationSettings settings = OrganizationSettings();
+  OrganizationSettings? settings = OrganizationSettings();
   double? lamportsMinted;
 
   Organization({
@@ -34,7 +34,9 @@ class Organization {
     logo = json['logo'];
     wallet = json['wallet'];
     lamportsMinted = intToDouble(json['lamportsMinted']);
-    settings = OrganizationSettings.fromJson(json['settings']);
+    settings = json['settings'] is Map
+        ? OrganizationSettings.fromJson(json['settings'])
+        : null;
   }
 
   @override
@@ -57,7 +59,7 @@ $settings
       'name': name,
       'link': link,
       'description': description,
-      'settings[treasury]': settings.treasury,
+      'settings[treasury]': settings?.treasury,
       'lamportsMinted': lamportsMinted,
     };
     if (member != null) {

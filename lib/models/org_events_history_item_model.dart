@@ -1,3 +1,4 @@
+import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/utils/common.dart';
 
@@ -5,6 +6,7 @@ enum OrgHistoryItemAction { Joined, Contributed }
 
 class OrgEventsHistoryItem {
   User? user;
+  Organization? orgUser;
   String? createdAt;
   String? stoppedAt;
   OrgHistoryItemAction? action;
@@ -18,7 +20,9 @@ class OrgEventsHistoryItem {
   });
 
   OrgEventsHistoryItem.fromJson(Map<String, dynamic> json) {
-    user = json['user'] != null ? User.fromJson(json['user']) : null;
+    user = json['user'] is Map ? User.fromJson(json['user']) : null;
+    orgUser =
+        json['orgUser'] is Map ? Organization.fromJson(json['orgUser']) : null;
     createdAt = json['createdAt'];
     stoppedAt = json['stoppedAt'];
     action =

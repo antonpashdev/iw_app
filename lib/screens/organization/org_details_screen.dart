@@ -161,7 +161,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
               ),
             const SizedBox(height: 5),
             Text(
-              'Treasury ${org.settings.treasury}%',
+              'Treasury ${org.settings?.treasury}%',
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
@@ -292,9 +292,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                 clipBehavior: Clip.antiAlias,
                 child: FittedBox(
                   fit: BoxFit.cover,
-                  child: data.member!.user.avatar != null
+                  child: data.member!.image != null
                       ? FutureBuilder(
-                          future: usersApi.getAvatar(data.member!.user.avatar),
+                          future: usersApi.getAvatar(data.member!.image!),
                           builder: (_, snapshot) {
                             if (!snapshot.hasData) return Container();
                             return Image.memory(snapshot.data!);
@@ -305,7 +305,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
               ),
               const SizedBox(height: 5),
               Text(
-                data.member!.user.nickname,
+                data.member!.username!,
                 style: Theme.of(context)
                     .textTheme
                     .labelMedium
@@ -520,7 +520,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
       color: COLOR_WHITE,
       size: 12,
     );
-    final title = item.user?.nickname;
+    final title = item.user?.nickname ?? item.orgUser?.username;
     final date = item.date != null
         ? DateTime.parse(item.date!).toLocal()
         : DateTime.now();

@@ -38,30 +38,33 @@ class _CreateOrgSettingsScreenState extends State<CreateOrgSettingsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
-                  flex: 3,
-                  child: Row(
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!
-                            .createOrgSettingsScreen_treasuryLabel,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          showBottomInfoSheet(context,
-                              title: AppLocalizations.of(context)!
-                                  .createOrgSettingsScreen_treasuryLabel,
-                              description: AppLocalizations.of(context)!
-                                  .treasury_description,);
-                        },
-                        icon: const Icon(Icons.info_outline_rounded),
-                        iconSize: 16,
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        color: COLOR_GRAY,
-                      ),
-                    ],
-                  ),),
+                flex: 3,
+                child: Row(
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!
+                          .createOrgSettingsScreen_treasuryLabel,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        showBottomInfoSheet(
+                          context,
+                          title: AppLocalizations.of(context)!
+                              .createOrgSettingsScreen_treasuryLabel,
+                          description: AppLocalizations.of(context)!
+                              .treasury_description,
+                        );
+                      },
+                      icon: const Icon(Icons.info_outline_rounded),
+                      iconSize: 16,
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      color: COLOR_GRAY,
+                    ),
+                  ],
+                ),
+              ),
               Flexible(
                 flex: 1,
                 child: AppTextFormFieldBordered(
@@ -74,7 +77,7 @@ class _CreateOrgSettingsScreenState extends State<CreateOrgSettingsScreen> {
                   size: AppTextFormSize.small,
                   onChanged: (value) {
                     setState(() {
-                      widget.organization.settings.treasury =
+                      widget.organization.settings?.treasury =
                           int.tryParse(value) ?? 0;
                     });
                   },
