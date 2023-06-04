@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,10 +6,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
-import 'package:iw_app/models/user_model.dart';
+import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/account/account_details_screen.dart';
 import 'package:iw_app/screens/assets/asset_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
@@ -37,27 +40,30 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<int> assets = [];
-  late Future<User> futureUser;
-  late Future<List<OrganizationMemberWithOtherMembers>> futureMembers;
-  List<OrganizationMemberWithOtherMembers> members = [];
+  late Future<Account> futureAccount;
+  late Future<List<OrganizationMemberWithOtherMembers>> futureAccountMembers;
+  late Future<List<OrganizationMemberWithOtherMembers>> futureUserMembers;
   late Future<double> futureBalance;
 
   @override
   void initState() {
     super.initState();
-    futureUser = fetchUser();
-    futureMembers = fetchMembers();
+    futureAccount = fetchAccount();
+    futureAccountMembers = fetchAccountMembers();
+    futureUserMembers = fetchUserMembers();
     futureBalance = fetchBalance();
   }
 
   Config get config => ConfigState.of(context).config;
 
-  Future<User> fetchUser() =>
-      authApi.getMe().then((response) => User.fromJson(response.data));
+  Future<Account> fetchAccount() =>
+      authApi.getMe().then((response) => Account.fromJson(response.data));
 
-  Future<List<OrganizationMemberWithOtherMembers>> fetchMembers() async {
-    final userId = await authApi.userId;
-    final response = await usersApi.getUserMemberships(userId!);
+  Future<List<OrganizationMemberWithOtherMembers>> fetchMembers(
+    Function(String) getMemberships,
+    String id,
+  ) async {
+    Response response = await getMemberships(id);
     final members = (response.data as List).map((member) {
       final m = OrganizationMember.fromJson(member);
       final memberWithOther = OrganizationMemberWithOtherMembers(
@@ -69,8 +75,24 @@ class _HomeScreenState extends State<HomeScreen> {
       memberWithOther.futureEquity = futureEquity;
       return memberWithOther;
     }).toList();
-    this.members = members;
     return members;
+  }
+
+  Future<List<OrganizationMemberWithOtherMembers>> fetchAccountMembers() async {
+    final userId = await authApi.userId;
+    final orgId = await authApi.orgId;
+    Function(String) fn = usersApi.getMemberships;
+    String? id = userId;
+    if (orgId != null) {
+      fn = orgsApi.getMemberships;
+      id = orgId;
+    }
+    return fetchMembers(fn, id!);
+  }
+
+  Future<List<OrganizationMemberWithOtherMembers>> fetchUserMembers() async {
+    final userId = await authApi.userId;
+    return fetchMembers(usersApi.getMemberships, userId!);
   }
 
   Future<List<OrganizationMember>> fetchOtherMembers(String orgId) async {
@@ -277,10 +299,48 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future onRefresh() {
     setState(() {
-      futureMembers = fetchMembers();
+      futureAccountMembers = fetchAccountMembers();
       futureBalance = fetchBalance();
     });
-    return Future.wait([futureMembers, futureBalance]);
+    return Future.wait([futureAccountMembers, futureBalance]);
+  }
+
+  onAccountsPressed(Account? account) async {
+    dynamic res = await showBottomSheetCustom(
+      context,
+      title: 'Accounts',
+      child: FutureBuilder(
+        future: futureUserMembers,
+        builder: (builder, membersSnapshot) {
+          if (!membersSnapshot.hasData) {
+            return Container();
+          }
+          return AccountsListWidget(
+            currentAccount: account,
+            orgs: membersSnapshot.data,
+          );
+        },
+      ),
+    );
+
+    try {
+      Response? response;
+      if (res == account?.user) {
+        response = await usersApi.loginWithToken();
+      } else if (res != null) {
+        Organization org =
+            (res as OrganizationMemberWithOtherMembers).member!.org;
+        response = await orgsApi.loginAsOrg(org.id!);
+      }
+      if (response != null) {
+        await appStorage.write('jwt_token', response.data['token']);
+        if (mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -291,75 +351,52 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         systemOverlayStyle: SystemUiOverlayStyle.dark,
         title: FutureBuilder(
-          future: futureUser,
+          future: futureAccount,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Container();
             }
-            final user = snapshot.data;
+            final account = snapshot.data;
 
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: COLOR_GRAY,
-                        borderRadius: BorderRadius.circular(12),
+                InkWell(
+                  onTap: () => onAccountsPressed(account),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: COLOR_GRAY,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: account?.image != null
+                              ? FutureBuilder(
+                                  future: usersApi.getAvatar(account!.image!),
+                                  builder: (_, snapshot) {
+                                    if (!snapshot.hasData) return Container();
+                                    return Image.memory(snapshot.data!);
+                                  },
+                                )
+                              : const Icon(
+                                  Icons.person,
+                                  color: Color(0xFFBDBDBD),
+                                ),
+                        ),
                       ),
-                      clipBehavior: Clip.antiAlias,
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: user?.avatar != null
-                            ? FutureBuilder(
-                                future: usersApi.getAvatar(user!.avatar!),
-                                builder: (_, snapshot) {
-                                  if (!snapshot.hasData) return Container();
-                                  return Image.memory(snapshot.data!);
-                                },
-                              )
-                            : const Icon(
-                                Icons.person,
-                                color: Color(0xFFBDBDBD),
-                              ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(user?.nickname ?? ''),
-                    IconButton(
-                      onPressed: () {
-                        showBottomSheetCustom(
-                          context,
-                          title: 'Accounts',
-                          child: FutureBuilder(
-                            future: futureUser,
-                            builder: (builder, userSnapshot) {
-                              if (!userSnapshot.hasData) return Container();
-                              return FutureBuilder(
-                                future: futureMembers,
-                                builder: (builder, membersSnapshot) {
-                                  if (!snapshot.hasData) {
-                                    return Container();
-                                  }
-                                  return AccountsListWidget(
-                                    currentUser: userSnapshot.data,
-                                    orgs: membersSnapshot.data,
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      icon: const Icon(
+                      const SizedBox(width: 10),
+                      Text(account?.username ?? ''),
+                      const Icon(
                         Icons.keyboard_arrow_down_outlined,
                         size: 20,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             );
@@ -390,7 +427,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SafeArea(
         child: FutureBuilder(
-          future: futureMembers,
+          future: futureAccountMembers,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(
@@ -458,7 +495,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       .homeScreen_organizationsTitle,
                               style: Theme.of(context).textTheme.headlineLarge,
                             ),
-                            if (members.isNotEmpty)
+                            if (snapshot.data!.isNotEmpty)
                               InkWell(
                                 borderRadius: BorderRadius.circular(30),
                                 onTap: () {

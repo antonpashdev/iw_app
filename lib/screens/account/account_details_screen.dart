@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
@@ -25,22 +26,22 @@ class AccountDetailsScreen extends StatefulWidget {
 }
 
 class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
-  late Future<User?> futureUser;
+  late Future<Account?> futureAccount;
   late Future<double> futureBalance;
   late Future<List<TxnHistoryItem>> futureHistory;
 
   @override
   void initState() {
-    futureUser = fetchUser();
+    futureAccount = fetchAccount();
     futureBalance = fetchBalance();
     futureHistory = fetchHistory();
     super.initState();
   }
 
-  Future<User?> fetchUser() async {
+  Future<Account?> fetchAccount() async {
     try {
       final response = await authApi.getMe();
-      return User.fromJson(response.data);
+      return Account.fromJson(response.data);
     } catch (err) {
       print(err);
     }
@@ -82,7 +83,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     ];
   }
 
-  buildTitle(User user) {
+  buildTitle(Account account) {
     return [
       Container(
         width: 30,
@@ -94,9 +95,9 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         clipBehavior: Clip.antiAlias,
         child: FittedBox(
           fit: BoxFit.cover,
-          child: user.avatar != null
+          child: account.image != null
               ? FutureBuilder(
-                  future: usersApi.getAvatar(user.avatar!),
+                  future: usersApi.getAvatar(account.image!),
                   builder: (_, snapshot) {
                     if (!snapshot.hasData) return Container();
                     return Image.memory(snapshot.data!);
@@ -110,7 +111,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
       ),
       const SizedBox(width: 10),
       Text(
-        user.nickname!,
+        account.username!,
         style: const TextStyle(fontWeight: FontWeight.normal),
       ),
     ];
@@ -401,11 +402,11 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
 
   Future onRefresh() {
     setState(() {
-      futureUser = fetchUser();
+      futureAccount = fetchAccount();
       futureBalance = fetchBalance();
       futureHistory = fetchHistory();
     });
-    return Future.wait([futureUser, futureBalance, futureHistory]);
+    return Future.wait([futureAccount, futureBalance, futureHistory]);
   }
 
   buildHeader(User user, double? balance) {
@@ -443,7 +444,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: futureUser,
+      future: futureAccount,
       builder: (_, snapshot) {
         return Scaffold(
           backgroundColor: APP_BODY_BG,
@@ -451,9 +452,9 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
             systemOverlayStyle: SystemUiOverlayStyle.dark,
             centerTitle: true,
             title: FutureBuilder(
-              future: futureUser,
+              future: futureAccount,
               builder: (context, snapshot) {
-                final user = snapshot.data;
+                final account = snapshot.data;
                 return Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -461,7 +462,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                     Row(
                       children: [
                         if (!snapshot.hasData) ...buildTitleShimmer(),
-                        if (snapshot.hasData) ...buildTitle(user!)
+                        if (snapshot.hasData) ...buildTitle(account!)
                       ],
                     ),
                   ],
@@ -476,7 +477,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
             ),
           ),
           body: FutureBuilder(
-            future: futureUser,
+            future: futureAccount,
             builder: (_, snapshot) {
               if (!snapshot.hasData) {
                 return const Center(

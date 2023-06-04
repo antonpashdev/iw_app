@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iw_app/models/user_model.dart';
+import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/list/generic_list_tile.dart';
 
@@ -8,10 +8,10 @@ import '../../models/organization_member_model.dart';
 import '../media/network_image_auth.dart';
 
 class AccountsListWidget extends StatelessWidget {
-  final User? currentUser;
+  final Account? currentAccount;
   final List<OrganizationMemberWithOtherMembers>? orgs;
 
-  const AccountsListWidget({super.key, this.currentUser, this.orgs});
+  const AccountsListWidget({super.key, this.currentAccount, this.orgs});
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +21,29 @@ class AccountsListWidget extends StatelessWidget {
         Column(
           children: [
             // current account
-            GenericListTile(
-                title: currentUser?.name,
-                subtitle: currentUser?.nickname,
+            InkWell(
+              onTap: () {
+                Navigator.of(context).pop(currentAccount?.user);
+              },
+              child: GenericListTile(
+                title: currentAccount?.user?.name,
+                subtitle: currentAccount?.user?.nickname,
                 showMiniIcon: false,
-                trailing: const Icon(Icons.check_circle_rounded,
-                    color: COLOR_BLUE, size: 25,),
-                image: currentUser?.avatar != null
+                trailing: currentAccount?.id == currentAccount?.user?.id
+                    ? const Icon(
+                        Icons.check_circle_rounded,
+                        color: COLOR_BLUE,
+                        size: 25,
+                      )
+                    : null,
+                image: currentAccount?.user?.avatar != null
                     ? NetworkImageAuth(
-                        imageUrl: '${usersApi.baseUrl}${currentUser?.avatar}',)
-                    : const Icon(Icons.person, color: Color(0xFFBDBDBD)),),
-
+                        imageUrl:
+                            '${usersApi.baseUrl}${currentAccount?.user?.avatar}',
+                      )
+                    : const Icon(Icons.person, color: Color(0xFFBDBDBD)),
+              ),
+            ),
             const Divider(
               color: COLOR_GRAY,
             )
@@ -46,16 +58,26 @@ class AccountsListWidget extends StatelessWidget {
             itemCount: orgs?.length ?? 0,
             itemBuilder: (BuildContext context, int index) {
               return InkWell(
-                  onTap: () {
-                    print('index: $index');
-                  },
-                  child: GenericListTile(
-                      title: orgs?[index].member?.org.name ?? '',
-                      subtitle: '@${orgs?[index].member?.org.username ?? ''}',
-                      showMiniIcon: false,
-                      image: NetworkImageAuth(
-                          imageUrl:
-                              '${usersApi.baseUrl}${orgs?[index].member?.org.logo}',),),);
+                onTap: () {
+                  Navigator.of(context).pop(orgs?[index]);
+                },
+                child: GenericListTile(
+                  title: orgs?[index].member?.org.name ?? '',
+                  subtitle: '@${orgs?[index].member?.org.username ?? ''}',
+                  showMiniIcon: false,
+                  image: NetworkImageAuth(
+                    imageUrl:
+                        '${usersApi.baseUrl}${orgs?[index].member?.org.logo}',
+                  ),
+                  trailing: currentAccount?.id == orgs?[index].member?.org.id
+                      ? const Icon(
+                          Icons.check_circle_rounded,
+                          color: COLOR_BLUE,
+                          size: 25,
+                        )
+                      : null,
+                ),
+              );
             },
           ),
         ),

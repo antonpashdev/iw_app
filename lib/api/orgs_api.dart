@@ -62,7 +62,10 @@ class _OrgsApi extends BaseApi {
   }
 
   Future<Response> stopContribution(
-      String orgId, String contributionId, String? memo,) {
+    String orgId,
+    String contributionId,
+    String? memo,
+  ) {
     final body = {
       'memo': memo,
     };
@@ -162,6 +165,14 @@ class _OrgsApi extends BaseApi {
 
   Future<Response> getOrgEventsHistory(String orgId) {
     return client.get('/orgs/$orgId/history');
+  }
+
+  Future<Response> getMemberships(String orgId) {
+    return client.get('/orgs/$orgId/memberships');
+  }
+
+  Future<Response> loginAsOrg(String orgId) {
+    return client.post('/orgs/$orgId/login');
   }
 }
 

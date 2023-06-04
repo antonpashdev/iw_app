@@ -5,11 +5,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
-import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
@@ -41,19 +41,19 @@ class _OfferScreenState extends State<OfferScreen> {
   late Future<Offer?> futureOffer;
   Payment? payment;
   String? offerError;
-  late Future<User?> futureUser;
+  late Future<Account?> futureAccount;
 
   @override
   initState() {
     futureOffer = fetchOffer();
-    futureUser = fetchUser();
+    futureAccount = fetchAccount();
     super.initState();
   }
 
-  Future<User?> fetchUser() async {
+  Future<Account?> fetchAccount() async {
     try {
       final response = await authApi.getMe();
-      return User.fromJson(response.data);
+      return Account.fromJson(response.data);
     } catch (err) {
       print(err);
     }
@@ -529,9 +529,11 @@ class _OfferScreenState extends State<OfferScreen> {
           left: 20,
           right: 20,
         ),
-        content: Text(AppLocalizations.of(context)!.common_link_copied,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white),),
+        content: Text(
+          AppLocalizations.of(context)!.common_link_copied,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white),
+        ),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -551,65 +553,68 @@ class _OfferScreenState extends State<OfferScreen> {
     return ScreenScaffold(
       title: 'Offer Preview',
       child: FutureBuilder(
-          future: Future.wait([
-            futureOffer,
-            futureUser,
-          ]),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            final offer = snapshot.data![0] as Offer;
-            final user = snapshot.data![1] as User;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: KeyboardDismissableListView(
-                    children: [
-                      buildOrganizationSection(context, offer),
-                      const SizedBox(height: 20),
-                      const Divider(
-                        color: COLOR_LIGHT_GRAY2,
-                        height: 1,
-                      ),
-                      const SizedBox(height: 20),
-                      if (offer.memberProspect!.role != MemberRole.Investor)
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: TextButton.icon(
-                            onPressed: () {},
-                            icon: SvgPicture.asset(
-                              'assets/icons/terms_icon.svg',
-                              width: 20,
-                              height: 20,
-                            ),
-                            label: const Text('View Terms',
-                                style: TextStyle(fontSize: 16),),
-                            style: TextButton.styleFrom(
-                              iconColor: COLOR_BLUE,
-                              foregroundColor: COLOR_BLUE,
-                            ),
+        future: Future.wait([
+          futureOffer,
+          futureAccount,
+        ]),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          final offer = snapshot.data![0] as Offer;
+          final account = snapshot.data![1] as Account;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: KeyboardDismissableListView(
+                  children: [
+                    buildOrganizationSection(context, offer),
+                    const SizedBox(height: 20),
+                    const Divider(
+                      color: COLOR_LIGHT_GRAY2,
+                      height: 1,
+                    ),
+                    const SizedBox(height: 20),
+                    if (offer.memberProspect!.role != MemberRole.Investor)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton.icon(
+                          onPressed: () {},
+                          icon: SvgPicture.asset(
+                            'assets/icons/terms_icon.svg',
+                            width: 20,
+                            height: 20,
+                          ),
+                          label: const Text(
+                            'View Terms',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          style: TextButton.styleFrom(
+                            iconColor: COLOR_BLUE,
+                            foregroundColor: COLOR_BLUE,
                           ),
                         ),
-                      const SizedBox(height: 17),
-                      if (offer.memberProspect!.role != MemberRole.Investor)
-                        const Text(
-                          'You are invited to join this Impact Organization under the  following conditions.',
-                          style: TextStyle(color: COLOR_GRAY),
-                        ),
-                      const SizedBox(height: 25),
-                      if (offer.memberProspect!.role == MemberRole.Investor)
-                        buildInvestorDetails(context, offer),
-                      if (offer.memberProspect!.role != MemberRole.Investor)
-                        buildMemberDetails(context, offer),
-                    ],
-                  ),
+                      ),
+                    const SizedBox(height: 17),
+                    if (offer.memberProspect!.role != MemberRole.Investor)
+                      const Text(
+                        'You are invited to join this Impact Organization under the  following conditions.',
+                        style: TextStyle(color: COLOR_GRAY),
+                      ),
+                    const SizedBox(height: 25),
+                    if (offer.memberProspect!.role == MemberRole.Investor)
+                      buildInvestorDetails(context, offer),
+                    if (offer.memberProspect!.role != MemberRole.Investor)
+                      buildMemberDetails(context, offer),
+                  ],
                 ),
-                if (payment != null)
-                  Row(children: [
+              ),
+              if (payment != null)
+                Row(
+                  children: [
                     Flexible(
                       flex: 1,
                       child: Container(
@@ -622,8 +627,11 @@ class _OfferScreenState extends State<OfferScreen> {
                             }
                           },
                           icon: const Icon(Icons.link),
-                          label: Text(payment!.cpPaymentUrl!,
-                              overflow: TextOverflow.ellipsis, maxLines: 1,),
+                          label: Text(
+                            payment!.cpPaymentUrl!,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
                           style: TextButton.styleFrom(
                             iconColor: COLOR_BLUE,
                             foregroundColor: COLOR_BLUE,
@@ -636,49 +644,50 @@ class _OfferScreenState extends State<OfferScreen> {
                       icon: const Icon(Icons.copy, size: 12),
                       onPressed: () => handleCopyPressed(context),
                     )
-                  ],),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (offer.memberProspect!.role != MemberRole.Investor)
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(minWidth: 290),
-                        child: SecondaryButton(
-                          onPressed: () =>
-                              acceptDeclineOffer(offer, 'declined'),
-                          child: const Text('Decline Offer'),
-                        ),
-                      ),
-                    const SizedBox(height: 10),
-                    if (payment == null)
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(minWidth: 290),
-                        child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () => acceptDeclineOffer(
-                                    offer,
-                                    'accepted',
-                                    isConfirmed: offer.memberProspect!.role !=
-                                        MemberRole.Investor,
-                                  ),
-                          child: isLoading
-                              ? const CircularProgressIndicator.adaptive()
-                              : Text(
-                                  offer.memberProspect!.role ==
-                                          MemberRole.Investor
-                                      ? 'Invest as @${user.nickname}'
-                                      : 'Accept Offer as @${user.nickname}',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                        ),
-                      ),
                   ],
                 ),
-              ],
-            );
-          },),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (offer.memberProspect!.role != MemberRole.Investor)
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 290),
+                      child: SecondaryButton(
+                        onPressed: () => acceptDeclineOffer(offer, 'declined'),
+                        child: const Text('Decline Offer'),
+                      ),
+                    ),
+                  const SizedBox(height: 10),
+                  if (payment == null)
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 290),
+                      child: ElevatedButton(
+                        onPressed: isLoading
+                            ? null
+                            : () => acceptDeclineOffer(
+                                  offer,
+                                  'accepted',
+                                  isConfirmed: offer.memberProspect!.role !=
+                                      MemberRole.Investor,
+                                ),
+                        child: isLoading
+                            ? const CircularProgressIndicator.adaptive()
+                            : Text(
+                                offer.memberProspect!.role ==
+                                        MemberRole.Investor
+                                    ? 'Invest as @${account.username}'
+                                    : 'Accept Offer as @${account.username}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

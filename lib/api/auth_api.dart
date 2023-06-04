@@ -15,7 +15,17 @@ class _AuthApi extends BaseApi {
       return null;
     }
 
-    return decodedToken['_id'];
+    return decodedToken['userId'] ?? decodedToken['_id'];
+  }
+
+  Future<String?> get orgId async {
+    final decodedToken = JwtDecoder.decode((await token) ?? '');
+
+    if (decodedToken.isEmpty) {
+      return null;
+    }
+
+    return decodedToken['orgId'];
   }
 
   Future<Response> getMe() async {
