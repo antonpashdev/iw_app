@@ -551,9 +551,10 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
         GenericListTile(
           title: title,
           subtitle: item.action!.name,
-          image: item.user?.avatar != null
+          image: item.user?.avatar != null || item.orgUser?.logo != null
               ? NetworkImageAuth(
-                  imageUrl: '${usersApi.baseUrl}${item.user?.avatar}',
+                  imageUrl:
+                      '${usersApi.baseUrl}${item.user?.avatar ?? item.orgUser?.logo}',
                 )
               : Image.asset('assets/images/avatar_placeholder.png'),
           trailingText: trailingText,
