@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:iw_app/api/account_api.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
-import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
@@ -54,7 +54,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   }
 
   Future<List<TxnHistoryItem>> fetchHistory() async {
-    final response = await usersApi.getUsdcHistory();
+    final response = await accountApi.getUsdcHistory();
     final List<TxnHistoryItem> history = [];
     for (final item in response.data) {
       history.add(TxnHistoryItem.fromJson(item));
@@ -145,12 +145,12 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     callSnackBar(context);
   }
 
-  buildWalletSection(BuildContext context, User user) {
+  buildWalletSection(BuildContext context, Account account) {
     return Column(
       children: [
         Center(
           child: TextButton.icon(
-            onPressed: () => handleCopyPressed(user.wallet!),
+            onPressed: () => handleCopyPressed(account.wallet!),
             style: const ButtonStyle(
               visualDensity: VisualDensity(vertical: 1),
             ),
@@ -172,7 +172,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      user.wallet!.replaceRange(8, 36, '...'),
+                      account.wallet!.replaceRange(8, 36, '...'),
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,
@@ -200,7 +200,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => SendMoneyRecipientScreen(
-                          senderWallet: user.wallet!,
+                          senderWallet: account.wallet!,
                           onSendMoney: (SendMoneyData data) =>
                               usersApi.sendMoney(data),
                           originScreenFactory: () =>
@@ -409,7 +409,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     return Future.wait([futureAccount, futureBalance, futureHistory]);
   }
 
-  buildHeader(User user, double? balance) {
+  buildHeader(Account account, double? balance) {
     return SliverPersistentHeader(
       key: Key(balance != null ? balance.toString() : 'na'),
       pinned: true,
@@ -431,7 +431,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
               AppPadding(
                 child: buildWalletSection(
                   context,
-                  user,
+                  account,
                 ),
               ),
             ],
@@ -484,7 +484,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   child: CircularProgressIndicator(),
                 );
               }
-              final user = snapshot.data as User;
+              final account = snapshot.data;
               return CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
@@ -494,7 +494,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   FutureBuilder(
                     future: futureBalance,
                     builder: (_, snapshot) {
-                      return buildHeader(user, snapshot.data);
+                      return buildHeader(account!, snapshot.data);
                     },
                   ),
                   SliverToBoxAdapter(

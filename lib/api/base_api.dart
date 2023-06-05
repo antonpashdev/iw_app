@@ -5,8 +5,8 @@ import 'package:iw_app/api/auth_api.dart';
 const TIMEOUT = Duration(days: 1);
 
 class BaseApi {
-  late final baseUrl = 'https://impact-wallet.herokuapp.com';
-  // final baseUrl = 'http://localhost:9898';
+  // late final baseUrl = 'https://impact-wallet.herokuapp.com';
+  final baseUrl = 'http://localhost:9898';
   late final Dio _dioClient;
 
   BaseApi() {

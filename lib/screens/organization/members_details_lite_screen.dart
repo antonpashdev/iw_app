@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/organization_member_model.dart';
-import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
@@ -17,21 +16,22 @@ class OrgMemebersDetailsLite extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-        title: 'Members Details',
-        child: Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: ListView.builder(
-            itemCount: memebersWithEquity.length,
-            itemBuilder: (context, index) {
-              final item = memebersWithEquity[index];
-              final bool isLast = memebersWithEquity.length == index;
-              return MemberDeitailsLite(
-                memeberWithEquity: item,
-                isLast: isLast,
-              );
-            },
-          ),
-        ),);
+      title: 'Members Details',
+      child: Padding(
+        padding: const EdgeInsets.only(top: 20),
+        child: ListView.builder(
+          itemCount: memebersWithEquity.length,
+          itemBuilder: (context, index) {
+            final item = memebersWithEquity[index];
+            final bool isLast = memebersWithEquity.length == index;
+            return MemberDeitailsLite(
+              memeberWithEquity: item,
+              isLast: isLast,
+            );
+          },
+        ),
+      ),
+    );
   }
 }
 
@@ -39,13 +39,18 @@ class MemberDeitailsLite extends StatelessWidget {
   final OrganizationMemberWithEquity memeberWithEquity;
   final bool isLast;
 
-  const MemberDeitailsLite(
-      {super.key, required this.memeberWithEquity, required this.isLast,});
+  const MemberDeitailsLite({
+    super.key,
+    required this.memeberWithEquity,
+    required this.isLast,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final User user = memeberWithEquity.member!.user;
-    String? memberAvatar = user.avatar;
+    String? username = memeberWithEquity.member?.user?.nickname ??
+        memeberWithEquity.member?.orgUser?.username;
+    String? memberAvatar = memeberWithEquity.member?.user?.avatar ??
+        memeberWithEquity.member?.orgUser?.logo;
     bool isMemberRoleInvestor =
         memeberWithEquity.member!.role == MemberRole.Investor;
     Widget avatar = memberAvatar == null
@@ -66,7 +71,10 @@ class MemberDeitailsLite extends StatelessWidget {
             ),
           );
     const TextStyle defaultDetailDataItemTextStyle = TextStyle(
-        color: COLOR_ALMOST_BLACK, fontSize: 16, fontWeight: FontWeight.w500,);
+      color: COLOR_ALMOST_BLACK,
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+    );
     final createdAt = DateTime.parse(memeberWithEquity.member!.createdAt!);
     final daysInCompany = (calculateDiffWithNow(createdAt) * -1).toInt();
     final compensationStr = memeberWithEquity.member!.compensation != null
@@ -78,67 +86,82 @@ class MemberDeitailsLite extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 25),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        avatar,
-        Flexible(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Column(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          avatar,
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(
                     height: 30,
                     child: Flex(
-                        direction: Axis.horizontal,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Text('@${user.nickname}',
-                              style: const TextStyle(
-                                  color: COLOR_ALMOST_BLACK,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,),),
-                          Text(
-                            ' / ${isMemberRoleInvestor ? "Investor" : memeberWithEquity.member!.occupation}',
-                            style: const TextStyle(
-                                color: COLOR_GRAY,
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,),
-                          )
-                        ],),
+                      direction: Axis.horizontal,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text(
+                          '@$username',
+                          style: const TextStyle(
+                            color: COLOR_ALMOST_BLACK,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          ' / ${isMemberRoleInvestor ? "Investor" : memeberWithEquity.member!.occupation}',
+                          style: const TextStyle(
+                            color: COLOR_GRAY,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        DetailDataItem(
-                            title: 'Contr.',
-                            data: Text(
-                                isMemberRoleInvestor
-                                    ? '\$${memeberWithEquity.member!.investorSettings!.investmentAmount!.toStringAsFixed(2)}'
-                                    : '${daysInCompany}d',
-                                style: defaultDetailDataItemTextStyle,),),
-                        DetailDataItem(
-                            title: 'Compensation',
-                            data: Text(compensationStr,
-                                style: defaultDetailDataItemTextStyle,),),
-                        DetailDataItem(
-                          title: 'Equity',
-                          data: Text(
-                            equityStr,
-                            style: const TextStyle(
-                              color: COLOR_GREEN,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      DetailDataItem(
+                        title: 'Contr.',
+                        data: Text(
+                          isMemberRoleInvestor
+                              ? '\$${memeberWithEquity.member!.investorSettings!.investmentAmount!.toStringAsFixed(2)}'
+                              : '${daysInCompany}d',
+                          style: defaultDetailDataItemTextStyle,
+                        ),
+                      ),
+                      DetailDataItem(
+                        title: 'Compensation',
+                        data: Text(
+                          compensationStr,
+                          style: defaultDetailDataItemTextStyle,
+                        ),
+                      ),
+                      DetailDataItem(
+                        title: 'Equity',
+                        data: Text(
+                          equityStr,
+                          style: const TextStyle(
+                            color: COLOR_GREEN,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ],),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 20),
                   if (!isLast) const Divider()
-                ],),
-          ),
-        )
-      ],),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -151,13 +174,18 @@ class DetailDataItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      data,
-      Text(
-        title,
-        style: const TextStyle(
-            color: COLOR_GRAY, fontSize: 12, fontWeight: FontWeight.w300,),
-      ),
-    ],);
+    return Column(
+      children: [
+        data,
+        Text(
+          title,
+          style: const TextStyle(
+            color: COLOR_GRAY,
+            fontSize: 12,
+            fontWeight: FontWeight.w300,
+          ),
+        ),
+      ],
+    );
   }
 }
