@@ -10,10 +10,12 @@ import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
+import 'package:iw_app/screens/offer/offer_investor_ivest_amount_screen.dart';
 import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
+import 'package:iw_app/widgets/components/investment_progress.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -138,73 +140,80 @@ class _OfferScreenState extends State<OfferScreen> {
   }
 
   buildInvestorDetails(BuildContext context, Offer offer) {
-    return Container(
-      decoration: BoxDecoration(
-        color: COLOR_LIGHT_GRAY,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Text(
-              'Offer for Investors',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
+    return Column(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: COLOR_LIGHT_GRAY,
+            borderRadius: BorderRadius.circular(20),
           ),
-          const Divider(
-            color: COLOR_LIGHT_GRAY2,
-            height: 1,
-          ),
-          const Padding(
-            padding: EdgeInsets.all(20),
-            child: Text(
-              'Hi,\n\nWe invite you to invest in our organization on following conditions',
-            ),
-          ),
-          const Divider(
-            color: COLOR_LIGHT_GRAY2,
-            height: 1,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text(
+                  'Offer for Investors',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+              const Divider(
+                color: COLOR_LIGHT_GRAY2,
+                height: 1,
+              ),
+              const Padding(
+                padding: EdgeInsets.all(20),
+                child: Text(
+                  'Hi,\n\nWe invite you to invest in our organization on following conditions',
+                ),
+              ),
+              const Divider(
+                color: COLOR_LIGHT_GRAY2,
+                height: 1,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
                   children: [
-                    const Text(
-                      'Raising Sum',
-                      style: TextStyle(fontWeight: FontWeight.w500),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Raising Sum',
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        Text(
+                          '\$${offer.memberProspect!.investorSettings!.investmentAmount}',
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ],
                     ),
-                    Text(
-                      '\$${offer.memberProspect!.investorSettings!.investmentAmount}',
-                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Equity Allocation',
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        Text(
+                          '${offer.memberProspect!.investorSettings!.equityAllocation}%',
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Equity Allocation',
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    Text(
-                      '${offer.memberProspect!.investorSettings!.equityAllocation}%',
-                      style: const TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 10),
+        const InvestmentProgressWidget(
+            progress: 0.24, invested: 15000, investors: 4)
+      ],
     );
   }
 
@@ -579,32 +588,40 @@ class _OfferScreenState extends State<OfferScreen> {
                     ),
                     const SizedBox(height: 20),
                     if (offer.memberProspect!.role != MemberRole.Investor)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: TextButton.icon(
-                          onPressed: () {},
-                          icon: SvgPicture.asset(
-                            'assets/icons/terms_icon.svg',
-                            width: 20,
-                            height: 20,
+                      Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: TextButton.icon(
+                              onPressed: () {},
+                              icon: SvgPicture.asset(
+                                'assets/icons/terms_icon.svg',
+                                width: 20,
+                                height: 20,
+                              ),
+                              label: const Text(
+                                'View Terms',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              style: TextButton.styleFrom(
+                                iconColor: COLOR_BLUE,
+                                foregroundColor: COLOR_BLUE,
+                              ),
+                            ),
                           ),
-                          label: const Text(
-                            'View Terms',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          style: TextButton.styleFrom(
-                            iconColor: COLOR_BLUE,
-                            foregroundColor: COLOR_BLUE,
-                          ),
-                        ),
+                          const SizedBox(height: 17),
+                        ],
                       ),
-                    const SizedBox(height: 17),
                     if (offer.memberProspect!.role != MemberRole.Investor)
-                      const Text(
-                        'You are invited to join this Impact Organization under the  following conditions.',
-                        style: TextStyle(color: COLOR_GRAY),
+                      const Column(
+                        children: [
+                          Text(
+                            'You are invited to join this Impact Organization under the  following conditions.',
+                            style: TextStyle(color: COLOR_GRAY),
+                          ),
+                          SizedBox(height: 25),
+                        ],
                       ),
-                    const SizedBox(height: 25),
                     if (offer.memberProspect!.role == MemberRole.Investor)
                       buildInvestorDetails(context, offer),
                     if (offer.memberProspect!.role != MemberRole.Investor)
@@ -664,11 +681,16 @@ class _OfferScreenState extends State<OfferScreen> {
                       child: ElevatedButton(
                         onPressed: isLoading
                             ? null
-                            : () => acceptDeclineOffer(
-                                  offer,
-                                  'accepted',
-                                  isConfirmed: offer.memberProspect!.role !=
-                                      MemberRole.Investor,
+                            : () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        OfferInvestorInvestAmount(
+                                      offer: offer,
+                                      maxEquity: 5.0,
+                                      maxInvestment: 40000,
+                                    ),
+                                  ),
                                 ),
                         child: isLoading
                             ? const CircularProgressIndicator.adaptive()
