@@ -63,7 +63,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
-        (route) => false);
+        (route) => false,);
   }
 
   String? getSecretTokenFromSecretLink() {
@@ -92,7 +92,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: COLOR_ALMOST_BLACK)),
+                        color: COLOR_ALMOST_BLACK,),),
                 const SizedBox(height: 35),
                 AppTextFormFieldBordered(
                   maxLines: 6,
@@ -113,7 +113,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
                         style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: COLOR_ALMOST_BLACK)),
+                            color: COLOR_ALMOST_BLACK,),),
                     const SizedBox(width: 5),
                     SvgPicture.asset(getValidationStatusIcon()),
                   ],
@@ -134,7 +134,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
                         restoreAccount(code);
                       }
                     },
-                    child: const Text('Restore My Account')),
+                    child: const Text('Restore My Account'),),
               )
             ],
           ),

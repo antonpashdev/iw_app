@@ -93,6 +93,37 @@ class OrgMemberCardLite extends StatelessWidget {
     );
   }
 
+  buildMember(OrganizationMember member, int i) {
+    return Positioned(
+      left: 10.0 * i,
+      top: 0,
+      child: Container(
+        width: 30,
+        height: 30,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: COLOR_GRAY,
+          border: Border.all(
+            color: COLOR_WHITE.withAlpha(200),
+            width: 1.5,
+          ),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: member.image != null
+                ? NetworkImageAuth(
+                    imageUrl: '${orgsApi.baseUrl}${member.image}',
+                  )
+                : Container(),
+          ),
+        ),
+      ),
+    );
+  }
+
   buildMainSection(BuildContext context) {
     if (member == null) {
       return Center(
@@ -133,71 +164,44 @@ class OrgMemberCardLite extends StatelessWidget {
         const Divider(height: 1),
         const SizedBox(height: 15),
         FutureBuilder(
-            future: futureOtherMembers,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return buildMembersShimmer();
-              }
-              return SizedBox(
-                height: 30,
-                child: Stack(
-                  children: [
-                    ...snapshot.data!
-                        .asMap()
-                        .map((i, member) {
-                          return MapEntry(
-                            i,
-                            Positioned(
-                              left: 10.0 * i,
-                              top: 0,
-                              child: Container(
-                                width: 30,
-                                height: 30,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: COLOR_GRAY,
-                                  border: Border.all(
-                                    color: COLOR_WHITE.withAlpha(200),
-                                    width: 1.5,
-                                  ),
+          future: futureOtherMembers,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return buildMembersShimmer();
+            }
+            return SizedBox(
+              height: 30,
+              child: Stack(
+                children: [
+                  ...snapshot.data!
+                      .asMap()
+                      .map((i, member) {
+                        return MapEntry(
+                          i,
+                          buildMember(member, i),
+                        );
+                      })
+                      .values
+                      .toList(),
+                  Positioned(
+                    top: 0,
+                    bottom: 0,
+                    left: 30 + ((snapshot.data!.length - 1) * 10) + 5,
+                    child: Center(
+                      child: Text(
+                        '${snapshot.data!.length} members',
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
                                 ),
-                                clipBehavior: Clip.antiAlias,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: FittedBox(
-                                    fit: BoxFit.cover,
-                                    child: member.user.avatar != null
-                                        ? NetworkImageAuth(
-                                            imageUrl:
-                                                '${orgsApi.baseUrl}${member.user.avatar}',
-                                          )
-                                        : Container(),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        })
-                        .values
-                        .toList(),
-                    Positioned(
-                      top: 0,
-                      bottom: 0,
-                      left: 30 + ((snapshot.data!.length - 1) * 10) + 5,
-                      child: Center(
-                        child: Text(
-                          '${snapshot.data!.length} members',
-                          style:
-                              Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                        ),
                       ),
                     ),
-                  ],
-                ),
-              );
-            }),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ],
     );
   }

@@ -20,7 +20,7 @@ class _CheckLoginLinkScreen extends State<CheckLoginLinkScreen> {
   handleNext() {
     Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
       return const HomeScreen(isOnboarding: true);
-    }), (route) => false);
+    },), (route) => false,);
   }
 
   getValidationStatusText() {
@@ -95,7 +95,7 @@ class _CheckLoginLinkScreen extends State<CheckLoginLinkScreen> {
                   width: 240,
                   child: ElevatedButton(
                       onPressed: handleNext,
-                      child: const Text('Finish Creating Account ')))),
+                      child: const Text('Finish Creating Account '),),),),
           const SizedBox(height: 20),
           const Text(
             'Be sure you save the link.\nYou won’t be able to get\naccess to your account\nwithout this link.',

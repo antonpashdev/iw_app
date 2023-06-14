@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,16 +6,19 @@ import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
-import 'package:iw_app/models/user_model.dart';
+import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/account/account_details_screen.dart';
 import 'package:iw_app/screens/assets/asset_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/screens/settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/numbers.dart';
 import 'package:iw_app/widgets/components/accounts_list.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_custom.dart';
 import 'package:iw_app/widgets/components/org_member_card.dart';
@@ -25,7 +29,6 @@ import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
-RegExp trimZeroesRegExp = RegExp(r'([.]*0+)(?!.*\d)');
 
 class HomeScreen extends StatefulWidget {
   final bool? isOnboarding;
@@ -37,25 +40,30 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<int> assets = [];
-  late Future<User> futureUser;
-  late Future<List<OrganizationMemberWithOtherMembers>> futureMembers;
-  List<OrganizationMemberWithOtherMembers> members = [];
+  late Future<Account> futureAccount;
+  late Future<List<OrganizationMemberWithOtherMembers>> futureAccountMembers;
+  late Future<List<OrganizationMemberWithOtherMembers>> futureUserMembers;
   late Future<double> futureBalance;
 
   @override
   void initState() {
     super.initState();
-    futureUser = fetchUser();
-    futureMembers = fetchMembers();
+    futureAccount = fetchAccount();
+    futureAccountMembers = fetchAccountMembers();
+    futureUserMembers = fetchUserMembers();
     futureBalance = fetchBalance();
   }
 
-  Future<User> fetchUser() =>
-      authApi.getMe().then((response) => User.fromJson(response.data));
+  Config get config => ConfigState.of(context).config;
 
-  Future<List<OrganizationMemberWithOtherMembers>> fetchMembers() async {
-    final userId = await authApi.userId;
-    final response = await usersApi.getUserMemberships(userId!);
+  Future<Account> fetchAccount() =>
+      authApi.getMe().then((response) => Account.fromJson(response.data));
+
+  Future<List<OrganizationMemberWithOtherMembers>> fetchMembers(
+    Function(String) getMemberships,
+    String id,
+  ) async {
+    Response response = await getMemberships(id);
     final members = (response.data as List).map((member) {
       final m = OrganizationMember.fromJson(member);
       final memberWithOther = OrganizationMemberWithOtherMembers(
@@ -67,8 +75,24 @@ class _HomeScreenState extends State<HomeScreen> {
       memberWithOther.futureEquity = futureEquity;
       return memberWithOther;
     }).toList();
-    this.members = members;
     return members;
+  }
+
+  Future<List<OrganizationMemberWithOtherMembers>> fetchAccountMembers() async {
+    final userId = await authApi.userId;
+    final orgId = await authApi.orgId;
+    Function(String) fn = usersApi.getMemberships;
+    String? id = userId;
+    if (orgId != null) {
+      fn = orgsApi.getMemberships;
+      id = orgId;
+    }
+    return fetchMembers(fn, id!);
+  }
+
+  Future<List<OrganizationMemberWithOtherMembers>> fetchUserMembers() async {
+    final userId = await authApi.userId;
+    return fetchMembers(usersApi.getMemberships, userId!);
   }
 
   Future<List<OrganizationMember>> fetchOtherMembers(String orgId) async {
@@ -78,10 +102,21 @@ class _HomeScreenState extends State<HomeScreen> {
         .toList();
   }
 
-  Future<MemberEquity> fetchMemberEquity(String orgId, String memberId,
-      OrganizationMemberWithOtherMembers member) async {
-    final response = await orgsApi.getMemberEquity(orgId, memberId);
-    final equity = MemberEquity.fromJson(response.data);
+  Future<MemberEquity> fetchMemberEquity(
+    String orgId,
+    String memberId,
+    OrganizationMemberWithOtherMembers member,
+  ) async {
+    MemberEquity equity;
+    if (config.mode == Mode.Lite) {
+      equity = MemberEquity(
+        lamportsEarned: 0,
+        equity: member.member!.equity?.amount ?? 0,
+      );
+    } else {
+      final response = await orgsApi.getMemberEquity(orgId, memberId);
+      equity = MemberEquity.fromJson(response.data);
+    }
     member.equity = equity;
     return equity;
   }
@@ -98,7 +133,8 @@ class _HomeScreenState extends State<HomeScreen> {
         OrgMemberCard(
           onTap: () {
             Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const CreateOrgScreen()));
+              MaterialPageRoute(builder: (_) => const CreateOrgScreen()),
+            );
           },
         ),
       ],
@@ -181,9 +217,8 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         String? tokensAmount;
         if (config.mode == Mode.Pro) {
-          tokensAmount = (snapshot.data!.lamportsEarned! / LAMPORTS_IN_SOL)
-              .toStringAsFixed(4)
-              .replaceAll(trimZeroesRegExp, '');
+          tokensAmount =
+              trimZeros(snapshot.data!.lamportsEarned! / LAMPORTS_IN_SOL);
         }
         final equity = config.mode == Mode.Pro
             ? (snapshot.data!.equity! * 100).toStringAsFixed(1)
@@ -191,9 +226,11 @@ class _HomeScreenState extends State<HomeScreen> {
         return InkWell(
           onTap: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => AssetScreen(memberWithEquity: omm)));
+              context,
+              MaterialPageRoute(
+                builder: (_) => AssetScreen(memberWithEquity: omm),
+              ),
+            );
           },
           child: AssetsListTile(
             leading: Container(
@@ -262,10 +299,48 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future onRefresh() {
     setState(() {
-      futureMembers = fetchMembers();
+      futureAccountMembers = fetchAccountMembers();
       futureBalance = fetchBalance();
     });
-    return Future.wait([futureMembers, futureBalance]);
+    return Future.wait([futureAccountMembers, futureBalance]);
+  }
+
+  onAccountsPressed(Account? account) async {
+    dynamic res = await showBottomSheetCustom(
+      context,
+      title: 'Accounts',
+      child: FutureBuilder(
+        future: futureUserMembers,
+        builder: (builder, membersSnapshot) {
+          if (!membersSnapshot.hasData) {
+            return Container();
+          }
+          return AccountsListWidget(
+            currentAccount: account,
+            orgs: membersSnapshot.data,
+          );
+        },
+      ),
+    );
+
+    try {
+      Response? response;
+      if (res == account?.user) {
+        response = await usersApi.loginWithToken();
+      } else if (res != null) {
+        Organization org =
+            (res as OrganizationMemberWithOtherMembers).member!.org;
+        response = await orgsApi.loginAsOrg(org.id!);
+      }
+      if (response != null) {
+        await appStorage.write('jwt_token', response.data['token']);
+        if (mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -276,68 +351,52 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         systemOverlayStyle: SystemUiOverlayStyle.dark,
         title: FutureBuilder(
-          future: futureUser,
+          future: futureAccount,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Container();
             }
-            final user = snapshot.data;
+            final account = snapshot.data;
 
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: COLOR_GRAY,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: user?.avatar != null
-                            ? FutureBuilder(
-                                future: usersApi.getAvatar(user!.avatar!),
-                                builder: (_, snapshot) {
-                                  if (!snapshot.hasData) return Container();
-                                  return Image.memory(snapshot.data!);
-                                })
-                            : const Icon(
-                                Icons.person,
-                                color: Color(0xFFBDBDBD),
-                              ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(user?.nickname ?? ''),
-                    IconButton(
-                        onPressed: () {
-                          showBottomSheetCustom(context,
-                              title: 'Accounts',
-                              child: FutureBuilder(
-                                  future: futureUser,
-                                  builder: (builder, snapshot) {
+                InkWell(
+                  onTap: () => onAccountsPressed(account),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: COLOR_GRAY,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: account?.image != null
+                              ? FutureBuilder(
+                                  future: usersApi.getAvatar(account!.image!),
+                                  builder: (_, snapshot) {
                                     if (!snapshot.hasData) return Container();
-                                    return FutureBuilder(
-                                        future: futureMembers,
-                                        builder: (_builder, _snapshot) {
-                                          if (!_snapshot.hasData) {
-                                            return Container();
-                                          }
-                                          return AccountsListWidget(
-                                              currentUser: snapshot.data,
-                                              orgs: _snapshot.data);
-                                        });
-                                  }));
-                        },
-                        icon: const Icon(
-                          Icons.keyboard_arrow_down_outlined,
-                          size: 20,
-                        )),
-                  ],
+                                    return Image.memory(snapshot.data!);
+                                  },
+                                )
+                              : const Icon(
+                                  Icons.person,
+                                  color: Color(0xFFBDBDBD),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(account?.username ?? ''),
+                      const Icon(
+                        Icons.keyboard_arrow_down_outlined,
+                        size: 20,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             );
@@ -353,9 +412,14 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return const SettingsSreen();
-              }));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const SettingsSreen();
+                  },
+                ),
+              );
             },
             icon: const Icon(Icons.settings_outlined),
           ),
@@ -363,135 +427,139 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SafeArea(
         child: FutureBuilder(
-            future: futureMembers,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-              return CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  CupertinoSliverRefreshControl(
-                    onRefresh: onRefresh,
-                  ),
-                  SliverList(
-                    delegate: SliverChildListDelegate.fixed(
-                      [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: AppPadding(
-                            child: FutureBuilder(
-                              future: futureBalance,
-                              builder: (_, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return const CircularProgressIndicator
-                                      .adaptive();
-                                }
-                                final decimals = snapshot.data! < 0.01 ? 3 : 2;
-                                final balance =
-                                    '\$${snapshot.data!.toStringAsFixed(decimals)}';
-                                return InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (_) =>
-                                                const AccountDetailsScreen()));
-                                  },
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        balance,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headlineMedium,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      const Icon(
-                                          Icons.keyboard_arrow_down_outlined),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
+          future: futureAccountMembers,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                CupertinoSliverRefreshControl(
+                  onRefresh: onRefresh,
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate.fixed(
+                    [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: AppPadding(
+                          child: FutureBuilder(
+                            future: futureBalance,
+                            builder: (_, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const CircularProgressIndicator
+                                    .adaptive();
+                              }
+                              final balance = '\$${trimZeros(snapshot.data!)}';
+                              return InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const AccountDetailsScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      balance,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineMedium,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    const Icon(
+                                      Icons.keyboard_arrow_down_outlined,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         ),
-                        const SizedBox(height: 45),
-                        AppPadding(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                config.mode == Mode.Lite
-                                    ? 'Orgs & Projects'
-                                    : AppLocalizations.of(context)!
-                                        .homeScreen_organizationsTitle,
-                                style:
-                                    Theme.of(context).textTheme.headlineLarge,
-                              ),
-                              if (members.isNotEmpty)
-                                InkWell(
-                                  borderRadius: BorderRadius.circular(30),
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const CreateOrgScreen(),
-                                      ),
-                                    );
-                                  },
-                                  child: SvgPicture.asset(
-                                      'assets/icons/add_circle.svg'),
+                      ),
+                      const SizedBox(height: 45),
+                      AppPadding(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              config.mode == Mode.Lite
+                                  ? 'Orgs & Projects'
+                                  : AppLocalizations.of(context)!
+                                      .homeScreen_organizationsTitle,
+                              style: Theme.of(context).textTheme.headlineLarge,
+                            ),
+                            if (snapshot.data!.isNotEmpty)
+                              InkWell(
+                                borderRadius: BorderRadius.circular(30),
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const CreateOrgScreen(),
+                                    ),
+                                  );
+                                },
+                                child: SvgPicture.asset(
+                                  'assets/icons/add_circle.svg',
                                 ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        height: 290,
+                        child: buildOrgsMembers(snapshot.data!),
+                      ),
+                      const SizedBox(height: 45),
+                      AppPadding(
+                        child: Text(
+                          AppLocalizations.of(context)!.homeScreen_assetsTitle,
+                          style: Theme.of(context).textTheme.headlineLarge,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      AppPadding(
+                        child: snapshot.data!.isEmpty
+                            ? buildAssetExample()
+                            : buildAssets(snapshot.data!),
+                      ),
+                      if (snapshot.data!.isEmpty)
+                        AppPadding(
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 15),
+                              SvgPicture.asset(
+                                'assets/icons/arrow_up_big.svg',
+                              ),
+                              const SizedBox(height: 15),
+                              Text(
+                                config.mode == Mode.Pro
+                                    ? AppLocalizations.of(context)!
+                                        .homeScreen_assetsExampleDesc
+                                    : 'Your Assets will appear here when you create or join Organization or Project',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          height: 290,
-                          child: buildOrgsMembers(snapshot.data!),
-                        ),
-                        const SizedBox(height: 45),
-                        AppPadding(
-                          child: Text(
-                            AppLocalizations.of(context)!
-                                .homeScreen_assetsTitle,
-                            style: Theme.of(context).textTheme.headlineLarge,
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        AppPadding(
-                          child: snapshot.data!.isEmpty
-                              ? buildAssetExample()
-                              : buildAssets(snapshot.data!),
-                        ),
-                        if (snapshot.data!.isEmpty)
-                          AppPadding(
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 15),
-                                SvgPicture.asset(
-                                    'assets/icons/arrow_up_big.svg'),
-                                const SizedBox(height: 15),
-                                Text(
-                                  AppLocalizations.of(context)!
-                                      .homeScreen_assetsExampleDesc,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        const SizedBox(height: 40),
-                      ],
-                    ),
+                      const SizedBox(height: 40),
+                    ],
                   ),
-                ],
-              );
-            }),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

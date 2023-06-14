@@ -80,6 +80,17 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
         print(err);
         if (err.response!.statusCode == HttpStatus.conflict) {
           navigateToHome();
+        } else {
+          final message = err.response!.data['message'];
+          if (message != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(message),
+                duration: const Duration(milliseconds: 3000),
+                backgroundColor: COLOR_RED,
+              ),
+            );
+          }
         }
       } catch (err) {
         print(err);

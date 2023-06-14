@@ -65,7 +65,7 @@ class _CreateProfile extends State<CreateProfile> {
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => LoginLinkScreen(link: link)),
-        (Route<dynamic> route) => false);
+        (Route<dynamic> route) => false,);
   }
 
   @override
@@ -86,7 +86,7 @@ class _CreateProfile extends State<CreateProfile> {
                   child: Container(
                       decoration: BoxDecoration(
                           color: const Color(0xFFE2E2E8),
-                          borderRadius: BorderRadius.circular(20)),
+                          borderRadius: BorderRadius.circular(20),),
                       width: 70,
                       height: 70,
                       clipBehavior: Clip.antiAlias,
@@ -94,14 +94,14 @@ class _CreateProfile extends State<CreateProfile> {
                           ? const Center(
                               child: Image(
                                   image:
-                                      AssetImage('assets/icons/add_image.png')))
+                                      AssetImage('assets/icons/add_image.png'),),)
                           : FittedBox(
                               clipBehavior: Clip.hardEdge,
                               fit: BoxFit.cover,
                               child: Image.memory(
                                 _imageBuffer!,
                               ),
-                            )),
+                            ),),
                 ),
                 const SizedBox(width: 20),
                 Expanded(
@@ -117,7 +117,7 @@ class _CreateProfile extends State<CreateProfile> {
                       name = value;
                     });
                   },
-                ))
+                ),)
               ],
             ),
             Expanded(
@@ -141,10 +141,10 @@ class _CreateProfile extends State<CreateProfile> {
                       )
                     : ElevatedButton(
                         onPressed: name == '' ? null : createUser,
-                        child: Text(nextButtonText)),
+                        child: Text(nextButtonText),),
               ],
-            )),
+            ),),
           ],
-        ));
+        ),);
   }
 }

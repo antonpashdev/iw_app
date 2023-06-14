@@ -2,14 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:iw_app/api/account_api.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
-import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
+import 'package:iw_app/utils/numbers.dart';
 import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
@@ -24,22 +26,22 @@ class AccountDetailsScreen extends StatefulWidget {
 }
 
 class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
-  late Future<User?> futureUser;
+  late Future<Account?> futureAccount;
   late Future<double> futureBalance;
   late Future<List<TxnHistoryItem>> futureHistory;
 
   @override
   void initState() {
-    futureUser = fetchUser();
+    futureAccount = fetchAccount();
     futureBalance = fetchBalance();
     futureHistory = fetchHistory();
     super.initState();
   }
 
-  Future<User?> fetchUser() async {
+  Future<Account?> fetchAccount() async {
     try {
       final response = await authApi.getMe();
-      return User.fromJson(response.data);
+      return Account.fromJson(response.data);
     } catch (err) {
       print(err);
     }
@@ -52,7 +54,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   }
 
   Future<List<TxnHistoryItem>> fetchHistory() async {
-    final response = await usersApi.getUsdcHistory();
+    final response = await accountApi.getUsdcHistory();
     final List<TxnHistoryItem> history = [];
     for (final item in response.data) {
       history.add(TxnHistoryItem.fromJson(item));
@@ -81,7 +83,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     ];
   }
 
-  buildTitle(User user) {
+  buildTitle(Account account) {
     return [
       Container(
         width: 30,
@@ -93,13 +95,14 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         clipBehavior: Clip.antiAlias,
         child: FittedBox(
           fit: BoxFit.cover,
-          child: user.avatar != null
+          child: account.image != null
               ? FutureBuilder(
-                  future: usersApi.getAvatar(user.avatar!),
+                  future: usersApi.getAvatar(account.image!),
                   builder: (_, snapshot) {
                     if (!snapshot.hasData) return Container();
                     return Image.memory(snapshot.data!);
-                  })
+                  },
+                )
               : const Icon(
                   Icons.person,
                   color: Color(0xFFBDBDBD),
@@ -108,7 +111,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
       ),
       const SizedBox(width: 10),
       Text(
-        user.nickname!,
+        account.username!,
         style: const TextStyle(fontWeight: FontWeight.normal),
       ),
     ];
@@ -123,8 +126,11 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
           left: 20,
           right: 20,
         ),
-        content: const Text('Copied to clipboard',
-            textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Copied to clipboard',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white),
+        ),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -139,12 +145,12 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     callSnackBar(context);
   }
 
-  buildWalletSection(BuildContext context, User user) {
+  buildWalletSection(BuildContext context, Account account) {
     return Column(
       children: [
         Center(
           child: TextButton.icon(
-            onPressed: () => handleCopyPressed(user.wallet!),
+            onPressed: () => handleCopyPressed(account.wallet!),
             style: const ButtonStyle(
               visualDensity: VisualDensity(vertical: 1),
             ),
@@ -166,7 +172,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      user.wallet!.replaceRange(8, 36, '...'),
+                      account.wallet!.replaceRange(8, 36, '...'),
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,
@@ -194,7 +200,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => SendMoneyRecipientScreen(
-                          senderWallet: user.wallet!,
+                          senderWallet: account.wallet!,
                           onSendMoney: (SendMoneyData data) =>
                               usersApi.sendMoney(data),
                           originScreenFactory: () =>
@@ -278,7 +284,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                               amount = snapshot.data!;
                             }
                             return Text(
-                              '\$${amount.toStringAsFixed(2)}',
+                              '\$${trimZeros(amount)}',
                               style:
                                   const TextStyle(fontWeight: FontWeight.w500),
                             );
@@ -322,13 +328,16 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   }
 
   buildHistoryItem(
-      BuildContext context, TxnHistoryItem item, TxnHistoryItem? prevItem) {
+    BuildContext context,
+    TxnHistoryItem item,
+    TxnHistoryItem? prevItem,
+  ) {
     final sign = item.amount != null && item.amount! < 0 ? '-' : '+';
     final color = item.amount != null && item.amount! < 0
         ? COLOR_ALMOST_BLACK
         : COLOR_GREEN;
     final amount = item.amount != null
-        ? '$sign \$${(item.amount!.abs() / LAMPORTS_PER_USDC).toStringAsFixed(2)} USDC'
+        ? '$sign \$${trimZeros(item.amount!.abs() / LAMPORTS_PER_USDC)} USDC'
         : '-';
     final title = item.addressOrUsername!.length == 44
         ? item.addressOrUsername!.replaceRange(4, 40, '...')
@@ -393,14 +402,14 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
 
   Future onRefresh() {
     setState(() {
-      futureUser = fetchUser();
+      futureAccount = fetchAccount();
       futureBalance = fetchBalance();
       futureHistory = fetchHistory();
     });
-    return Future.wait([futureUser, futureBalance, futureHistory]);
+    return Future.wait([futureAccount, futureBalance, futureHistory]);
   }
 
-  buildHeader(User user, double? balance) {
+  buildHeader(Account account, double? balance) {
     return SliverPersistentHeader(
       key: Key(balance != null ? balance.toString() : 'na'),
       pinned: true,
@@ -414,7 +423,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                 child: balance == null
                     ? const CircularProgressIndicator.adaptive()
                     : Text(
-                        '\$${balance.toStringAsFixed(2)}',
+                        '\$${trimZeros(balance)}',
                         style: Theme.of(context).textTheme.headlineLarge,
                       ),
               ),
@@ -422,7 +431,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
               AppPadding(
                 child: buildWalletSection(
                   context,
-                  user,
+                  account,
                 ),
               ),
             ],
@@ -435,7 +444,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: futureUser,
+      future: futureAccount,
       builder: (_, snapshot) {
         return Scaffold(
           backgroundColor: APP_BODY_BG,
@@ -443,9 +452,9 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
             systemOverlayStyle: SystemUiOverlayStyle.dark,
             centerTitle: true,
             title: FutureBuilder(
-              future: futureUser,
+              future: futureAccount,
               builder: (context, snapshot) {
-                final user = snapshot.data;
+                final account = snapshot.data;
                 return Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -453,7 +462,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                     Row(
                       children: [
                         if (!snapshot.hasData) ...buildTitleShimmer(),
-                        if (snapshot.hasData) ...buildTitle(user!)
+                        if (snapshot.hasData) ...buildTitle(account!)
                       ],
                     ),
                   ],
@@ -468,14 +477,14 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
             ),
           ),
           body: FutureBuilder(
-            future: futureUser,
+            future: futureAccount,
             builder: (_, snapshot) {
               if (!snapshot.hasData) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
               }
-              final user = snapshot.data as User;
+              final account = snapshot.data;
               return CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
@@ -485,7 +494,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   FutureBuilder(
                     future: futureBalance,
                     builder: (_, snapshot) {
-                      return buildHeader(user, snapshot.data);
+                      return buildHeader(account!, snapshot.data);
                     },
                   ),
                   SliverToBoxAdapter(
@@ -540,7 +549,10 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return child;
   }
 

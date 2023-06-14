@@ -10,6 +10,7 @@ import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/models/org_events_history_item_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/screens/contribution/contribution_memo_screen.dart';
 import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
 import 'package:iw_app/screens/organization/members_details_lite_screen.dart';
@@ -25,8 +26,6 @@ import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-RegExp trimZeroesRegExp = RegExp(r'([.]*0+)(?!.*\d)');
 
 class OrgDetailsScreen extends StatefulWidget {
   final String orgId;
@@ -47,7 +46,7 @@ class OrgDetailsScreen extends StatefulWidget {
 class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   late Future<Organization> futureOrg;
   late Future<List<OrganizationMemberWithEquity>> futureMembers;
-  late Future<double> futureBalance;
+  Future<double>? futureBalance;
   late Future<List<OrgEventsHistoryItem>> futureHistory;
 
   bool isLoading = false;
@@ -63,7 +62,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   Future<Organization> fetchOrg() async {
     final response = await orgsApi.getOrgById(widget.orgId);
     final org = Organization.fromJson(response.data);
-    futureBalance = fetchBalance(org.id!);
+    if (!widget.isPreviewMode) {
+      futureBalance = fetchBalance(org.id!);
+    }
     return org;
   }
 
@@ -104,15 +105,20 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     setState(() {
       futureOrg = fetchOrg();
       futureMembers = fetchMembers();
-      futureBalance = fetchBalance(widget.orgId);
+      if (!widget.isPreviewMode) {
+        futureBalance = fetchBalance(widget.orgId);
+      }
       futureHistory = fetchHistory();
     });
-    return Future.wait([
+    final futures = [
       futureOrg,
       futureMembers,
-      futureBalance,
       futureHistory,
-    ]);
+    ];
+    if (!widget.isPreviewMode) {
+      futures.add(futureBalance!);
+    }
+    return Future.wait(futures);
   }
 
   buildHeader(BuildContext context, Organization org) {
@@ -137,25 +143,30 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            FutureBuilder(
+            if (!widget.isPreviewMode)
+              FutureBuilder(
                 future: futureBalance,
                 builder: (_, snapshot) {
                   if (!snapshot.hasData) {
                     return const CircularProgressIndicator.adaptive();
                   }
                   return Text(
-                    '\$${snapshot.data!.toStringAsFixed(2)}',
+                    '\$${trimZeros(snapshot.data!)}',
                     style: Theme.of(context)
                         .textTheme
                         .bodyLarge
                         ?.copyWith(fontWeight: FontWeight.bold),
                   );
-                }),
+                },
+              ),
             const SizedBox(height: 5),
             Text(
-              'Treasury ${org.settings.treasury}%',
+              'Treasury ${org.settings?.treasury}%',
               style: const TextStyle(
-                  fontSize: 14, fontWeight: FontWeight.w400, color: COLOR_GRAY),
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: COLOR_GRAY,
+              ),
             ),
             const SizedBox(height: 7),
             Row(
@@ -195,11 +206,14 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                       ? null
                       : () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      ReceiveMoneyPaymentTypeScreen(
-                                          organization: org)));
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ReceiveMoneyPaymentTypeScreen(
+                                organization: org,
+                              ),
+                            ),
+                          );
                         },
                   icon: SvgPicture.asset('assets/icons/arrow_down_box.svg'),
                   label: const Text('Receive'),
@@ -230,7 +244,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 5),
-        if (org.link != null)
+        if (org.link != null && org.link!.isNotEmpty)
           Row(
             children: [
               TextButton.icon(
@@ -261,76 +275,82 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
 
   buildMember(OrganizationMemberWithEquity data) {
     Config config = ConfigState.of(context).config;
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Column(
-          children: [
-            Container(
-              width: 90,
-              height: 90,
-              decoration: BoxDecoration(
-                color: const Color(0xffe2e2e8),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: FittedBox(
-                fit: BoxFit.cover,
-                child: data.member!.user.avatar != null
-                    ? FutureBuilder(
-                        future: usersApi.getAvatar(data.member!.user.avatar),
-                        builder: (_, snapshot) {
-                          if (!snapshot.hasData) return Container();
-                          return Image.memory(snapshot.data!);
-                        },
-                      )
-                    : Container(),
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              data.member!.user.nickname,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        if (config.mode == Mode.Pro || data.member!.equity != null)
-          FutureBuilder(
-            future: config.mode == Mode.Pro
-                ? data.futureEquity
-                : Future.value(MemberEquity()),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return Container();
-              }
-              return Positioned(
-                top: -5,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: COLOR_ALMOST_BLACK,
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  child: Text(
-                    config.mode == Mode.Pro
-                        ? '${(snapshot.data!.equity! * 100).toStringAsFixed(1)}%'
-                        : '${data.member!.equity!.amount!.toStringAsFixed(1)}%',
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelMedium
-                        ?.copyWith(color: COLOR_WHITE),
-                  ),
+    return SizedBox(
+      width: 100,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Column(
+            children: [
+              Container(
+                width: 90,
+                height: 90,
+                decoration: BoxDecoration(
+                  color: const Color(0xffe2e2e8),
+                  borderRadius: BorderRadius.circular(30),
                 ),
-              );
-            },
+                clipBehavior: Clip.antiAlias,
+                child: FittedBox(
+                  fit: BoxFit.cover,
+                  child: data.member!.image != null
+                      ? FutureBuilder(
+                          future: usersApi.getAvatar(data.member!.image!),
+                          builder: (_, snapshot) {
+                            if (!snapshot.hasData) return Container();
+                            return Image.memory(snapshot.data!);
+                          },
+                        )
+                      : Container(),
+                ),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                data.member!.username!,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
-      ],
+          if (config.mode == Mode.Pro || data.member!.equity != null)
+            FutureBuilder(
+              future: config.mode == Mode.Pro
+                  ? data.futureEquity
+                  : Future.value(MemberEquity()),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Container();
+                }
+                return Positioned(
+                  top: -5,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: COLOR_ALMOST_BLACK,
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    child: Text(
+                      config.mode == Mode.Pro
+                          ? '${(snapshot.data!.equity! * 100).toStringAsFixed(1)}%'
+                          : '${data.member!.equity!.amount!.toStringAsFixed(1)}%',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelMedium
+                          ?.copyWith(color: COLOR_WHITE),
+                    ),
+                  ),
+                );
+              },
+            ),
+        ],
+      ),
     );
   }
 
@@ -386,10 +406,11 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                 child: const Text(
                   'View Details',
                   style: TextStyle(
-                      fontFamily: 'SF Pro Display',
-                      fontSize: 14,
-                      color: COLOR_BLUE,
-                      fontWeight: FontWeight.w600),
+                    fontFamily: 'SF Pro Display',
+                    fontSize: 14,
+                    color: COLOR_BLUE,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               )
             ],
@@ -442,19 +463,20 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                   .asMap()
                   .map((i, member) {
                     return MapEntry(
-                        i,
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () => onViewDetailsPressed(members),
-                              child: buildMember(member),
-                            ),
-                            if (i != members.length - 1)
-                              const SizedBox(width: 10),
-                            if (i == members.length - 1)
-                              const SizedBox(width: 20),
-                          ],
-                        ));
+                      i,
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => onViewDetailsPressed(members),
+                            child: buildMember(member),
+                          ),
+                          if (i != members.length - 1)
+                            const SizedBox(width: 10),
+                          if (i == members.length - 1)
+                            const SizedBox(width: 20),
+                        ],
+                      ),
+                    );
                   })
                   .values
                   .toList(),
@@ -469,9 +491,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     final startDate = DateTime.parse(item.createdAt!);
     final stopDate = DateTime.parse(item.stoppedAt!);
     final diff = stopDate.difference(startDate);
-    return (diff.inMilliseconds / 1000 / 60 / 60)
-        .toStringAsFixed(3)
-        .replaceAll(trimZeroesRegExp, '');
+    return trimZeros(diff.inMilliseconds / 1000 / 60 / 60);
   }
 
   buildPulseItem(
@@ -500,7 +520,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
       color: COLOR_WHITE,
       size: 12,
     );
-    final title = item.user?.nickname;
+    final title = item.user?.nickname ?? item.orgUser?.username;
     final date = item.date != null
         ? DateTime.parse(item.date!).toLocal()
         : DateTime.now();
@@ -531,9 +551,11 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
         GenericListTile(
           title: title,
           subtitle: item.action!.name,
-          image: item.user?.avatar != null
+          image: item.user?.avatar != null || item.orgUser?.logo != null
               ? NetworkImageAuth(
-                  imageUrl: '${usersApi.baseUrl}${item.user?.avatar}')
+                  imageUrl:
+                      '${usersApi.baseUrl}${item.user?.avatar ?? item.orgUser?.logo}',
+                )
               : Image.asset('assets/images/avatar_placeholder.png'),
           trailingText: trailingText,
           primaryColor: primaryColor,
@@ -552,8 +574,11 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           left: 20,
           right: 20,
         ),
-        content: const Text('Copied to clipboard',
-            textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Copied to clipboard',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white),
+        ),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -616,7 +641,20 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     );
   }
 
-  handleStartContributingPressed() async {
+  handleStartContributingPressed(Organization org) async {
+    Config config = ConfigState.of(context).config;
+    if (config.mode == Mode.Lite) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ContributionMemoScreen(
+            contribution: Contribution(
+              org: org,
+            ),
+          ),
+        ),
+      );
+      return;
+    }
     setState(() {
       isLoading = true;
     });
@@ -646,6 +684,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Config config = ConfigState.of(context).config;
     return FutureBuilder<List<dynamic>>(
       future: Future.wait([
         futureOrg,
@@ -705,7 +744,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                       const SizedBox(height: 10),
                                       AppPadding(
                                         child: buildHeader(
-                                            context, snapshot.data?[0]),
+                                          context,
+                                          snapshot.data?[0],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -719,7 +760,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                   const SizedBox(height: 15),
                                   AppPadding(
                                     child: buildDetails(
-                                        context, snapshot.data?[0]),
+                                      context,
+                                      snapshot.data?[0],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -728,8 +771,11 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                               child: Column(
                                 children: [
                                   const SizedBox(height: 60),
-                                  buildMembers(context, snapshot.data?[0],
-                                      snapshot.data?[1]),
+                                  buildMembers(
+                                    context,
+                                    snapshot.data?[0],
+                                    snapshot.data?[1],
+                                  ),
                                 ],
                               ),
                             ),
@@ -745,7 +791,8 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                           .textTheme
                                           .bodyLarge
                                           ?.copyWith(
-                                              fontWeight: FontWeight.bold),
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                     ),
                                     const SizedBox(height: 25),
                                   ],
@@ -804,12 +851,19 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                       widget.isPreviewMode ||
                                       widget.member!.role == MemberRole.Investor
                                   ? null
-                                  : handleStartContributingPressed,
+                                  : () => handleStartContributingPressed(
+                                        snapshot.data![0],
+                                      ),
                               child: isLoading
                                   ? const Center(
                                       child:
-                                          CircularProgressIndicator.adaptive())
-                                  : const Text('Start Contributing'),
+                                          CircularProgressIndicator.adaptive(),
+                                    )
+                                  : Text(
+                                      config.mode == Mode.Pro
+                                          ? 'Start Contributing'
+                                          : 'Tell what you\'ve done',
+                                    ),
                             ),
                           ),
                         ),
@@ -833,7 +887,10 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return child;
   }
 

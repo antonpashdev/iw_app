@@ -10,12 +10,12 @@ class QRCodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print(orgLogo);
-    return QrImage(
+    return QrImageView(
       data: url,
       version: QrVersions.auto,
       gapless: false,
       embeddedImage: NetworkImage(orgLogo),
-      embeddedImageStyle: QrEmbeddedImageStyle(size: const Size(70, 70)),
+      embeddedImageStyle: const QrEmbeddedImageStyle(size: Size(70, 70)),
       errorStateBuilder: (cxt, err) {
         return const Center(
           child: Text(

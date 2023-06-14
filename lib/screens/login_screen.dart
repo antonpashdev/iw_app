@@ -133,7 +133,7 @@ class LoginScreen extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const NicknameScreen()),
+                                          const NicknameScreen(),),
                                 );
                               },
                             ),
@@ -144,7 +144,7 @@ class LoginScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const RestoreAccountScreen()));
+                                            const RestoreAccountScreen(),),);
                               },
                               child: Text(
                                 AppLocalizations.of(context)!

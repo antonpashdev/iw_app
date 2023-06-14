@@ -209,7 +209,7 @@ class OrgMemberCard extends StatelessWidget {
                   ],
                 ),
               );
-            }),
+            },),
       ],
     );
   }

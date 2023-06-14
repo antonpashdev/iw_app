@@ -34,21 +34,27 @@ class _UsersApi extends BaseApi {
 
   Future<bool> isUserExists(String nickName) async {
     try {
-      await client.post('/users/exists', data: {
-        'nickname': nickName,
-      });
+      await client.post(
+        '/users/exists',
+        data: {
+          'nickname': nickName,
+        },
+      );
       return true;
     } catch (e) {
       return false;
     }
   }
 
-  Future<Response> getUserMemberships(String userId) {
+  Future<Response> getMemberships(String userId) {
     return client.get('/users/$userId/memberships');
   }
 
-  Future<Response> getUserContributions(String userId,
-      {bool? isStopped, String? orgId}) {
+  Future<Response> getUserContributions(
+    String userId, {
+    bool? isStopped,
+    String? orgId,
+  }) {
     final Map<String, dynamic> params = {};
     if (isStopped != null) {
       params['isStopped'] = isStopped;
@@ -111,18 +117,24 @@ class _UsersApi extends BaseApi {
     String? recipientAddress,
   }) {
     if (isLite) {
-      return client.post('/lite/users/assets/$orgId/send', data: {
+      return client.post(
+        '/lite/users/assets/$orgId/send',
+        data: {
+          'recipientId': recipientId,
+          'recipientAddress': recipientAddress,
+          'amount': amount,
+        },
+      );
+    }
+
+    return client.post(
+      '/users/assets/$orgId/send',
+      data: {
         'recipientId': recipientId,
         'recipientAddress': recipientAddress,
         'amount': amount,
-      });
-    }
-
-    return client.post('/users/assets/$orgId/send', data: {
-      'recipientId': recipientId,
-      'recipientAddress': recipientAddress,
-      'amount': amount,
-    });
+      },
+    );
   }
 
   Future<Response> getUsdcHistory() {
@@ -131,6 +143,10 @@ class _UsersApi extends BaseApi {
 
   Future<Response> getAssetHistory(String orgId) {
     return client.get('/users/assets/$orgId/history');
+  }
+
+  Future<Response> loginWithToken() {
+    return client.post('/users/login');
   }
 }
 

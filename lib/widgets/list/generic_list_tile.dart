@@ -23,7 +23,7 @@ class GenericListTile extends StatelessWidget {
     this.trailingOnTap,
     this.primaryColor = COLOR_GRAY,
     this.icon,
-    this.showMiniIcon = true
+    this.showMiniIcon = true,
 
   }) : super(key: key);
 

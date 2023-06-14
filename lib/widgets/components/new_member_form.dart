@@ -111,7 +111,7 @@ class _NewMemberFormState extends State<NewMemberForm> {
                       title: AppLocalizations.of(context)!
                           .createOrgMemberScreen_impactRatioLabel,
                       description:
-                          'The Impact Ratio helps to account ‘the power of influence’ of members contributed the same amount of time to differentiate their impacts. \n\nMember’s dividends will be calculated based on their Equity. \n\nEvery member’s Equity is calculated based on Impact Shares. Impact Shares are earned multiplying member’s contribution time by their Impact Ratio.');
+                          'The Impact Ratio helps to account ‘the power of influence’ of members contributed the same amount of time to differentiate their impacts. \n\nMember’s dividends will be calculated based on their Equity. \n\nEvery member’s Equity is calculated based on Impact Shares. Impact Shares are earned multiplying member’s contribution time by their Impact Ratio.',);
                 },
                 icon: const Icon(Icons.info_outline_rounded),
                 iconSize: 16,
@@ -154,7 +154,7 @@ class _NewMemberFormState extends State<NewMemberForm> {
                           title: AppLocalizations.of(context)!
                               .createOrgSettingsScreen_treasuryLabel,
                           description: AppLocalizations.of(context)!
-                              .treasury_description);
+                              .treasury_description,);
                     },
                     icon: const Icon(Icons.info_outline_rounded),
                     iconSize: 16,
@@ -210,7 +210,7 @@ class _NewMemberFormState extends State<NewMemberForm> {
                           title: AppLocalizations.of(context)!
                               .createOrgMemberScreen_autoContributionLabel,
                           description: AppLocalizations.of(context)!
-                              .autoContribution_description);
+                              .autoContribution_description,);
                     },
                     icon: const Icon(Icons.info_outline_rounded),
                     iconSize: 16,
@@ -234,7 +234,7 @@ class _NewMemberFormState extends State<NewMemberForm> {
             controller: hoursPerWeekCtrl,
             enabled: widget.member.isAutoContributing!,
             suffix: Text(AppLocalizations.of(context)!
-                .createOrgMemberScreen_hoursPerWeekLabel),
+                .createOrgMemberScreen_hoursPerWeekLabel,),
             validator: widget.member.isAutoContributing!
                 ? multiValidate([
                     requiredField(

@@ -53,7 +53,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
   }
 
   _buildDetails(double imageSize, double imageRaduis, String? imageUrl,
-      Widget title, Widget description) {
+      Widget title, Widget description,) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -108,7 +108,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
             children: [
               const Text('To',
                   style: TextStyle(
-                      color: COLOR_BLUE, fontWeight: FontWeight.w600)),
+                      color: COLOR_BLUE, fontWeight: FontWeight.w600,),),
               const SizedBox(width: 3),
               Text(
                 widget.sendAssetType == SendAssetType.ToUser
@@ -165,7 +165,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                         color: COLOR_GRAY,
                         fontWeight: FontWeight.w500,
                       ),
-                )),
+                ),),
             const SizedBox(height: 15),
             const Divider(),
             const SizedBox(height: 15),
@@ -180,7 +180,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                         widget.tokens.toString(),
                         style: const TextStyle(
                             color: COLOR_ALMOST_BLACK,
-                            fontWeight: FontWeight.w700),
+                            fontWeight: FontWeight.w700,),
                       )
                     ],
                   ),
@@ -194,7 +194,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                 Text(
                   '$equity%',
                   style: const TextStyle(
-                      color: COLOR_GREEN, fontWeight: FontWeight.w700),
+                      color: COLOR_GREEN, fontWeight: FontWeight.w700,),
                 )
               ],
             )
@@ -241,7 +241,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
             sendAssetType: widget.sendAssetType,
           ),
         ),
-        (route) => false);
+        (route) => false,);
   }
 
   @override
@@ -280,6 +280,6 @@ class _PreviewScreenState extends State<PreviewScreen> {
               ),
             ),
           ],
-        ));
+        ),);
   }
 }

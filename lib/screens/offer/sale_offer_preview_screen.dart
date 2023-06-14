@@ -153,7 +153,7 @@ class SaleOfferPreviewScreen extends StatelessWidget {
         ),
         content: Text(AppLocalizations.of(context)!.common_link_copied,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white)),
+            style: const TextStyle(color: Colors.white),),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -228,8 +228,8 @@ class SaleOfferPreviewScreen extends StatelessWidget {
                             BoxShadow(
                                 color: Colors.black.withOpacity(0.1),
                                 blurRadius: 10,
-                                offset: const Offset(0, 5))
-                          ]),
+                                offset: const Offset(0, 5),)
+                          ],),
                       child: QRCodeWidget(
                         url: offerUrl,
                         orgLogo: '${orgsApi.baseUrl}${saleOffer.org.logo!}',
@@ -241,6 +241,6 @@ class SaleOfferPreviewScreen extends StatelessWidget {
               ],
             ),
           ],
-        ));
+        ),);
   }
 }

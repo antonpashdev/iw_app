@@ -31,7 +31,7 @@ class SendMoneyAmountScreen<T extends Widget> extends StatelessWidget {
               senderWallet: senderWallet,
               onSendMoney: onSendMoney,
               originScreenFactory: originScreenFactory,
-            )));
+            ),),);
   }
 
   @override
@@ -80,6 +80,6 @@ class SendMoneyAmountScreen<T extends Widget> extends StatelessWidget {
               ),
             ),
           ],
-        ));
+        ),);
   }
 }

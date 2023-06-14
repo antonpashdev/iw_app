@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/screens/contribution/contribution_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
@@ -10,6 +11,7 @@ import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/state/config.dart';
 
 class ContributionMemoScreen extends StatefulWidget {
   final Contribution contribution;
@@ -27,18 +29,30 @@ class _ContributionMemoScreenState extends State<ContributionMemoScreen> {
   String? memo;
   bool isLoading = false;
 
+  Config get config => ConfigState.of(context).config;
+
   handleDonePressed() async {
     setState(() {
       isLoading = true;
     });
     try {
-      final response = await orgsApi.stopContribution(
-        widget.contribution.org.id,
-        widget.contribution.id!,
-        memo,
-      );
-      final stoppedContribution = Contribution.fromJson(response.data);
-      navigateToDetails(stoppedContribution);
+      if (config.mode == Mode.Lite) {
+        await orgsApi.recordContribution(
+          widget.contribution.org.id,
+          memo,
+        );
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
+      } else {
+        final response = await orgsApi.stopContribution(
+          widget.contribution.org.id,
+          widget.contribution.id!,
+          memo,
+        );
+        final stoppedContribution = Contribution.fromJson(response.data);
+        navigateToDetails(stoppedContribution);
+      }
     } on DioError catch (error) {
       print(error);
       if (error.response!.statusCode == HttpStatus.forbidden) {
@@ -164,7 +178,7 @@ class _ContributionMemoScreenState extends State<ContributionMemoScreen> {
                 onPressed: isLoading ? null : handleDonePressed,
                 child: isLoading
                     ? const Center(child: CircularProgressIndicator.adaptive())
-                    : const Text('Done'),
+                    : Text(config.mode == Mode.Pro ? 'Done' : 'Send'),
               ),
             ),
           ),

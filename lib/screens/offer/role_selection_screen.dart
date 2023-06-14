@@ -13,7 +13,7 @@ class RoleSelectionScreen extends StatefulWidget {
   final Organization organization;
 
   const RoleSelectionScreen(
-      {Key? key, required this.member, required this.organization})
+      {Key? key, required this.member, required this.organization,})
       : super(key: key);
 
   @override
@@ -74,7 +74,7 @@ class _RoleSelectionState extends State<RoleSelectionScreen> {
             leading: Icon(Icons.file_upload_outlined),
             minLeadingWidth: 0,
             title: Text(
-                'Send limited amount of money from the Organization’s wallet set by owner'),
+                'Send limited amount of money from the Organization’s wallet set by owner',),
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,
@@ -229,6 +229,6 @@ class _RoleSelectionState extends State<RoleSelectionScreen> {
               ),
             ),
           ],
-        ));
+        ),);
   }
 }

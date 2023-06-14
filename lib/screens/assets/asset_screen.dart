@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/constants/send_asset_type.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
@@ -13,6 +14,8 @@ import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
+
+import 'send/receiver_screen.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
 RegExp trimZeroesRegExp = RegExp(r'([.]*0+)(?!.*\d)');
@@ -40,6 +43,14 @@ class _AssetScreenState extends State<AssetScreen> {
   }
 
   Future<MemberEquity?> fetchEquity() async {
+    if (config.mode == Mode.Lite) {
+      return Future.value(
+        MemberEquity(
+          lamportsEarned: 0,
+          equity: widget.memberWithEquity.member!.equity?.amount ?? 0,
+        ),
+      );
+    }
     try {
       final response = await orgsApi.getMemberEquity(
         widget.memberWithEquity.member!.org.id,
@@ -158,7 +169,12 @@ class _AssetScreenState extends State<AssetScreen> {
     final tokensAmount = (memberEquity.lamportsEarned! / LAMPORTS_IN_SOL)
         .toStringAsFixed(4)
         .replaceAll(trimZeroesRegExp, '');
-    final equityStr = (memberEquity.equity! * 100).toStringAsFixed(1);
+    String equityStr;
+    if (config.mode == Mode.Lite) {
+      equityStr = memberEquity.equity!.toStringAsFixed(1);
+    } else {
+      equityStr = (memberEquity.equity! * 100).toStringAsFixed(1);
+    }
     return Row(
       children: [
         if (config.mode == Mode.Pro)
@@ -192,7 +208,7 @@ class _AssetScreenState extends State<AssetScreen> {
   }
 
   buildHistoryItem(
-      BuildContext context, TxnHistoryItem item, TxnHistoryItem? prevItem) {
+      BuildContext context, TxnHistoryItem item, TxnHistoryItem? prevItem,) {
     final sign = item.amount != null && item.amount! < 0 ? '-' : '+';
     final unit = config.mode == Mode.Pro ? ' iS' : '%';
     final amount = item.amount != null
@@ -263,6 +279,31 @@ class _AssetScreenState extends State<AssetScreen> {
         ],
       ),
     );
+  }
+
+  handleSendAssetPressed() {
+    if (config.mode == Mode.Pro) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SendTypeScreen(
+            organization: widget.memberWithEquity.member!.org,
+            member: widget.memberWithEquity.member!,
+          ),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ReceiverScreen(
+            organization: widget.memberWithEquity.member!.org,
+            member: widget.memberWithEquity.member!,
+            sendAssetType: SendAssetType.ToUser,
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -360,32 +401,16 @@ class _AssetScreenState extends State<AssetScreen> {
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: widget.memberWithEquity.equity!
-                                        .lamportsEarned ==
-                                    0
+                            onPressed: snapshot.data!.equity == 0
                                 ? null
-                                : () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => SendTypeScreen(
-                                          organization: widget
-                                              .memberWithEquity.member!.org,
-                                          member:
-                                              widget.memberWithEquity.member!,
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                : handleSendAssetPressed,
                             child: const Text('Send Asset'),
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: widget.memberWithEquity.equity!
-                                        .lamportsEarned ==
-                                    0
+                            onPressed: snapshot.data!.equity == 0
                                 ? null
                                 : () {
                                     Navigator.of(context)
@@ -397,7 +422,7 @@ class _AssetScreenState extends State<AssetScreen> {
                                                       .org,
                                                   member: widget
                                                       .memberWithEquity.member!,
-                                                )));
+                                                ),),);
                                   },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: COLOR_BLUE,
@@ -412,7 +437,7 @@ class _AssetScreenState extends State<AssetScreen> {
                   const SizedBox(height: 20),
                 ],
               );
-            }),
+            },),
       ),
     );
   }

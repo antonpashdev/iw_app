@@ -46,12 +46,12 @@ class _CustomBottomSheet extends StatelessWidget {
 }
 
 // define function to show modal bottom sheet
-void showBottomSheetCustom(
+showBottomSheetCustom(
   BuildContext context, {
   required String title,
   required Widget child,
 }) {
-  showModalBottomSheet(
+  return showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
     builder: (BuildContext context) {
