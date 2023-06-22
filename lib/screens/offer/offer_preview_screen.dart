@@ -9,6 +9,7 @@ import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/numbers.dart';
 import 'package:iw_app/widgets/components/investment_progress.dart';
 import 'package:iw_app/widgets/components/url_qr_code.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
@@ -172,11 +173,13 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
         const SizedBox(
           height: 10,
         ),
-        const InvestmentProgressWidget(
-          progress: 0.25,
-          invested: 40000,
-          investors: 3,
-        )
+        widget.member.role == MemberRole.Investor
+            ? InvestmentProgressWidget(
+                progress: 0,
+                invested: 0,
+                investors: widget.offer?.memberProspects?.length ?? 0,
+              )
+            : Container()
       ],
     );
   }
@@ -410,6 +413,22 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
         widget.organization.id!,
         widget.member,
         config.mode == Mode.Lite,
+        Offer(
+          org: widget.organization.id!,
+          type: widget.member.role == MemberRole.Investor
+              ? OfferType.Investor
+              : OfferType.Regular,
+          investorSettings: widget.member.role == MemberRole.Investor
+              ? OfferInvestorSettings(
+                  amount: intToDouble(
+                    widget.member.investorSettings?.investmentAmount!,
+                  ),
+                  equity: intToDouble(
+                    widget.member.investorSettings?.equityAllocation!,
+                  ),
+                )
+              : null,
+        ),
       );
       setState(() {
         offer = Offer.fromJson(response.data);
@@ -592,4 +611,10 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
       ),
     );
   }
+}
+
+_calculateInvestmentProgress(Offer offer) {
+  final requestedInvestment = offer.investorSettings!.amount;
+  final investorsCount = offer.memberProspects?.length ?? 0;
+  final alreadyInvested = 0.0;
 }

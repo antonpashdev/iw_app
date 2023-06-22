@@ -108,9 +108,7 @@ class _OfferScreenState extends State<OfferScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  offer.memberProspect!.role == MemberRole.Investor
-                      ? 'Invest to'
-                      : 'From',
+                  offer.type == OfferType.Investor ? 'Invest to' : 'From',
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: COLOR_GRAY,
                         fontWeight: FontWeight.w500,
@@ -185,7 +183,7 @@ class _OfferScreenState extends State<OfferScreen> {
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
                         Text(
-                          '\$${offer.memberProspect!.investorSettings!.investmentAmount}',
+                          '\$${offer.investorSettings!.amount}',
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ],
@@ -199,7 +197,7 @@ class _OfferScreenState extends State<OfferScreen> {
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
                         Text(
-                          '${offer.memberProspect!.investorSettings!.equityAllocation}%',
+                          '${offer.investorSettings!.equity}%',
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ],
@@ -460,7 +458,7 @@ class _OfferScreenState extends State<OfferScreen> {
           ),
           const SizedBox(height: 15),
           Text(
-            'By signing this transaction You will get ${offer.memberProspect?.investorSettings?.equityAllocation}% of equity allocation.\n\nThis transaction will be recorded on blockchain.',
+            'By signing this transaction You will get ${offer.availableInvestment?.equity}% of equity allocation.\n\nThis transaction will be recorded on blockchain.',
             style: const TextStyle(
               fontFamily: 'Gilroy',
             ),
@@ -479,7 +477,7 @@ class _OfferScreenState extends State<OfferScreen> {
               acceptDeclineOffer(offer, status);
             },
             child: Text(
-              'Send \$${offer.memberProspect!.investorSettings!.investmentAmount}',
+              'Send \$${offer.availableInvestment?.amount}',
             ),
           ),
         ],
@@ -587,7 +585,7 @@ class _OfferScreenState extends State<OfferScreen> {
                       height: 1,
                     ),
                     const SizedBox(height: 20),
-                    if (offer.memberProspect!.role != MemberRole.Investor)
+                    if (offer.type != OfferType.Investor)
                       Column(
                         children: [
                           Align(
@@ -612,7 +610,7 @@ class _OfferScreenState extends State<OfferScreen> {
                           const SizedBox(height: 17),
                         ],
                       ),
-                    if (offer.memberProspect!.role != MemberRole.Investor)
+                    if (offer.type != OfferType.Investor)
                       const Column(
                         children: [
                           Text(
@@ -622,9 +620,9 @@ class _OfferScreenState extends State<OfferScreen> {
                           SizedBox(height: 25),
                         ],
                       ),
-                    if (offer.memberProspect!.role == MemberRole.Investor)
+                    if (offer.type == OfferType.Investor)
                       buildInvestorDetails(context, offer),
-                    if (offer.memberProspect!.role != MemberRole.Investor)
+                    if (offer.type != OfferType.Investor)
                       buildMemberDetails(context, offer),
                   ],
                 ),
@@ -666,7 +664,7 @@ class _OfferScreenState extends State<OfferScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  if (offer.memberProspect!.role != MemberRole.Investor)
+                  if (offer.type != OfferType.Investor)
                     ConstrainedBox(
                       constraints: const BoxConstraints(minWidth: 290),
                       child: SecondaryButton(
@@ -695,8 +693,7 @@ class _OfferScreenState extends State<OfferScreen> {
                         child: isLoading
                             ? const CircularProgressIndicator.adaptive()
                             : Text(
-                                offer.memberProspect!.role ==
-                                        MemberRole.Investor
+                          offer.type == OfferType.Investor
                                     ? 'Invest as @${account.username}'
                                     : 'Accept Offer as @${account.username}',
                                 maxLines: 1,

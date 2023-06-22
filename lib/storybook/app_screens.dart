@@ -2,8 +2,8 @@ import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/user_model.dart';
-import 'package:storybook_flutter/storybook_flutter.dart';
 import 'package:iw_app/screens/offer/offer_preview_screen.dart';
+import 'package:storybook_flutter/storybook_flutter.dart';
 
 List<Story> appScreens() {
   return [
@@ -43,9 +43,10 @@ List<Story> appScreens() {
                   wallet: '8vmEKTrbDRH2wYQ2g7z3DD5tpRTQ7z2LpEfXQbK5qMMz',),);
 
           return OfferPreviewScreen(
-              member: member,
-              organization: org,
-              offer: Offer(id: '1', org: org, memberProspect: member),);
-        },)
+          member: member,
+          organization: org,
+          offer: Offer(id: '1', org: org, memberProspects: []),
+        );
+      },)
   ];
 }
