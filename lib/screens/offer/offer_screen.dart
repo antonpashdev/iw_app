@@ -209,8 +209,11 @@ class _OfferScreenState extends State<OfferScreen> {
           ),
         ),
         const SizedBox(height: 10),
-        const InvestmentProgressWidget(
-            progress: 0.24, invested: 15000, investors: 4)
+        InvestmentProgressWidget(
+          progress: (offer.availableInvestment?.amount ?? 0) / 100,
+          invested: offer.availableInvestment?.amount ?? 0,
+          investors: offer.memberProspects?.length ?? 0,
+        ),
       ],
     );
   }
@@ -684,9 +687,11 @@ class _OfferScreenState extends State<OfferScreen> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         OfferInvestorInvestAmount(
-                                      offer: offer,
-                                      maxEquity: 5.0,
-                                      maxInvestment: 40000,
+                                          offer: offer,
+                                      maxEquity:
+                                          offer.investorSettings!.equity!,
+                                      maxInvestment:
+                                          offer.investorSettings!.amount!,
                                     ),
                                   ),
                                 ),

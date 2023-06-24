@@ -54,9 +54,10 @@ class Offer {
     this.type,
     this.memberProspect,
     this.investorSettings,
+    this.availableInvestment,
   });
 
-  _getAvailableInvestment(
+  _getInvestmentData(
     List<OrganizationMember>? memberProspects,
     OfferType type,
     OfferInvestorSettings investorSettings,
@@ -64,14 +65,18 @@ class Offer {
     if (type == OfferType.Investor) {
       double amount = 0.00;
       double equity = 0.00;
+      print('memberProspects ${memberProspects?.length}');
       memberProspects?.forEach((element) {
         amount = amount + element.investorSettings!.investmentAmount!;
         equity = equity + element.investorSettings!.equityAllocation!;
       });
 
+      print('amount $amount');
+      print('equity $equity');
       return OfferInvestorSettings(
-          amount: investorSettings.amount! - amount,
-          equity: investorSettings.equity! - equity);
+        amount: amount,
+        equity: equity,
+      );
     }
     return null;
   }
@@ -89,11 +94,15 @@ class Offer {
     org = json['org'] is Map ? Organization.fromJson(json['org']) : json['org'];
     investorSettings = OfferInvestorSettings.fromJson(json['investorSettings']);
     availableInvestment =
-        _getAvailableInvestment(memberProspects, type!, investorSettings!);
+        _getInvestmentData(memberProspects, type!, investorSettings!);
     print('availableInvestment: $availableInvestment');
   }
 
   Map<String, dynamic> toMap() {
-    return {'org': org, 'type': type, 'investorSettings': investorSettings};
+    return {
+      'type': type.toString().split('.').last,
+      'memberProspect': memberProspect?.toMap(),
+      'investorSettings': investorSettings?.toJson(),
+    };
   }
 }

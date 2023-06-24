@@ -13,14 +13,17 @@ class OfferInvestorPreview extends StatelessWidget {
   final double invested;
   final double equity;
 
-  const OfferInvestorPreview(
-      {Key? key,
-      required this.offer,
-      required this.invested,
-      required this.equity})
-      : super(key: key);
+  const OfferInvestorPreview({
+    Key? key,
+    required this.offer,
+    required this.invested,
+    required this.equity,
+  }) : super(key: key);
 
-  acceptOffer() {}
+  acceptOffer() {
+    orgsApi.acceptDeclineOffer('', offer.id!, 'accepted', true);
+    // route to home
+  }
 
   onInvestTap(BuildContext context) {
     showBottomInfoSheet(

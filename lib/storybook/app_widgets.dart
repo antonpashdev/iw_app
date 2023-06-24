@@ -10,7 +10,7 @@ List<Story> appWidgets() {
           return Padding(
               padding: const EdgeInsets.all(16),
               child: InvestmentProgressWidget(
-                  invested: context.knobs.sliderInt(
+                  invested: context.knobs.slider(
                       label: 'Invested',
                       initial: 10000,
                       min: 0,

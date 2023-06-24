@@ -94,10 +94,7 @@ class _OrgsApi extends BaseApi {
     Offer offer,
   ) {
     if (isLite) {
-      final body = {
-        'offer': offer.toMap(),
-      };
-      return client.post('/lite/orgs/$orgId/offers', data: body);
+      return client.post('/lite/orgs/$orgId/offers', data: offer.toMap());
     }
 
     final body = {

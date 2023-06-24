@@ -3,7 +3,7 @@ import 'package:iw_app/theme/app_theme.dart';
 
 class InvestmentProgressWidget extends StatelessWidget {
   final double progress;
-  final int invested;
+  final double invested;
   final int investors;
 
   const InvestmentProgressWidget({
