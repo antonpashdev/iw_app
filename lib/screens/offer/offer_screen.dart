@@ -219,6 +219,7 @@ class _OfferScreenState extends State<OfferScreen> {
   }
 
   buildMemberDetailsPro(BuildContext context, Offer offer) {
+    final memberProspect = offer.memberProspects!.first;
     return Container(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
@@ -237,7 +238,7 @@ class _OfferScreenState extends State<OfferScreen> {
                     ),
               ),
               Text(
-                offer.memberProspect!.role!.name,
+                memberProspect.role!.name,
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
@@ -256,7 +257,7 @@ class _OfferScreenState extends State<OfferScreen> {
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
               Text(
-                offer.memberProspect!.occupation!,
+                memberProspect.occupation!,
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ],
@@ -270,12 +271,12 @@ class _OfferScreenState extends State<OfferScreen> {
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
               Text(
-                '${offer.memberProspect!.impactRatio}x',
+                '${memberProspect.impactRatio}x',
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ],
           ),
-          if (offer.memberProspect!.compensation != null)
+          if (memberProspect.compensation != null)
             Column(
               children: [
                 const SizedBox(height: 10),
@@ -287,14 +288,14 @@ class _OfferScreenState extends State<OfferScreen> {
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      '\$${offer.memberProspect!.compensation?.amount}',
+                      '\$${memberProspect.compensation?.amount}',
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ],
                 ),
               ],
             ),
-          if (offer.memberProspect!.isAutoContributing!)
+          if (memberProspect.isAutoContributing!)
             Column(
               children: [
                 const SizedBox(height: 10),
@@ -306,7 +307,7 @@ class _OfferScreenState extends State<OfferScreen> {
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      '${offer.memberProspect!.hoursPerWeek} hours / week',
+                      '${memberProspect.hoursPerWeek} hours / week',
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ],
@@ -319,6 +320,7 @@ class _OfferScreenState extends State<OfferScreen> {
   }
 
   buildMemberDetailsLite(BuildContext context, Offer offer) {
+    final memberProspect = offer.memberProspects!.first;
     return Container(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
@@ -337,7 +339,7 @@ class _OfferScreenState extends State<OfferScreen> {
                     ),
               ),
               Text(
-                '${offer.memberProspect?.role?.name}',
+                '${memberProspect.role?.name}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
@@ -356,12 +358,12 @@ class _OfferScreenState extends State<OfferScreen> {
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
               Text(
-                '${offer.memberProspect?.occupation}',
+                '${memberProspect.occupation}',
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ],
           ),
-          if (offer.memberProspect?.equity != null)
+          if (memberProspect.equity != null)
             Column(
               children: [
                 const SizedBox(height: 10),
@@ -373,25 +375,24 @@ class _OfferScreenState extends State<OfferScreen> {
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      '${offer.memberProspect?.equity?.amount}%',
+                      '${memberProspect.equity?.amount}%',
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ],
                 ),
-                if (offer.memberProspect?.equity?.type ==
-                    EquityType.DuringPeriod)
+                if (memberProspect.equity?.type == EquityType.DuringPeriod)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Period to get equity'),
                       Text(
-                        '${offer.memberProspect?.equity?.period?.value} ${offer.memberProspect?.equity?.period?.timeframe?.name.toLowerCase()}',
+                        '${memberProspect.equity?.period?.value} ${memberProspect.equity?.period?.timeframe?.name.toLowerCase()}',
                       ),
                     ],
                   ),
               ],
             ),
-          if (offer.memberProspect?.compensation != null)
+          if (memberProspect.compensation != null)
             Column(
               children: [
                 const SizedBox(height: 10),
@@ -399,26 +400,26 @@ class _OfferScreenState extends State<OfferScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      offer.memberProspect?.compensation?.type ==
+                      memberProspect.compensation?.type ==
                               CompensationType.PerMonth
                           ? 'Paycheck per month'
                           : 'One-time payment',
                       style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      '\$${offer.memberProspect?.compensation?.amount}',
+                      '\$${memberProspect.compensation?.amount}',
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ],
                 ),
-                if (offer.memberProspect?.compensation?.type ==
+                if (memberProspect.compensation?.type ==
                     CompensationType.OneTime)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Period to get payment'),
                       Text(
-                        '${offer.memberProspect?.compensation?.period?.value} ${offer.memberProspect?.compensation?.period?.timeframe?.name.toLowerCase()}',
+                        '${memberProspect.compensation?.period?.value} ${memberProspect.compensation?.period?.timeframe?.name.toLowerCase()}',
                       ),
                     ],
                   ),
@@ -617,7 +618,7 @@ class _OfferScreenState extends State<OfferScreen> {
                       const Column(
                         children: [
                           Text(
-                            'You are invited to join this Impact Organization under the  following conditions.',
+                            'You are invited to join this Impact Organization under the following conditions.',
                             style: TextStyle(color: COLOR_GRAY),
                           ),
                           SizedBox(height: 25),
@@ -687,7 +688,7 @@ class _OfferScreenState extends State<OfferScreen> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         OfferInvestorInvestAmount(
-                                          offer: offer,
+                                      offer: offer,
                                       maxEquity:
                                           offer.investorSettings!.equity!,
                                       maxInvestment:
@@ -698,7 +699,7 @@ class _OfferScreenState extends State<OfferScreen> {
                         child: isLoading
                             ? const CircularProgressIndicator.adaptive()
                             : Text(
-                          offer.type == OfferType.Investor
+                                offer.type == OfferType.Investor
                                     ? 'Invest as @${account.username}'
                                     : 'Accept Offer as @${account.username}',
                                 maxLines: 1,

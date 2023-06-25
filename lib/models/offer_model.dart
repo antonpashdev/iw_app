@@ -41,7 +41,6 @@ class Offer {
   dynamic org;
   OfferType? type;
   OfferStatus? status;
-  OrganizationMember? memberProspect;
   List<OrganizationMember>? memberProspects;
   OfferInvestorSettings? investorSettings;
   OfferInvestorSettings? availableInvestment;
@@ -52,7 +51,6 @@ class Offer {
     this.memberProspects,
     this.org,
     this.type,
-    this.memberProspect,
     this.investorSettings,
     this.availableInvestment,
   });
@@ -70,9 +68,6 @@ class Offer {
         amount = amount + element.investorSettings!.investmentAmount!;
         equity = equity + element.investorSettings!.equityAllocation!;
       });
-
-      print('amount $amount');
-      print('equity $equity');
       return OfferInvestorSettings(
         amount: amount,
         equity: equity,
@@ -85,9 +80,6 @@ class Offer {
     id = json['_id'];
     status = CommonUtils.stringToEnum(json['status'], OfferStatus.values);
     type = CommonUtils.stringToEnum(json['type'], OfferType.values);
-    memberProspect = json['memberProspect'] is Map
-        ? OrganizationMember.fromJson(json['memberProspect'])
-        : json['memberProspect'];
     memberProspects = (json['memberProspects'] as List)
         .map((member) => OrganizationMember.fromJson(member))
         .toList();
@@ -101,7 +93,6 @@ class Offer {
   Map<String, dynamic> toMap() {
     return {
       'type': type.toString().split('.').last,
-      'memberProspect': memberProspect?.toMap(),
       'investorSettings': investorSettings?.toJson(),
     };
   }

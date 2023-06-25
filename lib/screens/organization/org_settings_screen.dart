@@ -109,7 +109,7 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
           MaterialPageRoute(
             builder: (_) => OfferPreviewScreen(
               organization: widget.organization,
-              member: offer.memberProspect!,
+              member: offer.memberProspects!.firstOrNull,
               offer: offer,
             ),
           ),
