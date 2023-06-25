@@ -506,8 +506,10 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                             width: 20,
                             height: 20,
                           ),
-                          label: const Text('View Terms',
-                              style: TextStyle(fontSize: 16)),
+                          label: const Text(
+                            'View Terms',
+                            style: TextStyle(fontSize: 16),
+                          ),
                           style: TextButton.styleFrom(
                             iconColor: COLOR_BLUE,
                             foregroundColor: COLOR_BLUE,
@@ -611,10 +613,4 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
       ),
     );
   }
-}
-
-_calculateInvestmentProgress(Offer offer) {
-  final requestedInvestment = offer.investorSettings!.amount;
-  final investorsCount = offer.memberProspects?.length ?? 0;
-  final alreadyInvested = 0.0;
 }

@@ -47,7 +47,9 @@ class InvestmentProgressWidget extends StatelessWidget {
                     Text(
                       '$invested\$',
                       style: const TextStyle(
-                          fontWeight: FontWeight.w700, fontSize: 16),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
                     ),
                   ],
                 ),
@@ -63,7 +65,9 @@ class InvestmentProgressWidget extends StatelessWidget {
                     Text(
                       '$investors',
                       style: const TextStyle(
-                          fontWeight: FontWeight.w700, fontSize: 16),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
                     ),
                   ],
                 )
