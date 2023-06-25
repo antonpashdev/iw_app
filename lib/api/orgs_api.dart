@@ -182,6 +182,14 @@ class _OrgsApi extends BaseApi {
   Future<Response> loginAsOrg(String orgId) {
     return client.post('/orgs/$orgId/login');
   }
+
+  Future<Response> getOrgs({String? username, bool? isExactMatch}) {
+    final params = {
+      'username': username,
+      'isExactMatch': isExactMatch,
+    };
+    return client.get('/orgs', queryParameters: params);
+  }
 }
 
 final orgsApi = _OrgsApi();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/constants/send_asset_type.dart';
 import 'package:iw_app/models/organization_member_model.dart';
@@ -35,6 +36,7 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
   bool? _error;
   User? receiver;
   String? receiverAddress;
+  Organization? receiverOrg;
 
   OrganizationMember get member => widget.member;
 
@@ -59,8 +61,33 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
     }
   }
 
+  callFetchOrgByUsername(String username) async {
+    setState(() {
+      _error = false;
+    });
+
+    try {
+      final response = await orgsApi.getOrgs(
+        username: username,
+        isExactMatch: true,
+      );
+      setState(() {
+        receiverOrg = Organization.fromJson(response.data[0]);
+      });
+    } catch (ex) {
+      setState(() {
+        _error = true;
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   onReceiverChanged(String? receiver) {
-    if (widget.sendAssetType == SendAssetType.ToUser) {
+    if (widget.sendAssetType == SendAssetType.ToUser ||
+        widget.sendAssetType == SendAssetType.ToOrg) {
       _debouncer.debounce(() async {
         final trimmedNickname = receiver?.trim();
         setState(() {
@@ -69,7 +96,11 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
         });
 
         if (trimmedNickname != null) {
-          await callFetchUserByNickname(trimmedNickname);
+          if (widget.sendAssetType == SendAssetType.ToOrg) {
+            await callFetchOrgByUsername(trimmedNickname);
+          } else {
+            await callFetchUserByNickname(trimmedNickname);
+          }
         }
       });
     } else {
@@ -88,6 +119,7 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
           organization: widget.organization,
           member: member,
           receiver: receiver,
+          receiverOrg: receiverOrg,
           receiverAddress: receiverAddress,
           sendAssetType: widget.sendAssetType,
         ),
@@ -109,9 +141,9 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
       child: Column(
         children: <Widget>[
           Text(
-            widget.sendAssetType == SendAssetType.ToUser
-                ? 'Enter Impact Wallet Username of a person you want to send your Asset'
-                : 'Enter Solana Wallet Address of a person you want to send your Asset',
+            widget.sendAssetType == SendAssetType.ToAddress
+                ? 'Enter Solana Wallet Address of a person you want to send your Asset'
+                : 'Enter Impact Wallet Username you want to send your Asset',
             style: const TextStyle(
               color: COLOR_GRAY,
               fontSize: 16,
@@ -123,17 +155,18 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
             child: Row(
               children: [
                 Flexible(
-                    flex: 1,
-                    child: AppTextFormField(
-                      prefix: widget.sendAssetType == SendAssetType.ToUser
-                          ? '@'
-                          : null,
-                      inputType: TextInputType.text,
-                      labelText: widget.sendAssetType == SendAssetType.ToUser
-                          ? '@username'
-                          : 'Solana Wallet Address',
-                      onChanged: onReceiverChanged,
-                    ),),
+                  flex: 1,
+                  child: AppTextFormField(
+                    prefix: widget.sendAssetType == SendAssetType.ToAddress
+                        ? null
+                        : '@',
+                    inputType: TextInputType.text,
+                    labelText: widget.sendAssetType == SendAssetType.ToAddress
+                        ? 'Solana Wallet Address'
+                        : '@username',
+                    onChanged: onReceiverChanged,
+                  ),
+                ),
                 SizedBox(width: _error != null ? 10 : 0),
                 _error != null
                     ? _isLoading == true

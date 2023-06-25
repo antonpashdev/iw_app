@@ -21,6 +21,7 @@ class NumberOfSharesScreen extends StatefulWidget {
   final Organization organization;
   final OrganizationMember member;
   final User? receiver;
+  final Organization? receiverOrg;
   final String? receiverAddress;
   final SendAssetType sendAssetType;
 
@@ -28,6 +29,7 @@ class NumberOfSharesScreen extends StatefulWidget {
     super.key,
     required this.member,
     required this.receiver,
+    required this.receiverOrg,
     required this.organization,
     required this.receiverAddress,
     required this.sendAssetType,
@@ -46,6 +48,7 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
 
   OrganizationMember get member => widget.member;
   User? get receiver => widget.receiver;
+  Organization? get receiverOrg => widget.receiverOrg;
 
   fetchEquity() async {
     _debouncer.debounce(() async {
@@ -81,6 +84,7 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
           member: member,
           tokens: tokensAmount!,
           receiver: receiver,
+          receiverOrg: receiverOrg,
           receiverAddress: widget.receiverAddress,
           sendAssetType: widget.sendAssetType,
         ),
@@ -107,9 +111,10 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
                         ? 'Enter number of Impact Shares you want to send'
                         : 'Enter percent of equity you want to send',
                     style: const TextStyle(
-                        color: COLOR_GRAY,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,),
+                      color: COLOR_GRAY,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   const SizedBox(height: 55),
                   if (config.mode == Mode.Pro)
@@ -187,7 +192,9 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
             SizedBox(
               width: 290,
               child: ElevatedButton(
-                  onPressed: handleNext, child: const Text('Preview'),),
+                onPressed: handleNext,
+                child: const Text('Preview'),
+              ),
             )
           ],
         ),
