@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/config_model.dart';
@@ -68,7 +67,6 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
         isLoading = true;
       });
       try {
-        member.user = await authApi.userId;
         await orgsApi.createOrg(
           widget.organization,
           member,

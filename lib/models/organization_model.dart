@@ -68,7 +68,6 @@ $settings
       orgMap['member[impactRatio]'] = member.impactRatio;
       orgMap['member[isAutoContributing]'] = member.isAutoContributing;
       orgMap['member[hoursPerWeek]'] = member.hoursPerWeek;
-      orgMap['member[user]'] = member.user;
       if (member.compensation != null) {
         orgMap['member[compensation][amount]'] = member.compensation!.amount;
         orgMap['member[compensation][type]'] = member.compensation!.type?.name;
