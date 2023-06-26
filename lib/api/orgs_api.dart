@@ -7,6 +7,8 @@ import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 
+import '../models/offer_model.dart';
+
 class _OrgsApi extends BaseApi {
   getOrgByUsername(String username) {
     final params = {
@@ -89,14 +91,18 @@ class _OrgsApi extends BaseApi {
     String orgId,
     OrganizationMember member,
     bool isLite,
+    Offer offer,
   ) {
+    if (isLite) {
+      return client.post(
+        '/lite/orgs/$orgId/offers',
+        data: offer.toJson(member),
+      );
+    }
+
     final body = {
       'memberProspect': member.toMap(),
     };
-
-    if (isLite) {
-      return client.post('/lite/orgs/$orgId/offers', data: body);
-    }
 
     return client.post('/orgs/$orgId/offers', data: body);
   }
@@ -105,10 +111,12 @@ class _OrgsApi extends BaseApi {
     String orgId,
     String offerId,
     String status,
-    bool isLite,
-  ) {
+    bool isLite, {
+    double? amount,
+  }) {
     final body = {
       'status': status,
+      'amount': amount,
     };
 
     if (isLite) {

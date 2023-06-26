@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/offers_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/config_model.dart';
@@ -181,7 +180,6 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
         amount: saleOffer.tokensAmount!,
         price: saleOffer.price!,
         orgId: widget.organization.id!,
-        userId: (await authApi.userId)!,
       );
       final newSaleOffer = SaleOffer.fromJson(response.data!);
       if (context.mounted) {

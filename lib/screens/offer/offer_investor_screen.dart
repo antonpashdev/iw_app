@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/offer/offer_preview_screen.dart';
@@ -23,6 +24,10 @@ class OfferInvestorScreen extends StatefulWidget {
 class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
   final formKey = GlobalKey<FormState>();
   String? equityError;
+  Offer offer = Offer(
+    type: OfferType.Investor,
+    investorSettings: OfferInvestorSettings(),
+  );
 
   final OrganizationMember memberProspect = OrganizationMember(
     role: MemberRole.Investor,
@@ -52,8 +57,7 @@ class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
               numberField('Raising'),
             ]),
             onChanged: (value) {
-              memberProspect.investorSettings!.investmentAmount =
-                  double.tryParse(value);
+              offer.investorSettings!.amount = double.tryParse(value);
             },
           ),
           const SizedBox(height: 20),
@@ -70,8 +74,7 @@ class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
               numberField('Equity Allocation'),
             ]),
             onChanged: (value) {
-              memberProspect.investorSettings!.equityAllocation =
-                  double.tryParse(value);
+              offer.investorSettings!.equity = double.tryParse(value);
             },
           ),
         ],
@@ -88,7 +91,7 @@ class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
         MaterialPageRoute(
           builder: (_) => OfferPreviewScreen(
             organization: widget.organization,
-            member: memberProspect,
+            offer: offer,
           ),
         ),
       );
