@@ -55,15 +55,10 @@ class Offer {
     this.availableInvestment,
   });
 
-  _getInvestmentData(
-    List<OrganizationMember>? memberProspects,
-    OfferType type,
-    OfferInvestorSettings investorSettings,
-  ) {
+  _getInvestmentData() {
     if (type == OfferType.Investor) {
       double amount = 0.00;
       double equity = 0.00;
-      print('memberProspects ${memberProspects?.length}');
       memberProspects?.forEach((element) {
         amount = amount + element.investorSettings!.investmentAmount!;
         equity = equity + element.investorSettings!.equityAllocation!;
@@ -84,16 +79,20 @@ class Offer {
         .map((member) => OrganizationMember.fromJson(member))
         .toList();
     org = json['org'] is Map ? Organization.fromJson(json['org']) : json['org'];
-    investorSettings = OfferInvestorSettings.fromJson(json['investorSettings']);
-    availableInvestment =
-        _getInvestmentData(memberProspects, type!, investorSettings!);
-    print('availableInvestment: $availableInvestment');
+    investorSettings = json['investorSettings'] is Map
+        ? OfferInvestorSettings.fromJson(json['investorSettings'])
+        : json['investorSettings'];
+    availableInvestment = _getInvestmentData();
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'type': type.toString().split('.').last,
+  Map<String, dynamic> toJson(OrganizationMember? member) {
+    final json = {
+      'type': type?.name,
       'investorSettings': investorSettings?.toJson(),
     };
+    if (member != null) {
+      json['memberProspect'] = member.toMap();
+    }
+    return json;
   }
 }

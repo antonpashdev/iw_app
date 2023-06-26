@@ -25,28 +25,28 @@ class OfferInvestorInvestAmount extends StatefulWidget {
 }
 
 class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
-  final yourInvestmentController = TextEditingController();
-  final yourEquityController = TextEditingController();
+  final amountController = TextEditingController();
+  final equityController = TextEditingController();
   final formGlobalKey = GlobalKey<FormState>();
 
   _onMaxTapped() {
-    yourEquityController.text = widget.maxEquity.toString();
-    yourInvestmentController.text = widget.maxInvestment.toString();
+    equityController.text = widget.maxEquity.toString();
+    amountController.text = widget.maxInvestment.toString();
   }
 
   onPreviewTap() {
     if (!formGlobalKey.currentState!.validate()) {
-      print('not validated');
       return;
     }
-
+    final amount = double.parse(amountController.text);
+    final equity = double.parse(equityController.text);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => OfferInvestorPreview(
           offer: widget.offer,
-          invested: 1.0,
-          equity: 1.0,
+          amount: amount,
+          equity: equity,
         ),
       ),
     );
@@ -69,7 +69,7 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
             const SizedBox(height: 25),
             BoardedTextFieldWithTitle(
               title: 'You Invest',
-              textFieldController: yourInvestmentController,
+              textFieldController: amountController,
               onSuffixTap: _onMaxTapped,
               prefix: '\$',
               suffix: 'Max',
@@ -81,11 +81,19 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
                   max(widget.maxInvestment),
                 ],
               ),
+              onChanged: (value) {
+                final amount = double.tryParse(value);
+                if (amount != null) {
+                  final equity =
+                      widget.maxEquity * (amount / widget.maxInvestment);
+                  equityController.text = equity.toString();
+                }
+              },
             ),
             const SizedBox(height: 15),
             BoardedTextFieldWithTitle(
               title: 'Your Equity',
-              textFieldController: yourEquityController,
+              textFieldController: equityController,
               onSuffixTap: _onMaxTapped,
               prefix: '%',
               suffix: 'Max',
@@ -96,6 +104,14 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
                   max(widget.maxEquity),
                 ],
               ),
+              onChanged: (value) {
+                final equity = double.tryParse(value);
+                if (equity != null) {
+                  final amount =
+                      widget.maxInvestment * (equity / widget.maxEquity);
+                  amountController.text = amount.toString();
+                }
+              },
             ),
             Expanded(
               child: Column(

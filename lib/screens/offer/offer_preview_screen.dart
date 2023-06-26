@@ -186,13 +186,12 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
         const SizedBox(
           height: 10,
         ),
-        isInvestor
-            ? InvestmentProgressWidget(
-                progress: 0,
-                invested: 0,
-                investors: offer.memberProspects?.length ?? 0,
-              )
-            : Container()
+        InvestmentProgressWidget(
+          progress: offer.availableInvestment!.amount! /
+              offer.investorSettings!.amount!,
+          invested: offer.availableInvestment!.amount!,
+          investors: offer.memberProspects?.length ?? 0,
+        ),
       ],
     );
   }

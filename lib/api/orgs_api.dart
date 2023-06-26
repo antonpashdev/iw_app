@@ -94,7 +94,10 @@ class _OrgsApi extends BaseApi {
     Offer offer,
   ) {
     if (isLite) {
-      return client.post('/lite/orgs/$orgId/offers', data: offer.toMap());
+      return client.post(
+        '/lite/orgs/$orgId/offers',
+        data: offer.toJson(member),
+      );
     }
 
     final body = {
@@ -108,10 +111,12 @@ class _OrgsApi extends BaseApi {
     String orgId,
     String offerId,
     String status,
-    bool isLite,
-  ) {
+    bool isLite, {
+    double? amount,
+  }) {
     final body = {
       'status': status,
+      'amount': amount,
     };
 
     if (isLite) {

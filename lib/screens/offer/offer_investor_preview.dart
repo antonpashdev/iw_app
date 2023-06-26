@@ -1,28 +1,68 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/state/config.dart';
 
 import '../../api/orgs_api.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/buttons/secondary_button.dart';
 import '../../widgets/media/network_image_auth.dart';
 
-class OfferInvestorPreview extends StatelessWidget {
+class OfferInvestorPreview extends StatefulWidget {
   final Offer offer;
-  final double invested;
+  final double amount;
   final double equity;
 
   const OfferInvestorPreview({
     Key? key,
     required this.offer,
-    required this.invested,
+    required this.amount,
     required this.equity,
   }) : super(key: key);
 
-  acceptOffer() {
-    orgsApi.acceptDeclineOffer('', offer.id!, 'accepted', true);
-    // route to home
+  @override
+  State<OfferInvestorPreview> createState() => _OfferInvestorPreviewState();
+}
+
+class _OfferInvestorPreviewState extends State<OfferInvestorPreview> {
+  bool isLoading = false;
+
+  acceptOffer() async {
+    setState(() {
+      isLoading = true;
+    });
+    Config config = ConfigState.of(context).config;
+    try {
+      await orgsApi.acceptDeclineOffer(
+        widget.offer.org.id,
+        widget.offer.id!,
+        'accepted',
+        config.mode == Mode.Lite,
+        amount: widget.amount,
+      );
+      if (context.mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      }
+    } on DioError catch (err) {
+      final message = err.response!.data['message'];
+      if (message != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: COLOR_RED,
+          ),
+        );
+      }
+    } catch (err) {
+      print(err);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   onInvestTap(BuildContext context) {
@@ -41,7 +81,7 @@ class OfferInvestorPreview extends StatelessWidget {
           ),
           const SizedBox(height: 15),
           Text(
-            'By signing this transaction You will get $equity% of equity of ${offer.org.name}.',
+            'By signing this transaction You will get ${widget.equity}% of equity of ${widget.offer.org.name}.',
             style: const TextStyle(
               fontFamily: 'Gilroy',
             ),
@@ -67,7 +107,7 @@ class OfferInvestorPreview extends StatelessWidget {
               acceptOffer();
             },
             child: Text(
-              'Send \$${invested.toStringAsFixed(2)}',
+              'Send \$${widget.amount.toStringAsFixed(2)}',
             ),
           ),
         ],
@@ -95,7 +135,7 @@ class OfferInvestorPreview extends StatelessWidget {
                 child: FittedBox(
                   fit: BoxFit.cover,
                   child: NetworkImageAuth(
-                    imageUrl: '${orgsApi.baseUrl}${offer.org.logo!}',
+                    imageUrl: '${orgsApi.baseUrl}${widget.offer.org.logo!}',
                   ),
                 ),
               ),
@@ -113,13 +153,13 @@ class OfferInvestorPreview extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      '${offer.org.name}',
+                      '${widget.offer.org.name}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     Text(
-                      '@${offer.org.username}',
+                      '@${widget.offer.org.username}',
                       style: const TextStyle(color: COLOR_GRAY),
                     ),
                   ],
@@ -146,7 +186,7 @@ class OfferInvestorPreview extends StatelessWidget {
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        '$invested USDC',
+                        '${widget.amount} USDC',
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ],
@@ -160,7 +200,7 @@ class OfferInvestorPreview extends StatelessWidget {
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        '$equity%',
+                        '${widget.equity}%',
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ],
@@ -176,10 +216,14 @@ class OfferInvestorPreview extends StatelessWidget {
                 SizedBox(
                   width: 290,
                   child: ElevatedButton(
-                    onPressed: () {
-                      onInvestTap(context);
-                    },
-                    child: const Text('Invest'),
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            onInvestTap(context);
+                          },
+                    child: isLoading
+                        ? const CircularProgressIndicator.adaptive()
+                        : const Text('Invest'),
                   ),
                 )
               ],

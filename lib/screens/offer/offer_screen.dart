@@ -10,11 +10,10 @@ import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
-import 'package:iw_app/screens/offer/offer_investor_ivest_amount_screen.dart';
+import 'package:iw_app/screens/offer/offer_investor_invest_amount_screen.dart';
 import 'package:iw_app/screens/organization/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
-import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
 import 'package:iw_app/widgets/components/investment_progress.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
@@ -210,8 +209,9 @@ class _OfferScreenState extends State<OfferScreen> {
         ),
         const SizedBox(height: 10),
         InvestmentProgressWidget(
-          progress: (offer.availableInvestment?.amount ?? 0) / 100,
-          invested: offer.availableInvestment?.amount ?? 0,
+          progress: offer.availableInvestment!.amount! /
+              offer.investorSettings!.amount!,
+          invested: offer.availableInvestment!.amount!,
           investors: offer.memberProspects?.length ?? 0,
         ),
       ],
@@ -446,56 +446,18 @@ class _OfferScreenState extends State<OfferScreen> {
     }
   }
 
-  confirmInvesting(Offer offer, String status) {
-    showBottomInfoSheet(
-      context,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Text(
-            'Confirm to send money.',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Gilroy',
-            ),
+  acceptDeclineOffer(Offer offer, String status) async {
+    if (offer.type == OfferType.Investor) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => OfferInvestorInvestAmount(
+            offer: offer,
+            maxEquity: offer.investorSettings!.equity!,
+            maxInvestment: offer.investorSettings!.amount!,
           ),
-          const SizedBox(height: 15),
-          Text(
-            'By signing this transaction You will get ${offer.availableInvestment?.equity}% of equity allocation.\n\nThis transaction will be recorded on blockchain.',
-            style: const TextStyle(
-              fontFamily: 'Gilroy',
-            ),
-          ),
-          const SizedBox(height: 35),
-          SecondaryButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Cancel'),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              acceptDeclineOffer(offer, status);
-            },
-            child: Text(
-              'Send \$${offer.availableInvestment?.amount}',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  acceptDeclineOffer(
-    Offer offer,
-    String status, {
-    bool isConfirmed = true,
-  }) async {
-    if (!isConfirmed) {
-      confirmInvesting(offer, status);
+        ),
+      );
       return;
     }
     setState(() {
@@ -683,19 +645,7 @@ class _OfferScreenState extends State<OfferScreen> {
                       child: ElevatedButton(
                         onPressed: isLoading
                             ? null
-                            : () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        OfferInvestorInvestAmount(
-                                      offer: offer,
-                                      maxEquity:
-                                          offer.investorSettings!.equity!,
-                                      maxInvestment:
-                                          offer.investorSettings!.amount!,
-                                    ),
-                                  ),
-                                ),
+                            : () => acceptDeclineOffer(offer, 'accepted'),
                         child: isLoading
                             ? const CircularProgressIndicator.adaptive()
                             : Text(
