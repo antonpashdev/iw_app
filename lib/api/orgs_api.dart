@@ -152,8 +152,12 @@ class _OrgsApi extends BaseApi {
     double price,
   ) {
     final body = {
-      'item': item,
-      'amount': price,
+      'items': [
+        {
+          'name': item,
+          'amount': price,
+        }
+      ],
     };
 
     return client.post('/orgs/$orgId/payments/receive', data: body);
