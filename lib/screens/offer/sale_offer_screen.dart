@@ -321,9 +321,11 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
           left: 20,
           right: 20,
         ),
-        content: Text(AppLocalizations.of(context)!.common_link_copied,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white),),
+        content: Text(
+          AppLocalizations.of(context)!.common_link_copied,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white),
+        ),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -376,13 +378,16 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                                             Uri.parse(payment!.cpPaymentUrl!);
                                         if (!(await launchUrl(url))) {
                                           throw Exception(
-                                              'Could not launch $url',);
+                                            'Could not launch $url',
+                                          );
                                         }
                                       },
                                       icon: const Icon(Icons.link),
-                                      label: Text(payment!.cpPaymentUrl!,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,),
+                                      label: Text(
+                                        payment!.cpPaymentUrl!,
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
                                       style: TextButton.styleFrom(
                                         iconColor: COLOR_BLUE,
                                         foregroundColor: COLOR_BLUE,
