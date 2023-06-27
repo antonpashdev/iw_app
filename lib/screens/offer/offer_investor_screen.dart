@@ -27,6 +27,7 @@ class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
   Offer offer = Offer(
     type: OfferType.Investor,
     investorSettings: OfferInvestorSettings(),
+    availableInvestment: OfferInvestorSettings(),
   );
 
   final OrganizationMember memberProspect = OrganizationMember(
