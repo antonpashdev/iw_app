@@ -6,7 +6,7 @@ class SaleOffer {
   String? status;
   double? tokensAmount;
   double? price;
-  Map<String, dynamic>? seller;
+  dynamic seller;
   dynamic org;
   String? buyer;
 
