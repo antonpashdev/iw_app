@@ -89,10 +89,10 @@ class _OrgsApi extends BaseApi {
 
   Future<Response> createOffer(
     String orgId,
-    OrganizationMember member,
     bool isLite,
-    Offer offer,
-  ) {
+    Offer offer, {
+    OrganizationMember? member,
+  }) {
     if (isLite) {
       return client.post(
         '/lite/orgs/$orgId/offers',
@@ -101,7 +101,7 @@ class _OrgsApi extends BaseApi {
     }
 
     final body = {
-      'memberProspect': member.toMap(),
+      'memberProspect': member?.toMap(),
     };
 
     return client.post('/orgs/$orgId/offers', data: body);

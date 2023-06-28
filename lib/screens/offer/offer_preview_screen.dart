@@ -422,9 +422,9 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
     try {
       final response = await orgsApi.createOffer(
         widget.organization.id!,
-        widget.member!,
         config.mode == Mode.Lite,
         offer,
+        member: widget.member,
       );
       setState(() {
         offer = Offer.fromJson(response.data);
