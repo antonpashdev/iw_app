@@ -61,9 +61,10 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
 
   navigateToHomeScreen() {
     Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-        (route) => false,);
+      context,
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      (route) => false,
+    );
   }
 
   String? getSecretTokenFromSecretLink() {
@@ -87,12 +88,14 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
             child: KeyboardDismissableListView(
               children: [
                 const Text(
-                    'Paste your secret link to access to your Impact Wallet',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: COLOR_ALMOST_BLACK,),),
+                  'Paste your secret link to access to your Equity Wallet',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: COLOR_ALMOST_BLACK,
+                  ),
+                ),
                 const SizedBox(height: 35),
                 AppTextFormFieldBordered(
                   maxLines: 6,
@@ -109,11 +112,14 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(getValidationStatusText(),
-                        style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: COLOR_ALMOST_BLACK,),),
+                    Text(
+                      getValidationStatusText(),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: COLOR_ALMOST_BLACK,
+                      ),
+                    ),
                     const SizedBox(width: 5),
                     SvgPicture.asset(getValidationStatusIcon()),
                   ],
@@ -128,13 +134,14 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
               SizedBox(
                 width: 290,
                 child: ElevatedButton(
-                    onPressed: () {
-                      String? code = getSecretTokenFromSecretLink();
-                      if (code != null && isLinkValid) {
-                        restoreAccount(code);
-                      }
-                    },
-                    child: const Text('Restore My Account'),),
+                  onPressed: () {
+                    String? code = getSecretTokenFromSecretLink();
+                    if (code != null && isLinkValid) {
+                      restoreAccount(code);
+                    }
+                  },
+                  child: const Text('Restore My Account'),
+                ),
               )
             ],
           ),

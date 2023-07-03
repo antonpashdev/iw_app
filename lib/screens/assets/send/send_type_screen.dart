@@ -60,7 +60,7 @@ class SendTypeScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Expanded(flex: 2, child: Text('To Impact Wallet User')),
+                  const Expanded(flex: 2, child: Text('To Equity Wallet User')),
                 ],
               ),
             ),

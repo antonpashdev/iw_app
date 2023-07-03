@@ -143,7 +143,7 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
           Text(
             widget.sendAssetType == SendAssetType.ToAddress
                 ? 'Enter Solana Wallet Address of a person you want to send your Asset'
-                : 'Enter Impact Wallet Username you want to send your Asset',
+                : 'Enter Equity Wallet Username you want to send your Asset',
             style: const TextStyle(
               color: COLOR_GRAY,
               fontSize: 16,

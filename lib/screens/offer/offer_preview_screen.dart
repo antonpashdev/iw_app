@@ -37,7 +37,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
   late Offer offer;
 
   String get offerUrl {
-    return 'app.impactwallet.xyz/offer?i=${offer.id}&oi=${widget.organization.id}';
+    return 'app.equitywallet.org/offer?i=${offer.id}&oi=${widget.organization.id}';
   }
 
   bool get isInvestor {

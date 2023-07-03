@@ -40,28 +40,29 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Impact Wallet',
+      title: 'Equity Wallet',
       theme: getAppTheme(),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       builder: (context, child) {
         return FutureBuilder(
-            future: futureConfig,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const Scaffold(
-                  backgroundColor: APP_BODY_BG,
-                  body: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-              Config config = snapshot.data as Config;
-              return ConfigState(
-                config: config,
-                child: child!,
+          future: futureConfig,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Scaffold(
+                backgroundColor: APP_BODY_BG,
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
               );
-            },);
+            }
+            Config config = snapshot.data as Config;
+            return ConfigState(
+              config: config,
+              child: child!,
+            );
+          },
+        );
       },
       routes: {
         AppHome.routeName: (context) => const AppHome(),
