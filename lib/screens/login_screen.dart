@@ -34,7 +34,7 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Config config = ConfigState.of(context).config;
     String slogan = config.mode == Mode.Lite
-        ? 'Manage your equity like never before'
+        ? 'Manage your equity in projects like never before'
         : AppLocalizations.of(context)!.loginScreen_slogan;
     String logoPath = 'assets/images/logo_with_text.png';
     return Scaffold(

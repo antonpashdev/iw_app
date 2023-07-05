@@ -5,16 +5,20 @@ import 'package:iw_app/theme/app_theme.dart';
 
 class AppProgressBar extends StatefulWidget {
   final double progress;
-  final double size;
+  final double? size;
   final Color backgroundColor;
   final Color progressColor;
+  final Function(AnimationStatus)? onStatusUpdate;
+  final Function(double)? onUpdate;
 
   const AppProgressBar({
     Key? key,
     required this.progress,
-    this.size = 100.0,
+    this.size,
     this.backgroundColor = COLOR_PURPLE2,
     this.progressColor = COLOR_PINK,
+    this.onStatusUpdate,
+    this.onUpdate,
   }) : super(key: key);
 
   @override
@@ -30,11 +34,33 @@ class _AppProgressBarState extends State<AppProgressBar>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(seconds: 30),
       vsync: this,
     );
     _progress = CurvedAnimation(parent: _controller, curve: Curves.linear);
+    if (widget.onStatusUpdate != null) {
+      _progress.addStatusListener(widget.onStatusUpdate!);
+    }
+    if (widget.onUpdate != null) {
+      _progress.addListener(() {
+        widget.onUpdate!(_progress.value);
+      });
+    }
     _controller.animateTo(widget.progress);
+  }
+
+  @override
+  void didUpdateWidget(AppProgressBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.progress <= 1) {
+      _controller.animateTo(widget.progress);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -49,13 +75,13 @@ class _AppProgressBarState extends State<AppProgressBar>
 }
 
 class _AnimatedAppProgressBar extends AnimatedWidget {
-  final double size;
+  final double? size;
   final Color backgroundColor;
   final Color progressColor;
 
   const _AnimatedAppProgressBar({
     required Animation<double> progress,
-    required this.size,
+    this.size,
     required this.backgroundColor,
     required this.progressColor,
   }) : super(listenable: progress);
@@ -69,7 +95,7 @@ class _AnimatedAppProgressBar extends AnimatedWidget {
         backgroundColor: backgroundColor,
         progressColor: progressColor,
       ),
-      size: Size.square(size),
+      size: size != null ? Size.square(size!) : Size.zero,
     );
   }
 }
