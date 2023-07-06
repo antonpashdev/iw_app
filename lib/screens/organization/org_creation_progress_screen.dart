@@ -187,7 +187,7 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
       children: [
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.all(60),
+            padding: const EdgeInsets.all(30),
             children: [
               const Icon(
                 Icons.check_circle_outline_outlined,
@@ -205,7 +205,7 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
               ),
               const SizedBox(height: 40),
               Text(
-                'Follow the link below to check on blockchain token created for ${organization.name}',
+                'Check ${organization.name} token on blockchain',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       color: COLOR_GRAY,
@@ -234,7 +234,7 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
               const Divider(),
               const SizedBox(height: 20),
               Text(
-                'Follow the link below to check on blockchain that your wallet owns 100% of ${organization.name}',
+                'Check that your wallet owns 100% of ${organization.name} token',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       color: COLOR_GRAY,
