@@ -19,7 +19,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
   bool isLinkValid = false;
   String? _restoreLink;
   RegExp restoreUrlRegexp =
-      RegExp(r'^https:\/\/app\.impactwallet\.xyz\/restore\/.*$');
+      RegExp(r'^https:\/\/app\.equitywallet\.org\/restore\/.*$');
 
   void validateSecretLink(String? value) {
     if (value != null && restoreUrlRegexp.hasMatch(value)) {
