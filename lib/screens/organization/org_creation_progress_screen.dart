@@ -140,35 +140,40 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
       child: SizedBox(
         width: 220,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            AppProgressBar(
-              size: 220,
-              progress: progress,
-              onStatusUpdate: (status) {
-                if (status == AnimationStatus.completed && isCreated) {
-                  setState(() {
-                    isDone = true;
-                  });
-                }
-              },
-              onUpdate: (value) {
-                setState(() {
-                  animationProgress = value;
-                });
-              },
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: AppProgressBar(
+                  size: 220,
+                  progress: progress,
+                  onStatusUpdate: (status) {
+                    if (status == AnimationStatus.completed && isCreated) {
+                      setState(() {
+                        isDone = true;
+                      });
+                    }
+                  },
+                  onUpdate: (value) {
+                    setState(() {
+                      animationProgress = value;
+                    });
+                  },
+                ),
+              ),
             ),
             const SizedBox(height: 30),
-            Text(
-              animationProgress <= 0.5
-                  ? 'Wait.\nProject is being created on blockchain.'
-                  : 'Wait.\n100% equity of a project is being linked to your account.',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontFamily: 'Gilroy',
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
+            Expanded(
+              child: Text(
+                animationProgress <= 0.5
+                    ? 'Project is being created on blockchain.'
+                    : '100% equity of a project is being linked to your account.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: 'Gilroy',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],
@@ -178,80 +183,87 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
   }
 
   buildDone(BuildContext context, Account account) {
-    return ListView(
-      padding: const EdgeInsets.all(60),
+    return Column(
       children: [
-        const Icon(
-          Icons.check_circle_outline_outlined,
-          color: COLOR_GREEN,
-          size: 110,
-        ),
-        const SizedBox(height: 30),
-        Text(
-          'Project was successfully created on blockchain!',
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.displayMedium!.copyWith(
-                fontFamily: 'Gilroy',
-                fontWeight: FontWeight.bold,
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(60),
+            children: [
+              const Icon(
+                Icons.check_circle_outline_outlined,
+                color: COLOR_GREEN,
+                size: 110,
               ),
-        ),
-        const SizedBox(height: 40),
-        Text(
-          'Follow the link below to check on blockchain token created for ${organization.name}',
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                color: COLOR_GRAY,
+              const SizedBox(height: 30),
+              Text(
+                'Project was successfully created on blockchain!',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.displayMedium!.copyWith(
+                      fontFamily: 'Gilroy',
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
-        ),
-        const SizedBox(height: 10),
-        TextButton(
-          onPressed: () async {
-            final url = Uri.parse(
-              'https://explorer.solana.com/address/${organization.mint}',
-            );
-            if (!(await launchUrl(url))) {
-              throw Exception('Could not launch $url');
-            }
-          },
-          child: Text(
-            'https://explorer.solana.com/address/${organization.mint}',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  color: COLOR_BLUE,
-                  decoration: TextDecoration.underline,
+              const SizedBox(height: 40),
+              Text(
+                'Follow the link below to check on blockchain token created for ${organization.name}',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: COLOR_GRAY,
+                    ),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () async {
+                  final url = Uri.parse(
+                    'https://explorer.solana.com/address/${organization.mint}',
+                  );
+                  if (!(await launchUrl(url))) {
+                    throw Exception('Could not launch $url');
+                  }
+                },
+                child: Text(
+                  'https://explorer.solana.com/address/${organization.mint}',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        color: COLOR_BLUE,
+                        decoration: TextDecoration.underline,
+                      ),
                 ),
+              ),
+              const SizedBox(height: 20),
+              const Divider(),
+              const SizedBox(height: 20),
+              Text(
+                'Follow the link below to check on blockchain that your wallet owns 100% of ${organization.name}',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: COLOR_GRAY,
+                    ),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () async {
+                  final url = Uri.parse(
+                    'https://explorer.solana.com/address/${account.wallet}/tokens',
+                  );
+                  if (!(await launchUrl(url))) {
+                    throw Exception('Could not launch $url');
+                  }
+                },
+                child: Text(
+                  'https://explorer.solana.com/address/${account.wallet}/tokens',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        color: COLOR_BLUE,
+                        decoration: TextDecoration.underline,
+                      ),
+                ),
+              ),
+              const SizedBox(height: 60),
+            ],
           ),
         ),
-        const SizedBox(height: 20),
-        const Divider(),
-        const SizedBox(height: 20),
-        Text(
-          'Follow the link below to check on blockchain that your wallet owns 100% of ${organization.name}',
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                color: COLOR_GRAY,
-              ),
-        ),
         const SizedBox(height: 10),
-        TextButton(
-          onPressed: () async {
-            final url = Uri.parse(
-              'https://explorer.solana.com/address/${account.wallet}/tokens',
-            );
-            if (!(await launchUrl(url))) {
-              throw Exception('Could not launch $url');
-            }
-          },
-          child: Text(
-            'https://explorer.solana.com/address/${account.wallet}/tokens',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  color: COLOR_BLUE,
-                  decoration: TextDecoration.underline,
-                ),
-          ),
-        ),
-        const SizedBox(height: 60),
         Center(
           child: SizedBox(
             width: 220,
@@ -263,6 +275,7 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
             ),
           ),
         ),
+        const SizedBox(height: 20),
       ],
     );
   }
