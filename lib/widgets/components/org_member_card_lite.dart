@@ -117,12 +117,9 @@ class OrgMemberCardLite extends StatelessWidget {
                 ? NetworkImageAuth(
                     imageUrl: '${orgsApi.baseUrl}${member.image}',
                   )
-                : const Padding(
-                    padding: EdgeInsets.all(3),
-                    child: Icon(
-                      CupertinoIcons.person_fill,
-                      color: COLOR_LIGHT_GRAY,
-                    ),
+                : const Icon(
+                    CupertinoIcons.person_fill,
+                    color: COLOR_LIGHT_GRAY,
                   ),
           ),
         ),

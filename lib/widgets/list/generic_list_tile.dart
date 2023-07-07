@@ -24,7 +24,6 @@ class GenericListTile extends StatelessWidget {
     this.primaryColor = COLOR_GRAY,
     this.icon,
     this.showMiniIcon = true,
-
   }) : super(key: key);
 
   @override
@@ -50,7 +49,7 @@ class GenericListTile extends StatelessWidget {
                             width: 50,
                             height: 50,
                             decoration: BoxDecoration(
-                              color: COLOR_GRAY,
+                              color: COLOR_LIGHT_GRAY2,
                               borderRadius: BorderRadius.circular(18),
                             ),
                             clipBehavior: Clip.antiAlias,
@@ -60,23 +59,25 @@ class GenericListTile extends StatelessWidget {
                             ),
                           ),
                         ),
-                        showMiniIcon ? Positioned(
-                          bottom: -5,
-                          right: -5,
-                          child: Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: COLOR_WHITE,
-                                width: 2,
-                              ),
-                              color: primaryColor,
-                              borderRadius: BorderRadius.circular(7),
-                            ),
-                            child: Center(child: icon),
-                          ),
-                        ) : Container(),
+                        showMiniIcon
+                            ? Positioned(
+                                bottom: -5,
+                                right: -5,
+                                child: Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: COLOR_WHITE,
+                                      width: 2,
+                                    ),
+                                    color: primaryColor,
+                                    borderRadius: BorderRadius.circular(7),
+                                  ),
+                                  child: Center(child: icon),
+                                ),
+                              )
+                            : Container(),
                       ],
                     ),
                   ),

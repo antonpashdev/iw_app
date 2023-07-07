@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
@@ -41,7 +42,10 @@ class AccountsListWidget extends StatelessWidget {
                         imageUrl:
                             '${usersApi.baseUrl}${currentAccount?.user?.avatar}',
                       )
-                    : const Icon(Icons.person, color: Color(0xFFBDBDBD)),
+                    : const Icon(
+                        CupertinoIcons.person_fill,
+                        color: COLOR_LIGHT_GRAY,
+                      ),
               ),
             ),
             const Divider(
