@@ -68,7 +68,7 @@ buildHeader(
           Row(
             children: [
               ElevatedButton.icon(
-                onPressed: isPreviewMode
+                onPressed: isPreviewMode || !member.permissions!.canSendMoney
                     ? null
                     : () {
                         Navigator.of(context).push(
@@ -85,7 +85,9 @@ buildHeader(
                           ),
                         );
                       },
-                icon: SvgPicture.asset('assets/icons/arrow_up_box.svg'),
+                icon: SvgPicture.asset(
+                  'assets/icons/arrow_up_box.svg',
+                ),
                 label: const Text('Send'),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
