@@ -21,7 +21,7 @@ class GrayButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         textStyle: const TextStyle(
           fontSize: 14,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
           fontFamily: 'Gilroy',
           height: 1,
         ),
