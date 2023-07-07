@@ -18,12 +18,12 @@ import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class OrgSettingsScreen extends StatefulWidget {
   final Organization organization;
-  final List<OrganizationMemberWithEquity> membersWithEquity;
+  final OrganizationMember member;
 
   const OrgSettingsScreen({
     Key? key,
     required this.organization,
-    required this.membersWithEquity,
+    required this.member,
   }) : super(key: key);
 
   @override
@@ -102,19 +102,23 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
           ),
           const SizedBox(height: 30),
           GrayButton(
-            onPressed: onRiseMoneyPressed,
-            child: Row(
+            onPressed: widget.member.permissions!.canRaiseMoney
+                ? onRiseMoneyPressed
+                : null,
+            child: const Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Raise Money'),
-                SvgPicture.asset('assets/icons/raise_money.svg'),
+                Text('Raise Money'),
+                Icon(CupertinoIcons.money_dollar_circle),
               ],
             ),
           ),
           const SizedBox(height: 10),
           GrayButton(
-            onPressed: onChangeTrasuryPressed,
+            onPressed: widget.member.permissions!.canChangeTreasury
+                ? onChangeTrasuryPressed
+                : null,
             child: const Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -126,7 +130,9 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
           ),
           const SizedBox(height: 10),
           GrayButton(
-            onPressed: onInviteMemberPressed,
+            onPressed: widget.member.permissions!.canInviteMembers
+                ? onInviteMemberPressed
+                : null,
             child: const Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -176,7 +176,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                           MaterialPageRoute(
                             builder: (_) => OrgSettingsScreen(
                               organization: snapshot.data![0],
-                              membersWithEquity: snapshot.data![1],
+                              member: widget.member!,
                             ),
                           ),
                         );
