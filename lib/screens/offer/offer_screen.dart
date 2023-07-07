@@ -11,7 +11,7 @@ import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/screens/offer/offer_investor_invest_amount_screen.dart';
-import 'package:iw_app/screens/organization/org_details_screen.dart';
+import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/components/investment_progress.dart';

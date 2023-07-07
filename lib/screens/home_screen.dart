@@ -15,7 +15,7 @@ import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/account/account_details_screen.dart';
 import 'package:iw_app/screens/assets/asset_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
-import 'package:iw_app/screens/organization/org_details_screen.dart';
+import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
 import 'package:iw_app/screens/settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/numbers.dart';
