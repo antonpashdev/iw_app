@@ -183,9 +183,12 @@ class OrgMemberCard extends StatelessWidget {
                                           imageUrl:
                                               '${orgsApi.baseUrl}${member.user.avatar}',
                                         )
-                                      : const Icon(
-                                          CupertinoIcons.person_fill,
-                                          color: COLOR_LIGHT_GRAY,
+                                      : const Padding(
+                                          padding: EdgeInsets.all(5.0),
+                                          child: Icon(
+                                            CupertinoIcons.person_fill,
+                                            color: COLOR_ALMOST_BLACK,
+                                          ),
                                         ),
                                 ),
                               ),

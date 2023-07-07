@@ -54,9 +54,12 @@ class MemberDeitails extends StatelessWidget {
     bool isMemberRoleInvestor =
         memeberWithEquity.member!.role == MemberRole.Investor;
     Widget avatar = memberAvatar == null
-        ? const Icon(
-            CupertinoIcons.person_fill,
-            color: COLOR_ALMOST_BLACK,
+        ? const Padding(
+            padding: EdgeInsets.all(5.0),
+            child: Icon(
+              CupertinoIcons.person_fill,
+              color: COLOR_ALMOST_BLACK,
+            ),
           )
         : Container(
             width: 30,
