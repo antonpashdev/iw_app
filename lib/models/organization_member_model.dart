@@ -99,6 +99,20 @@ class Compensation {
   }
 }
 
+class OrganizationMemberPermissions {
+  bool canSendMoney;
+  bool canRaiseMoney;
+  bool canInviteMembers;
+  bool canChangeTreasury;
+
+  OrganizationMemberPermissions({
+    this.canSendMoney = false,
+    this.canRaiseMoney = false,
+    this.canInviteMembers = false,
+    this.canChangeTreasury = false,
+  });
+}
+
 class OrganizationMember {
   String? id;
   String? occupation;
@@ -115,6 +129,7 @@ class OrganizationMember {
   Equity? equity;
   Compensation? compensation;
   String? createdAt;
+  OrganizationMemberPermissions? permissions;
 
   OrganizationMember({
     this.occupation,
@@ -129,6 +144,7 @@ class OrganizationMember {
     this.lamportsEarned,
     this.equity,
     this.compensation,
+    this.permissions,
   });
 
   OrganizationMember.fromJson(Map<String, dynamic> json) {
@@ -155,6 +171,14 @@ class OrganizationMember {
         ? Compensation.fromJson(json['compensation'])
         : json['compensation'];
     createdAt = json['createdAt'];
+
+    final isAdmin = role == MemberRole.Admin;
+    permissions = OrganizationMemberPermissions(
+      canSendMoney: isAdmin,
+      canRaiseMoney: isAdmin,
+      canInviteMembers: isAdmin,
+      canChangeTreasury: isAdmin,
+    );
   }
 
   String? get image {
