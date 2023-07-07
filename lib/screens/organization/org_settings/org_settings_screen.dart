@@ -1,9 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/offer/offer_investor_screen.dart';
+import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
+import 'package:iw_app/screens/organization/change_treasury_screen.dart';
 import 'package:iw_app/screens/organization/org_settings/api.dart';
 import 'package:iw_app/screens/organization/org_settings/builders/header.dart';
 import 'package:iw_app/screens/organization/org_settings/builders/pending_offers_list.dart';
@@ -46,7 +49,26 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
     );
   }
 
-  onChangeTrasuryPressed() {}
+  onChangeTrasuryPressed() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ChangeTreasuryScreen(
+          organization: widget.organization,
+        ),
+      ),
+    );
+  }
+
+  onInviteMemberPressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OfferNewMemberScreen(
+          organization: widget.organization,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +96,8 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
           const RoundBorderContainer(
             child: Text(
               'Our first collaboration via Equity Wallet',
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+              style: TextStyle(fontSize: 18),
+              softWrap: true,
             ),
           ),
           const SizedBox(height: 30),
@@ -98,6 +121,18 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
               children: [
                 Text('Change Treasury'),
                 Icon(Icons.percent_rounded),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          GrayButton(
+            onPressed: onInviteMemberPressed,
+            child: const Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Invite member'),
+                Icon(CupertinoIcons.person_badge_plus),
               ],
             ),
           ),

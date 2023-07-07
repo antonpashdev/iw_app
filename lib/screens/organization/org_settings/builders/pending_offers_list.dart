@@ -21,7 +21,7 @@ buildPendingOffers(
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 50),
+          const SizedBox(height: 30),
           Text(
             'Pending Investment Proposals',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
