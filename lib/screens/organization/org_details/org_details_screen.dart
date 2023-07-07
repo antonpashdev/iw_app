@@ -18,7 +18,7 @@ import 'package:iw_app/screens/organization/org_details/builders/members.dart';
 import 'package:iw_app/screens/organization/org_details/builders/pulse_item.dart';
 import 'package:iw_app/screens/organization/org_details/builders/wallet_section.dart';
 import 'package:iw_app/screens/organization/org_details/fetchers.dart';
-import 'package:iw_app/screens/organization/org_settings_screen.dart';
+import 'package:iw_app/screens/organization/org_settings/org_settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
@@ -176,6 +176,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                           MaterialPageRoute(
                             builder: (_) => OrgSettingsScreen(
                               organization: snapshot.data![0],
+                              membersWithEquity: snapshot.data![1],
                             ),
                           ),
                         );
@@ -244,6 +245,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                     context,
                                     snapshot.data?[0],
                                     snapshot.data?[1],
+                                    widget.member!,
                                     widget.isPreviewMode,
                                     onViewDetailsPressed,
                                     onAddMemberPressed,
