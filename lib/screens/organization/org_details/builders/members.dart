@@ -10,6 +10,7 @@ buildMembers(
   BuildContext context,
   Organization org,
   List<OrganizationMemberWithEquity> members,
+  OrganizationMember currentMember,
   bool isPreviewMode,
   Function onViewDetailsPressed,
   Function onAddMemberPressed,
@@ -62,25 +63,34 @@ buildMembers(
                       color: const Color(0xffe2e2e8),
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: InkWell(
-                      customBorder: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      onTap:
-                          isPreviewMode ? null : () => onAddMemberPressed(org),
-                      child: const Icon(
-                        CupertinoIcons.add,
-                        size: 35,
-                      ),
-                    ),
+                    child: currentMember.permissions!.canInviteMembers
+                        ? InkWell(
+                            customBorder: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            onTap: isPreviewMode
+                                ? null
+                                : () => onAddMemberPressed(org),
+                            child: const Icon(
+                              CupertinoIcons.add,
+                              size: 35,
+                            ),
+                          )
+                        : const Icon(
+                            CupertinoIcons.add,
+                            size: 35,
+                            color: COLOR_LIGHT_GRAY2,
+                          ),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     'Invite member',
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelMedium
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: currentMember.permissions!.canInviteMembers
+                              ? COLOR_ALMOST_BLACK
+                              : COLOR_LIGHT_GRAY2,
+                        ),
                   ),
                 ],
               ),
