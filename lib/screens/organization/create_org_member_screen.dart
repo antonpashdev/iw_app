@@ -32,7 +32,7 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
 
   OrganizationMember member = OrganizationMember(
     occupation: 'Founder',
-    role: MemberRole.CoOwner,
+    role: MemberRole.Member,
   );
   bool isLoading = false;
 
