@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/config_model.dart';
@@ -32,7 +33,10 @@ buildMember(BuildContext context, OrganizationMemberWithEquity data) {
                           return Image.memory(snapshot.data!);
                         },
                       )
-                    : Container(),
+                    : const Icon(
+                        CupertinoIcons.person_fill,
+                        color: COLOR_LIGHT_GRAY,
+                      ),
               ),
             ),
             const SizedBox(height: 5),
