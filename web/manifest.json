@@ -1,15 +1,19 @@
 {
-    "name": "Impact Wallet",
-    "short_name": "Impact Wallet",
-    "start_url": "https://app.impactwallet.xyz/",
+    "name": "Equity Wallet",
+    "short_name": "Equity Wallet",
+    "start_url": "https://app.equitywallet.org/",
     "display": "standalone",
     "background_color": "#ffffff",
-    "theme_color": "#ffffff",
-    "description": "Turn your contribution into equity.",
+    "theme_color": "#222222",
+    "description": "Manage your equity like never before.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "screenshots": [],
-    "categories": ["productivity", "business", "finance"],
+    "categories": [
+        "productivity",
+        "business",
+        "finance"
+    ],
     "icons": [
         {
             "src": "icons/Icon-192.png",

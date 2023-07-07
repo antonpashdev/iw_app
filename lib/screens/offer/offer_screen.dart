@@ -538,6 +538,12 @@ class _OfferScreenState extends State<OfferScreen> {
           }
           final offer = snapshot.data![0] as Offer;
           final account = snapshot.data![1] as Account;
+          bool isInvestmentComplete = false;
+          if (offer.type == OfferType.Investor) {
+            isInvestmentComplete = offer.availableInvestment!.amount! /
+                    offer.investorSettings!.amount! >=
+                1;
+          }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -643,7 +649,7 @@ class _OfferScreenState extends State<OfferScreen> {
                     ConstrainedBox(
                       constraints: const BoxConstraints(minWidth: 290),
                       child: ElevatedButton(
-                        onPressed: isLoading
+                        onPressed: isLoading || isInvestmentComplete
                             ? null
                             : () => acceptDeclineOffer(offer, 'accepted'),
                         child: isLoading

@@ -1,15 +1,10 @@
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iw_app/api/auth_api.dart';
-import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
-import 'package:iw_app/screens/home_screen.dart';
+import 'package:iw_app/screens/organization/org_creation_progress_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/new_member_form.dart';
 import 'package:iw_app/widgets/components/new_owner_member_form_lite.dart';
@@ -52,54 +47,18 @@ class _CreateOrgMemberScreenState extends State<CreateOrgMemberScreen> {
     );
   }
 
-  navigateToHome() {
-    if (context.mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-        (route) => false,
-      );
-    }
-  }
-
   handleNextPressed() async {
-    if (formKey.currentState!.validate()) {
-      Config config = ConfigState.of(context).config;
-      setState(() {
-        isLoading = true;
-      });
-      try {
-        member.user = await authApi.userId;
-        await orgsApi.createOrg(
-          widget.organization,
-          member,
-          config.mode == Mode.Lite,
-        );
-
-        navigateToHome();
-      } on DioError catch (err) {
-        print(err);
-        if (err.response!.statusCode == HttpStatus.conflict) {
-          navigateToHome();
-        } else {
-          final message = err.response!.data['message'];
-          if (message != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(message),
-                duration: const Duration(milliseconds: 3000),
-                backgroundColor: COLOR_RED,
-              ),
-            );
-          }
-        }
-      } catch (err) {
-        print(err);
-      } finally {
-        setState(() {
-          isLoading = false;
-        });
-      }
+    if (!formKey.currentState!.validate()) {
+      return;
     }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => OrgCreationProgressScreen(
+          organization: widget.organization,
+          member: member,
+        ),
+      ),
+    );
   }
 
   @override

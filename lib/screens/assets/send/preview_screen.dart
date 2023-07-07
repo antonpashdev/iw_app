@@ -17,6 +17,7 @@ const LAMPORTS_IN_SOL = 1000000000;
 
 class PreviewScreen extends StatefulWidget {
   final User? receiver;
+  final Organization? receiverOrg;
   final String? receiverAddress;
   final Organization organization;
   final OrganizationMember member;
@@ -29,6 +30,7 @@ class PreviewScreen extends StatefulWidget {
     required this.member,
     required this.tokens,
     this.receiver,
+    this.receiverOrg,
     this.receiverAddress,
     required this.sendAssetType,
   });
@@ -52,8 +54,13 @@ class _PreviewScreenState extends State<PreviewScreen> {
         : widget.tokens.toStringAsFixed(1);
   }
 
-  _buildDetails(double imageSize, double imageRaduis, String? imageUrl,
-      Widget title, Widget description,) {
+  _buildDetails(
+    double imageSize,
+    double imageRaduis,
+    String? imageUrl,
+    Widget title,
+    Widget description,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -103,17 +110,25 @@ class _PreviewScreenState extends State<PreviewScreen> {
           15,
           widget.sendAssetType == SendAssetType.ToUser
               ? widget.receiver!.avatar
-              : null,
+              : widget.sendAssetType == SendAssetType.ToOrg
+                  ? widget.receiverOrg!.logo
+                  : null,
           Row(
             children: [
-              const Text('To',
-                  style: TextStyle(
-                      color: COLOR_BLUE, fontWeight: FontWeight.w600,),),
+              const Text(
+                'To',
+                style: TextStyle(
+                  color: COLOR_BLUE,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(width: 3),
               Text(
                 widget.sendAssetType == SendAssetType.ToUser
                     ? widget.receiver!.name!
-                    : widget.receiverAddress!.replaceRange(4, 40, '...'),
+                    : widget.sendAssetType == SendAssetType.ToOrg
+                        ? widget.receiverOrg!.name!
+                        : widget.receiverAddress!.replaceRange(4, 40, '...'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -125,7 +140,9 @@ class _PreviewScreenState extends State<PreviewScreen> {
           Text(
             widget.sendAssetType == SendAssetType.ToUser
                 ? '@${widget.receiver!.nickname}'
-                : 'Solana Wallet Address',
+                : widget.sendAssetType == SendAssetType.ToOrg
+                    ? '@${widget.receiverOrg!.username}'
+                    : 'Solana Wallet Address',
             style: Theme.of(context).textTheme.labelMedium!.copyWith(
                   color: COLOR_GRAY,
                   fontWeight: FontWeight.w500,
@@ -148,24 +165,25 @@ class _PreviewScreenState extends State<PreviewScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildDetails(
-                60,
-                20,
-                widget.member.org.logo!,
-                Text(
-                  widget.member.org.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                  ),
+              60,
+              20,
+              widget.member.org.logo!,
+              Text(
+                widget.member.org.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
                 ),
-                Text(
-                  '@${widget.member.org.username}',
-                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                        color: COLOR_GRAY,
-                        fontWeight: FontWeight.w500,
-                      ),
-                ),),
+              ),
+              Text(
+                '@${widget.member.org.username}',
+                style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                      color: COLOR_GRAY,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+            ),
             const SizedBox(height: 15),
             const Divider(),
             const SizedBox(height: 15),
@@ -179,8 +197,9 @@ class _PreviewScreenState extends State<PreviewScreen> {
                       Text(
                         widget.tokens.toString(),
                         style: const TextStyle(
-                            color: COLOR_ALMOST_BLACK,
-                            fontWeight: FontWeight.w700,),
+                          color: COLOR_ALMOST_BLACK,
+                          fontWeight: FontWeight.w700,
+                        ),
                       )
                     ],
                   ),
@@ -194,7 +213,9 @@ class _PreviewScreenState extends State<PreviewScreen> {
                 Text(
                   '$equity%',
                   style: const TextStyle(
-                      color: COLOR_GREEN, fontWeight: FontWeight.w700,),
+                    color: COLOR_GREEN,
+                    fontWeight: FontWeight.w700,
+                  ),
                 )
               ],
             )
@@ -215,6 +236,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
         widget.tokens,
         config.mode == Mode.Lite,
         recipientId: widget.receiver?.id!,
+        recipientOrgId: widget.receiverOrg?.id!,
         recipientAddress: widget.receiverAddress,
       );
       if (context.mounted) {
@@ -231,55 +253,58 @@ class _PreviewScreenState extends State<PreviewScreen> {
 
   navigateToSuccessScreen(BuildContext context) {
     Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (_) => SuccessScreen(
-            sharesSent: widget.tokens,
-            orgName: widget.member.org.name,
-            receiverNickName: widget.receiver?.nickname,
-            receiverAddress: widget.receiverAddress,
-            sendAssetType: widget.sendAssetType,
-          ),
+      context,
+      MaterialPageRoute(
+        builder: (_) => SuccessScreen(
+          sharesSent: widget.tokens,
+          orgName: widget.member.org.name,
+          receiverUsername:
+              widget.receiver?.nickname ?? widget.receiverOrg?.username,
+          receiverAddress: widget.receiverAddress,
+          sendAssetType: widget.sendAssetType,
         ),
-        (route) => false,);
+      ),
+      (route) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-        title: 'Preview',
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: KeyboardDismissableListView(
-                children: <Widget>[
-                  buildHeader(context),
-                  const SizedBox(height: 5),
-                  buildInfoCard(context),
-                ],
-              ),
+      title: 'Preview',
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: KeyboardDismissableListView(
+              children: <Widget>[
+                buildHeader(context),
+                const SizedBox(height: 5),
+                buildInfoCard(context),
+              ],
             ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: SizedBox(
-                  width: 290,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : () => sendAssets(context),
-                    child: _isLoading
-                        ? const CircularProgressIndicator.adaptive()
-                        : Text(
-                            config.mode == Mode.Pro
-                                ? 'Send Impact Shares'
-                                : 'Send $equity% Equity',
-                          ),
-                  ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: SizedBox(
+                width: 290,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : () => sendAssets(context),
+                  child: _isLoading
+                      ? const CircularProgressIndicator.adaptive()
+                      : Text(
+                          config.mode == Mode.Pro
+                              ? 'Send Impact Shares'
+                              : 'Send $equity% Equity',
+                        ),
                 ),
               ),
             ),
-          ],
-        ),);
+          ),
+        ],
+      ),
+    );
   }
 }

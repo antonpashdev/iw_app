@@ -29,9 +29,27 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
   final equityController = TextEditingController();
   final formGlobalKey = GlobalKey<FormState>();
 
+  double get allocatedEquity {
+    return widget.offer.memberProspects!.isNotEmpty
+        ? widget.offer.memberProspects!
+            .map((m) => m.equity!.amount!)
+            .reduce((value, element) => value + element)
+        : 0;
+  }
+
+  double get maxEquity {
+    return widget.maxEquity - allocatedEquity;
+  }
+
+  double get maxInvestment {
+    final ratio =
+        allocatedEquity > 0 ? 1 - (allocatedEquity / widget.maxEquity) : 1;
+    return widget.maxInvestment * ratio;
+  }
+
   _onMaxTapped() {
-    equityController.text = widget.maxEquity.toString();
-    amountController.text = widget.maxInvestment.toString();
+    equityController.text = maxEquity.toString();
+    amountController.text = maxInvestment.toString();
   }
 
   onPreviewTap() {
@@ -78,7 +96,7 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
                 [
                   requiredField('You Invest'),
                   numberField('You Invest'),
-                  max(widget.maxInvestment),
+                  max(maxInvestment),
                 ],
               ),
               onChanged: (value) {
@@ -101,7 +119,7 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
                 [
                   requiredField('Your Equity'),
                   numberField('Your Equity'),
-                  max(widget.maxEquity),
+                  max(maxEquity),
                 ],
               ),
               onChanged: (value) {

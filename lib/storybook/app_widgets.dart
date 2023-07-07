@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iw_app/widgets/components/app_progress_bar.dart';
 import 'package:iw_app/widgets/components/investment_progress.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
@@ -34,6 +35,17 @@ List<Story> appWidgets() {
           ),
         );
       },
-    )
+    ),
+    Story(
+      name: 'Widgets/Components/App Progress Bar',
+      builder: (context) {
+        return const Center(
+          child: AppProgressBar(
+            progress: 0.3,
+            size: 250,
+          ),
+        );
+      },
+    ),
   ];
 }
