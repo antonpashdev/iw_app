@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/organization_member_model.dart';
@@ -54,7 +55,10 @@ class MemberDeitailsLite extends StatelessWidget {
     bool isMemberRoleInvestor =
         memeberWithEquity.member!.role == MemberRole.Investor;
     Widget avatar = memberAvatar == null
-        ? const Icon(Icons.man_2_rounded)
+        ? const Icon(
+            CupertinoIcons.person_fill,
+            color: COLOR_ALMOST_BLACK,
+          )
         : Container(
             width: 30,
             height: 30,
