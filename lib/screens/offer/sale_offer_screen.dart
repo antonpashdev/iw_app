@@ -172,6 +172,9 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
   }
 
   buildFromDetails(BuildContext context, SaleOffer saleOffer) {
+    final imageUrl = saleOffer.seller!['avatar'] ?? saleOffer.seller!['logo'];
+    final sellerUsername =
+        saleOffer.seller!['nickname'] ?? saleOffer.seller!['username'];
     return Container(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
@@ -192,10 +195,9 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                 clipBehavior: Clip.antiAlias,
                 child: FittedBox(
                   fit: BoxFit.cover,
-                  child: saleOffer.seller.avatar != null
+                  child: imageUrl != null
                       ? NetworkImageAuth(
-                          imageUrl:
-                              '${usersApi.baseUrl}${saleOffer.seller.avatar}',
+                          imageUrl: '${usersApi.baseUrl}$imageUrl',
                         )
                       : null,
                 ),
@@ -213,7 +215,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                           style: TextStyle(color: COLOR_BLUE),
                         ),
                         TextSpan(
-                          text: ' ${saleOffer.seller.name}',
+                          text: ' ${saleOffer.seller!['name']}',
                           style: const TextStyle(color: COLOR_ALMOST_BLACK),
                         ),
                       ],
@@ -221,7 +223,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '@${saleOffer.seller.nickname!}',
+                    '@$sellerUsername',
                     style: Theme.of(context).textTheme.labelMedium!.copyWith(
                           color: COLOR_GRAY,
                           fontWeight: FontWeight.w500,

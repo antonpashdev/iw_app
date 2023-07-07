@@ -3,13 +3,14 @@ import 'package:iw_app/constants/send_asset_type.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/assets/send/receiver_screen.dart';
+import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
-class SendTypeScreen extends StatelessWidget {
+class SendTypeLiteScreen extends StatelessWidget {
   final Organization organization;
   final OrganizationMember member;
 
-  const SendTypeScreen({
+  const SendTypeLiteScreen({
     Key? key,
     required this.organization,
     required this.member,
@@ -51,23 +52,25 @@ class SendTypeScreen extends StatelessWidget {
                         height: 50,
                         clipBehavior: Clip.hardEdge,
                         decoration: BoxDecoration(
+                          color: COLOR_GRAY,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: FittedBox(
-                          fit: BoxFit.cover,
-                          child: Image.asset('assets/app_icon.png'),
+                        child: const Icon(
+                          Icons.person,
+                          color: COLOR_WHITE,
+                          size: 40,
                         ),
                       ),
                     ),
                   ),
-                  const Expanded(flex: 2, child: Text('To Equity Wallet User')),
+                  const Expanded(flex: 2, child: Text('to Personal account')),
                 ],
               ),
             ),
             const SizedBox(height: 40),
             TextButton(
               onPressed: () {
-                onTypeSelect(context, SendAssetType.ToAddress);
+                onTypeSelect(context, SendAssetType.ToOrg);
               },
               child: Row(
                 children: [
@@ -78,19 +81,20 @@ class SendTypeScreen extends StatelessWidget {
                         width: 50,
                         height: 50,
                         clipBehavior: Clip.hardEdge,
+                        padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
+                          color: COLOR_GRAY,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: FittedBox(
-                          fit: BoxFit.cover,
-                          child: Image.asset('assets/images/solana.png'),
+                        child: Image.asset(
+                          'assets/icons/organization.png',
                         ),
                       ),
                     ),
                   ),
                   const Expanded(
                     flex: 2,
-                    child: Text('To Solana Wallet Address'),
+                    child: Text('to Organization or Project'),
                   ),
                 ],
               ),

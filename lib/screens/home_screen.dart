@@ -126,16 +126,22 @@ class _HomeScreenState extends State<HomeScreen> {
     return response.data['balance'];
   }
 
+  navigateToCreateOrg() async {
+    if (mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const CreateOrgScreen(),
+        ),
+      );
+    }
+  }
+
   Widget buildCallToCreateCard(BuildContext context) {
     return Row(
       children: [
         const SizedBox(width: 20),
         OrgMemberCard(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const CreateOrgScreen()),
-            );
-          },
+          onTap: navigateToCreateOrg,
         ),
       ],
     );
@@ -498,13 +504,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             if (snapshot.data!.isNotEmpty)
                               InkWell(
                                 borderRadius: BorderRadius.circular(30),
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => const CreateOrgScreen(),
-                                    ),
-                                  );
-                                },
+                                onTap: navigateToCreateOrg,
                                 child: SvgPicture.asset(
                                   'assets/icons/add_circle.svg',
                                 ),

@@ -291,7 +291,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                           },
                         ),
                         Text(
-                          'Impact Wallet Card',
+                          'Equity Wallet Card',
                           style: Theme.of(context)
                               .textTheme
                               .labelSmall!

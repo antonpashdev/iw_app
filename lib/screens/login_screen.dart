@@ -34,11 +34,9 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Config config = ConfigState.of(context).config;
     String slogan = config.mode == Mode.Lite
-        ? 'Manage your equity like never before'
+        ? 'Manage your equity in projects like never before'
         : AppLocalizations.of(context)!.loginScreen_slogan;
-    String logoPath = config.mode == Mode.Lite
-        ? 'assets/images/logo_with_text_lite.svg'
-        : 'assets/images/logo_with_text.svg';
+    String logoPath = 'assets/images/logo_with_text.png';
     return Scaffold(
       backgroundColor: APP_BODY_BG,
       appBar: AppBar(
@@ -53,7 +51,10 @@ class LoginScreen extends StatelessWidget {
               Center(
                 child: Stack(
                   children: [
-                    SvgPicture.asset(logoPath),
+                    Image.asset(
+                      logoPath,
+                      width: 250,
+                    ),
                     GestureDetector(
                       onTap: () => onLogoPressed(config, context),
                       child: Container(
@@ -132,8 +133,9 @@ class LoginScreen extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          const NicknameScreen(),),
+                                    builder: (context) =>
+                                        const NicknameScreen(),
+                                  ),
                                 );
                               },
                             ),
@@ -141,10 +143,12 @@ class LoginScreen extends StatelessWidget {
                             SecondaryButton(
                               onPressed: () {
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const RestoreAccountScreen(),),);
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const RestoreAccountScreen(),
+                                  ),
+                                );
                               },
                               child: Text(
                                 AppLocalizations.of(context)!

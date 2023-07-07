@@ -20,7 +20,7 @@ class SaleOfferPreviewScreen extends StatelessWidget {
   const SaleOfferPreviewScreen({Key? key, required this.saleOffer})
       : super(key: key);
 
-  String get offerUrl => 'app.impactwallet.xyz/saleoffer?i=${saleOffer.id}';
+  String get offerUrl => 'app.equitywallet.org/saleoffer?i=${saleOffer.id}';
 
   buildHeader(BuildContext context) {
     return Row(
@@ -151,9 +151,11 @@ class SaleOfferPreviewScreen extends StatelessWidget {
           left: 20,
           right: 20,
         ),
-        content: Text(AppLocalizations.of(context)!.common_link_copied,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white),),
+        content: Text(
+          AppLocalizations.of(context)!.common_link_copied,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white),
+        ),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -184,63 +186,66 @@ class SaleOfferPreviewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-        title: 'Offer to Buy',
-        child: KeyboardDismissableListView(
-          children: [
-            const SizedBox(height: 20),
-            buildDetails(context),
-            const SizedBox(height: 30),
-            Column(
-              children: [
-                const SizedBox(height: 30),
-                const Text(
-                  'This Offer is available by the link below. Send it to a person you want to sell iShares',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: COLOR_CORAL,
-                    fontWeight: FontWeight.w500,
-                  ),
+      title: 'Offer to Buy',
+      child: KeyboardDismissableListView(
+        children: [
+          const SizedBox(height: 20),
+          buildDetails(context),
+          const SizedBox(height: 30),
+          Column(
+            children: [
+              const SizedBox(height: 30),
+              const Text(
+                'This Offer is available by the link below. Send it to a person you want to sell iShares',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: COLOR_CORAL,
+                  fontWeight: FontWeight.w500,
                 ),
-                const SizedBox(height: 20),
-                Text(
-                  offerUrl,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: COLOR_GRAY),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                offerUrl,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: COLOR_GRAY),
+              ),
+              const SizedBox(height: 25),
+              SizedBox(
+                width: 290,
+                child: ElevatedButton(
+                  onPressed: () => handleCopyPressed(context),
+                  child: const Text('Copy Link to this Offer'),
                 ),
-                const SizedBox(height: 25),
-                SizedBox(
-                  width: 290,
-                  child: ElevatedButton(
-                    onPressed: () => handleCopyPressed(context),
-                    child: const Text('Copy Link to this Offer'),
-                  ),
-                ),
-                const SizedBox(height: 25),
-                Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 300),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),)
-                          ],),
-                      child: QRCodeWidget(
-                        url: offerUrl,
-                        orgLogo: '${orgsApi.baseUrl}${saleOffer.org.logo!}',
-                      ),
+              ),
+              const SizedBox(height: 25),
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 300),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.75,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        )
+                      ],
+                    ),
+                    child: QRCodeWidget(
+                      url: offerUrl,
+                      orgLogo: '${orgsApi.baseUrl}${saleOffer.org.logo!}',
                     ),
                   ),
                 ),
-                const SizedBox(height: 25),
-              ],
-            ),
-          ],
-        ),);
+              ),
+              const SizedBox(height: 25),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

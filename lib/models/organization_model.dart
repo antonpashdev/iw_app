@@ -11,6 +11,9 @@ class Organization {
   String? description;
   String? logo;
   String? wallet;
+  String? mint;
+  String? mintStatus;
+  String? mintError;
   Uint8List? logoToSet;
   OrganizationSettings? settings = OrganizationSettings();
   double? lamportsMinted;
@@ -33,6 +36,9 @@ class Organization {
     description = json['description'];
     logo = json['logo'];
     wallet = json['wallet'];
+    mint = json['mint'];
+    mintStatus = json['mintStatus'];
+    mintError = json['mintError'];
     lamportsMinted = intToDouble(json['lamportsMinted']);
     settings = json['settings'] is Map
         ? OrganizationSettings.fromJson(json['settings'])
@@ -68,7 +74,6 @@ $settings
       orgMap['member[impactRatio]'] = member.impactRatio;
       orgMap['member[isAutoContributing]'] = member.isAutoContributing;
       orgMap['member[hoursPerWeek]'] = member.hoursPerWeek;
-      orgMap['member[user]'] = member.user;
       if (member.compensation != null) {
         orgMap['member[compensation][amount]'] = member.compensation!.amount;
         orgMap['member[compensation][type]'] = member.compensation!.type?.name;

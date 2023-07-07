@@ -114,6 +114,7 @@ class _UsersApi extends BaseApi {
     double amount,
     bool isLite, {
     String? recipientId,
+    String? recipientOrgId,
     String? recipientAddress,
   }) {
     if (isLite) {
@@ -121,6 +122,7 @@ class _UsersApi extends BaseApi {
         '/lite/users/assets/$orgId/send',
         data: {
           'recipientId': recipientId,
+          'recipientOrgId': recipientOrgId,
           'recipientAddress': recipientAddress,
           'amount': amount,
         },
@@ -131,6 +133,7 @@ class _UsersApi extends BaseApi {
       '/users/assets/$orgId/send',
       data: {
         'recipientId': recipientId,
+        'recipientOrgId': recipientOrgId,
         'recipientAddress': recipientAddress,
         'amount': amount,
       },

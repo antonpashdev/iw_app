@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/models/offer_model.dart';
-import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/offer/offer_preview_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
@@ -27,11 +26,7 @@ class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
   Offer offer = Offer(
     type: OfferType.Investor,
     investorSettings: OfferInvestorSettings(),
-  );
-
-  final OrganizationMember memberProspect = OrganizationMember(
-    role: MemberRole.Investor,
-    investorSettings: InvestorSettings(),
+    availableInvestment: OfferInvestorSettings(),
   );
 
   buildForm() {

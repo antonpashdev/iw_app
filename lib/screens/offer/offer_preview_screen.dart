@@ -37,7 +37,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
   late Offer offer;
 
   String get offerUrl {
-    return 'app.impactwallet.xyz/offer?i=${offer.id}&oi=${widget.organization.id}';
+    return 'app.equitywallet.org/offer?i=${offer.id}&oi=${widget.organization.id}';
   }
 
   bool get isInvestor {
@@ -422,9 +422,9 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
     try {
       final response = await orgsApi.createOffer(
         widget.organization.id!,
-        widget.member!,
         config.mode == Mode.Lite,
         offer,
+        member: widget.member,
       );
       setState(() {
         offer = Offer.fromJson(response.data);

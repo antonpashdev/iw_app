@@ -89,10 +89,10 @@ class _OrgsApi extends BaseApi {
 
   Future<Response> createOffer(
     String orgId,
-    OrganizationMember member,
     bool isLite,
-    Offer offer,
-  ) {
+    Offer offer, {
+    OrganizationMember? member,
+  }) {
     if (isLite) {
       return client.post(
         '/lite/orgs/$orgId/offers',
@@ -101,7 +101,7 @@ class _OrgsApi extends BaseApi {
     }
 
     final body = {
-      'memberProspect': member.toMap(),
+      'memberProspect': member?.toMap(),
     };
 
     return client.post('/orgs/$orgId/offers', data: body);
@@ -152,8 +152,12 @@ class _OrgsApi extends BaseApi {
     double price,
   ) {
     final body = {
-      'item': item,
-      'amount': price,
+      'items': [
+        {
+          'name': item,
+          'amount': price,
+        }
+      ],
     };
 
     return client.post('/orgs/$orgId/payments/receive', data: body);
@@ -181,6 +185,14 @@ class _OrgsApi extends BaseApi {
 
   Future<Response> loginAsOrg(String orgId) {
     return client.post('/orgs/$orgId/login');
+  }
+
+  Future<Response> getOrgs({String? username, bool? isExactMatch}) {
+    final params = {
+      'username': username,
+      'isExactMatch': isExactMatch,
+    };
+    return client.get('/orgs', queryParameters: params);
   }
 }
 

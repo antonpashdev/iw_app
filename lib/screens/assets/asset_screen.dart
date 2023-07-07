@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
-import 'package:iw_app/constants/send_asset_type.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
 import 'package:iw_app/screens/assets/sell_asset_screen.dart';
+import 'package:iw_app/screens/assets/send/send_type_lite_screen.dart';
 import 'package:iw_app/screens/assets/send/send_type_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
@@ -14,8 +14,6 @@ import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
-
-import 'send/receiver_screen.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
 RegExp trimZeroesRegExp = RegExp(r'([.]*0+)(?!.*\d)');
@@ -208,7 +206,10 @@ class _AssetScreenState extends State<AssetScreen> {
   }
 
   buildHistoryItem(
-      BuildContext context, TxnHistoryItem item, TxnHistoryItem? prevItem,) {
+    BuildContext context,
+    TxnHistoryItem item,
+    TxnHistoryItem? prevItem,
+  ) {
     final sign = item.amount != null && item.amount! < 0 ? '-' : '+';
     final unit = config.mode == Mode.Pro ? ' iS' : '%';
     final amount = item.amount != null
@@ -296,10 +297,9 @@ class _AssetScreenState extends State<AssetScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => ReceiverScreen(
+          builder: (_) => SendTypeLiteScreen(
             organization: widget.memberWithEquity.member!.org,
             member: widget.memberWithEquity.member!,
-            sendAssetType: SendAssetType.ToUser,
           ),
         ),
       );
@@ -313,131 +313,134 @@ class _AssetScreenState extends State<AssetScreen> {
       appBar: AppBar(title: const Text('Asset')),
       body: SafeArea(
         child: FutureBuilder(
-            future: futureEquity,
-            builder: (context, snapshot) {
-              return Column(
-                children: [
-                  Expanded(
-                    child: CustomScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      slivers: [
-                        CupertinoSliverRefreshControl(
-                          onRefresh: onRefresh,
-                        ),
-                        SliverPersistentHeader(
-                          pinned: true,
-                          delegate: _HeaderDelegate(
-                            equity: snapshot.data,
-                            child: Container(
-                              color: COLOR_WHITE,
-                              child: AppPadding(
-                                child: Column(
-                                  children: [
-                                    const SizedBox(height: 10),
-                                    buildHeader(context),
-                                    const SizedBox(height: 20),
-                                    buildAmounts(context, snapshot.data),
-                                    const SizedBox(height: 20),
-                                  ],
-                                ),
+          future: futureEquity,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Container();
+            }
+            return Column(
+              children: [
+                Expanded(
+                  child: CustomScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      CupertinoSliverRefreshControl(
+                        onRefresh: onRefresh,
+                      ),
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _HeaderDelegate(
+                          equity: snapshot.data,
+                          child: Container(
+                            color: COLOR_WHITE,
+                            child: AppPadding(
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 10),
+                                  buildHeader(context),
+                                  const SizedBox(height: 20),
+                                  buildAmounts(context, snapshot.data),
+                                  const SizedBox(height: 20),
+                                ],
                               ),
                             ),
                           ),
                         ),
-                        SliverToBoxAdapter(
-                          child: AppPadding(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Activity',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                ),
-                                const SizedBox(height: 30),
-                              ],
-                            ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: AppPadding(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Activity',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                              ),
+                              const SizedBox(height: 30),
+                            ],
                           ),
                         ),
-                        FutureBuilder(
-                          future: futureHistory,
-                          builder: (_, snapshot) {
-                            if (!snapshot.hasData) {
-                              return const SliverToBoxAdapter(
-                                child: Center(
-                                  child: CircularProgressIndicator.adaptive(),
-                                ),
-                              );
-                            }
-                            return SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                (context, index) => Column(
-                                  children: [
-                                    buildHistoryItem(
-                                      context,
-                                      snapshot.data![index],
-                                      index > 0
-                                          ? snapshot.data![index - 1]
-                                          : null,
-                                    ),
-                                    const SizedBox(height: 20),
-                                  ],
-                                ),
-                                childCount: snapshot.data!.length,
+                      ),
+                      FutureBuilder(
+                        future: futureHistory,
+                        builder: (_, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const SliverToBoxAdapter(
+                              child: Center(
+                                child: CircularProgressIndicator.adaptive(),
                               ),
                             );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  AppPadding(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: snapshot.data!.equity == 0
-                                ? null
-                                : handleSendAssetPressed,
-                            child: const Text('Send Asset'),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: snapshot.data!.equity == 0
-                                ? null
-                                : () {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (_) => SellAssetScreen(
-                                                  organization: widget
-                                                      .memberWithEquity
-                                                      .member!
-                                                      .org,
-                                                  member: widget
-                                                      .memberWithEquity.member!,
-                                                ),),);
-                                  },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: COLOR_BLUE,
+                          }
+                          return SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) => Column(
+                                children: [
+                                  buildHistoryItem(
+                                    context,
+                                    snapshot.data![index],
+                                    index > 0
+                                        ? snapshot.data![index - 1]
+                                        : null,
+                                  ),
+                                  const SizedBox(height: 20),
+                                ],
+                              ),
+                              childCount: snapshot.data!.length,
                             ),
-                            child: const Text('Sell Asset'),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                ],
-              );
-            },),
+                ),
+                const SizedBox(height: 10),
+                AppPadding(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: snapshot.data!.equity == 0
+                              ? null
+                              : handleSendAssetPressed,
+                          child: const Text('Send Asset'),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: snapshot.data!.equity == 0
+                              ? null
+                              : () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => SellAssetScreen(
+                                        organization:
+                                            widget.memberWithEquity.member!.org,
+                                        member: widget.memberWithEquity.member!,
+                                      ),
+                                    ),
+                                  );
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: COLOR_BLUE,
+                          ),
+                          child: const Text('Sell Asset'),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

@@ -20,8 +20,8 @@ class OfferInvestorSettings {
   double? equity;
 
   OfferInvestorSettings({
-    this.amount,
-    this.equity,
+    this.amount = 0,
+    this.equity = 0,
   });
 
   OfferInvestorSettings.fromJson(Map<String, dynamic> json) {
