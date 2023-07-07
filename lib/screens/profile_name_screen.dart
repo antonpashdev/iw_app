@@ -63,9 +63,10 @@ class _CreateProfile extends State<CreateProfile> {
 
   handleNext(String link) {
     Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => LoginLinkScreen(link: link)),
-        (Route<dynamic> route) => false,);
+      context,
+      MaterialPageRoute(builder: (context) => LoginLinkScreen(link: link)),
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
@@ -73,39 +74,42 @@ class _CreateProfile extends State<CreateProfile> {
     String? nextButtonText = AppLocalizations.of(context)!.common_next;
 
     return ScreenScaffold(
-        title: AppLocalizations.of(context)!.profileScreen_title,
-        child: Column(
-          children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                InkWell(
-                  onTap: selectUserImage,
-                  borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                      decoration: BoxDecoration(
-                          color: const Color(0xFFE2E2E8),
-                          borderRadius: BorderRadius.circular(20),),
-                      width: 70,
-                      height: 70,
-                      clipBehavior: Clip.antiAlias,
-                      child: _imageBuffer == null
-                          ? const Center(
-                              child: Image(
-                                  image:
-                                      AssetImage('assets/icons/add_image.png'),),)
-                          : FittedBox(
-                              clipBehavior: Clip.hardEdge,
-                              fit: BoxFit.cover,
-                              child: Image.memory(
-                                _imageBuffer!,
-                              ),
-                            ),),
+      title: AppLocalizations.of(context)!.profileScreen_title,
+      child: Column(
+        children: <Widget>[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              InkWell(
+                onTap: selectUserImage,
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE2E2E8),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  width: 70,
+                  height: 70,
+                  clipBehavior: Clip.antiAlias,
+                  child: _imageBuffer == null
+                      ? const Center(
+                          child: Image(
+                            image: AssetImage('assets/icons/add_image.png'),
+                          ),
+                        )
+                      : FittedBox(
+                          clipBehavior: Clip.hardEdge,
+                          fit: BoxFit.cover,
+                          child: Image.memory(
+                            _imageBuffer!,
+                          ),
+                        ),
                 ),
-                const SizedBox(width: 20),
-                Expanded(
-                    child: TextFormField(
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: TextFormField(
                   decoration: InputDecoration(
                     border: const UnderlineInputBorder(),
                     labelText:
@@ -117,11 +121,12 @@ class _CreateProfile extends State<CreateProfile> {
                       name = value;
                     });
                   },
-                ),)
-              ],
-            ),
-            Expanded(
-                child: Column(
+                ),
+              )
+            ],
+          ),
+          Expanded(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -141,10 +146,13 @@ class _CreateProfile extends State<CreateProfile> {
                       )
                     : ElevatedButton(
                         onPressed: name == '' ? null : createUser,
-                        child: Text(nextButtonText),),
+                        child: Text(nextButtonText),
+                      ),
               ],
-            ),),
-          ],
-        ),);
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
