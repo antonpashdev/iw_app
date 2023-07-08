@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:iw_app/api/models/org_to_update.model.dart';
+import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
@@ -22,12 +24,50 @@ class ChangeTreasuryScreen extends StatefulWidget {
 
 class _ChangeTreasuryScreenState extends State<ChangeTreasuryScreen> {
   late int treasury;
+  bool saving = false;
   final formKey = GlobalKey<FormState>();
 
   @override
   initState() {
     super.initState();
     treasury = widget.organization.settings?.treasury ?? 0;
+  }
+
+  updaTreasury() async {
+    await orgsApi.updateOrg(
+      widget.organization.id!,
+      OrgToUpdate(
+        settings: OrgSettingsToUpdate(
+          treasury: treasury,
+        ),
+      ),
+    );
+  }
+
+  onSave() async {
+    setState(() {
+      saving = true;
+    });
+    if (formKey.currentState!.validate()) {
+      try {
+        await updaTreasury();
+        widget.organization.settings!.treasury = treasury;
+
+        if (context.mounted) {
+          Navigator.of(context).pop(treasury);
+        }
+      } catch (e) {
+        print(e);
+      } finally {
+        setState(() {
+          saving = false;
+        });
+      }
+    }
+  }
+
+  onCancel() {
+    Navigator.of(context).pop();
   }
 
   @override
@@ -115,10 +155,7 @@ class _ChangeTreasuryScreenState extends State<ChangeTreasuryScreen> {
                 SizedBox(
                   width: 290,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: implement save treasury api whenever it is ready
-                      print(treasury);
-                    },
+                    onPressed: saving ? null : onSave,
                     child: const Text('Save'),
                   ),
                 ),
@@ -126,9 +163,7 @@ class _ChangeTreasuryScreenState extends State<ChangeTreasuryScreen> {
                 SizedBox(
                   width: 290,
                   child: SecondaryButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                    onPressed: saving ? null : onCancel,
                     child: const Text('Cancel'),
                   ),
                 ),
