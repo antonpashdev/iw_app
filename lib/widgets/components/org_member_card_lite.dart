@@ -102,7 +102,7 @@ class OrgMemberCardLite extends StatelessWidget {
         height: 30,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: COLOR_GRAY,
+          color: COLOR_LIGHT_GRAY2,
           border: Border.all(
             color: COLOR_WHITE.withAlpha(200),
             width: 1.5,
@@ -117,7 +117,10 @@ class OrgMemberCardLite extends StatelessWidget {
                 ? NetworkImageAuth(
                     imageUrl: '${orgsApi.baseUrl}${member.image}',
                   )
-                : Container(),
+                : const Icon(
+                    CupertinoIcons.person_fill,
+                    color: COLOR_LIGHT_GRAY,
+                  ),
           ),
         ),
       ),

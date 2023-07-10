@@ -15,7 +15,7 @@ import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/account/account_details_screen.dart';
 import 'package:iw_app/screens/assets/asset_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
-import 'package:iw_app/screens/organization/org_details_screen.dart';
+import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
 import 'package:iw_app/screens/settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/numbers.dart';
@@ -375,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 30,
                         height: 30,
                         decoration: BoxDecoration(
-                          color: COLOR_GRAY,
+                          color: COLOR_LIGHT_GRAY2,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         clipBehavior: Clip.antiAlias,
@@ -389,9 +389,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     return Image.memory(snapshot.data!);
                                   },
                                 )
-                              : const Icon(
-                                  Icons.person,
-                                  color: Color(0xFFBDBDBD),
+                              : const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: Icon(
+                                    CupertinoIcons.person_fill,
+                                    color: COLOR_WHITE,
+                                  ),
                                 ),
                         ),
                       ),

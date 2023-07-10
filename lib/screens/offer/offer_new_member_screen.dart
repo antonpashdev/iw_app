@@ -3,7 +3,7 @@ import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
-import 'package:iw_app/screens/offer/role_selection_screen.dart';
+import 'package:iw_app/screens/offer/role_selection/role_selection_screen.dart';
 import 'package:iw_app/widgets/components/new_member_form.dart';
 import 'package:iw_app/widgets/components/new_member_form_lite.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';

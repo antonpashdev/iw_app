@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:iw_app/api/base_api.dart';
 import 'package:iw_app/api/models/org_offers_filter_model.dart';
+import 'package:iw_app/api/models/org_to_update.model.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
@@ -193,6 +194,10 @@ class _OrgsApi extends BaseApi {
       'isExactMatch': isExactMatch,
     };
     return client.get('/orgs', queryParameters: params);
+  }
+
+  Future<Response> updateOrg(String orgId, OrgToUpdate orgToUpdate) {
+    return client.put('/orgs/$orgId/update', data: orgToUpdate.toMap());
   }
 }
 
