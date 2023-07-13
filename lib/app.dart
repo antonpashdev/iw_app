@@ -69,17 +69,7 @@ class _AppState extends State<App> {
         AppStorybook.routeName: (context) => const AppStorybook(),
       },
       onGenerateRoute: (settings) {
-        if (settings.name!.startsWith(OfferScreen.routeName)) {
-          final settingsUri = Uri.parse(settings.name!);
-          String? offerId = settingsUri.queryParameters['i'];
-          String? orgId = settingsUri.queryParameters['oi'];
-          return MaterialPageRoute(
-            builder: (_) => OfferScreen(
-              orgId: orgId!,
-              offerId: offerId!,
-            ),
-          );
-        } else if (settings.name!.startsWith(SaleOfferScreen.routeName)) {
+        if (settings.name!.startsWith(SaleOfferScreen.routeName)) {
           final settingsUri = Uri.parse(settings.name!);
           String? offerId = settingsUri.queryParameters['i'];
           return MaterialPageRoute(

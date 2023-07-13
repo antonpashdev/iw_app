@@ -30,8 +30,11 @@ buildHeader(
         clipBehavior: Clip.antiAlias,
         child: FittedBox(
           fit: BoxFit.cover,
-          child: NetworkImageAuth(
-            imageUrl: '${orgsApi.baseUrl}${org.logo!}',
+          child: Hero(
+            tag: 'org-logo-${org.id}',
+            child: NetworkImageAuth(
+              imageUrl: '${orgsApi.baseUrl}${org.logo!}',
+            ),
           ),
         ),
       ),

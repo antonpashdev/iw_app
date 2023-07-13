@@ -406,10 +406,10 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
 
   buildMemberDetails(BuildContext context) {
     Config config = ConfigState.of(context).config;
-    final member = widget.member!;
-    if (config.mode == Mode.Pro) {
+    final member = widget.member;
+    if (config.mode == Mode.Pro && member != null) {
       return buildMemberDetailsPro(context, member);
-    } else {
+    } else if (config.mode == Mode.Lite && member != null) {
       return buildMemberDetailsLite(context, member);
     }
   }

@@ -1,11 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/screens/login_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/url.dart';
 
 import 'api/auth_api.dart';
 
@@ -59,6 +61,10 @@ class _AppHomeState extends State<AppHome> {
         futureContributions,
       ]),
       builder: (context, snapshot) {
+        final url = Uri.base.toString();
+        if (isOfferUrl(url)) {
+          appStorage.write('offer_url', url);
+        }
         if (snapshot.hasError &&
             snapshot.error is DioError &&
             (snapshot.error as DioError).response!.statusCode == 401) {

@@ -10,10 +10,13 @@ import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/models/config_model.dart';
+import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/account/account_details_screen.dart';
 import 'package:iw_app/screens/assets/asset_screen.dart';
+import 'package:iw_app/screens/offer/offer_preview_screen.dart';
+import 'package:iw_app/screens/offer/offer_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
 import 'package:iw_app/screens/settings_screen.dart';
@@ -52,6 +55,27 @@ class _HomeScreenState extends State<HomeScreen> {
     futureAccountMembers = fetchAccountMembers();
     futureUserMembers = fetchUserMembers();
     futureBalance = fetchBalance();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final offerUrl = await appStorage.getValue('offer_url');
+      final uri = Uri.parse(offerUrl ?? '');
+      final i = uri.queryParameters['i'];
+      final oi = uri.queryParameters['oi'];
+      await appStorage.deleteValue('offer_url');
+
+      if (i == null || oi == null) return;
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OfferScreen(
+              offerId: i,
+              orgId: oi,
+            ),
+          ),
+        );
+      }
+    });
   }
 
   Config get config => ConfigState.of(context).config;
