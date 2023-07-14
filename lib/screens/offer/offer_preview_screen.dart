@@ -572,8 +572,6 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                             ),
                             child: QRCodeWidget(
                               url: offerUrl,
-                              orgLogo:
-                                  '${orgsApi.baseUrl}${widget.organization.logo!}',
                             ),
                           ),
                         ),

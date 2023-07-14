@@ -236,7 +236,6 @@ class SaleOfferPreviewScreen extends StatelessWidget {
                     ),
                     child: QRCodeWidget(
                       url: offerUrl,
-                      orgLogo: '${orgsApi.baseUrl}${saleOffer.org.logo!}',
                     ),
                   ),
                 ),
