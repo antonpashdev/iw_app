@@ -3,7 +3,6 @@ import 'package:iw_app/api/config_api.dart';
 import 'package:iw_app/app_home.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/config_model.dart';
-import 'package:iw_app/screens/offer/offer_screen.dart';
 import 'package:iw_app/screens/offer/sale_offer_screen.dart';
 import 'package:iw_app/screens/restore_account_immidiate_screen.dart';
 import 'package:iw_app/storybook/app_storybook.dart';
