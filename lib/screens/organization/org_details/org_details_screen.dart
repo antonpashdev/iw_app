@@ -213,7 +213,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                         child: buildHeader(
                                           context,
                                           snapshot.data?[0],
-                                          widget.member!,
+                                          widget.member,
                                           widget.isPreviewMode,
                                           futureBalance,
                                         ),
@@ -245,7 +245,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                     context,
                                     snapshot.data?[0],
                                     snapshot.data?[1],
-                                    widget.member!,
+                                    widget.member,
                                     widget.isPreviewMode,
                                     onViewDetailsPressed,
                                     onAddMemberPressed,

@@ -10,7 +10,7 @@ buildMembers(
   BuildContext context,
   Organization org,
   List<OrganizationMemberWithEquity> members,
-  OrganizationMember currentMember,
+  OrganizationMember? currentMember,
   bool isPreviewMode,
   Function onViewDetailsPressed,
   Function onAddMemberPressed,
@@ -63,7 +63,8 @@ buildMembers(
                       color: const Color(0xffe2e2e8),
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: currentMember.permissions!.canInviteMembers
+                    child: currentMember != null &&
+                            currentMember.permissions!.canInviteMembers
                         ? InkWell(
                             customBorder: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
@@ -87,7 +88,8 @@ buildMembers(
                     'Invite member',
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: currentMember.permissions!.canInviteMembers
+                          color: currentMember != null &&
+                                  currentMember.permissions!.canInviteMembers
                               ? COLOR_ALMOST_BLACK
                               : COLOR_LIGHT_GRAY2,
                         ),

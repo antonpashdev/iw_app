@@ -78,7 +78,6 @@ class _OfferScreenState extends State<OfferScreen> {
           MaterialPageRoute(
             builder: (context) => OrgDetailsScreen(
               orgId: widget.orgId,
-              member: offer.memberProspects?.first,
               isPreviewMode: true,
             ),
           ),
