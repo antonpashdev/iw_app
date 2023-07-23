@@ -104,7 +104,6 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Config config = ConfigState.of(context).config;
     return FutureBuilder<List<dynamic>>(
       future: Future.wait([
         futureOrg,
@@ -162,7 +161,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                   child: Column(
                                     children: [
                                       buildWalletSection(
-                                          context, snapshot.data?[0]),
+                                        context,
+                                        snapshot.data?[0],
+                                      ),
                                       const SizedBox(height: 10),
                                       AppPadding(
                                         child: buildHeader(
