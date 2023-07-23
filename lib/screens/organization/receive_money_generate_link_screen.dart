@@ -28,9 +28,11 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
           left: 20,
           right: 20,
         ),
-        content: Text(message,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white),),
+        content: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white),
+        ),
         duration: const Duration(milliseconds: 300),
         backgroundColor: Colors.black.withOpacity(0.7),
         shape: RoundedRectangleBorder(
@@ -76,25 +78,29 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Flexible(
-                      child: TextButton.icon(
-                    label: Text(organization.wallet!,
-                        overflow: TextOverflow.ellipsis,),
-                    icon: const Icon(Icons.copy, size: 12),
-                    onPressed: () => handleCopyWalletPressed(context),
-                  ),),
+                    child: TextButton.icon(
+                      label: Text(
+                        organization.wallet!,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      icon: const Icon(Icons.copy, size: 12),
+                      onPressed: () => handleCopyWalletPressed(context),
+                    ),
+                  ),
                   Container(
-                      padding: const EdgeInsets.only(left: 20.0),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            'assets/icons/usdc-icon.png',
-                            width: 25,
-                            height: 25,
-                          ),
-                          const SizedBox(width: 10),
-                          const Text('USDC'),
-                        ],
-                      ),),
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'assets/icons/usdc-icon.png',
+                          width: 25,
+                          height: 25,
+                        ),
+                        const SizedBox(width: 10),
+                        const Text('USDC'),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -110,17 +116,18 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.75,
                       decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),)
-                          ],),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          )
+                        ],
+                      ),
                       child: QRCodeWidget(
                         url: payment.cpPaymentUrl!,
-                        orgLogo: '${orgsApi.baseUrl}${organization.logo!}',
                       ),
                     ),
                   ),
@@ -147,8 +154,11 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
                     }
                   },
                   icon: const Icon(Icons.link),
-                  label: Text(payment.cpPaymentUrl!,
-                      overflow: TextOverflow.ellipsis, maxLines: 1,),
+                  label: Text(
+                    payment.cpPaymentUrl!,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
                   style: TextButton.styleFrom(
                     iconColor: COLOR_BLUE,
                     foregroundColor: COLOR_BLUE,

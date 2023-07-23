@@ -3,7 +3,6 @@ import 'package:iw_app/api/config_api.dart';
 import 'package:iw_app/app_home.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/config_model.dart';
-import 'package:iw_app/screens/offer/offer_screen.dart';
 import 'package:iw_app/screens/offer/sale_offer_screen.dart';
 import 'package:iw_app/screens/restore_account_immidiate_screen.dart';
 import 'package:iw_app/storybook/app_storybook.dart';
@@ -69,17 +68,7 @@ class _AppState extends State<App> {
         AppStorybook.routeName: (context) => const AppStorybook(),
       },
       onGenerateRoute: (settings) {
-        if (settings.name!.startsWith(OfferScreen.routeName)) {
-          final settingsUri = Uri.parse(settings.name!);
-          String? offerId = settingsUri.queryParameters['i'];
-          String? orgId = settingsUri.queryParameters['oi'];
-          return MaterialPageRoute(
-            builder: (_) => OfferScreen(
-              orgId: orgId!,
-              offerId: offerId!,
-            ),
-          );
-        } else if (settings.name!.startsWith(SaleOfferScreen.routeName)) {
+        if (settings.name!.startsWith(SaleOfferScreen.routeName)) {
           final settingsUri = Uri.parse(settings.name!);
           String? offerId = settingsUri.queryParameters['i'];
           return MaterialPageRoute(

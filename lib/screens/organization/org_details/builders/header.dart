@@ -14,7 +14,7 @@ import 'package:iw_app/widgets/media/network_image_auth.dart';
 buildHeader(
   BuildContext context,
   Organization org,
-  OrganizationMember member,
+  OrganizationMember? member,
   bool isPreviewMode,
   Future<double>? futureBalance,
 ) {
@@ -30,8 +30,11 @@ buildHeader(
         clipBehavior: Clip.antiAlias,
         child: FittedBox(
           fit: BoxFit.cover,
-          child: NetworkImageAuth(
-            imageUrl: '${orgsApi.baseUrl}${org.logo!}',
+          child: Hero(
+            tag: 'org-logo-${org.id}',
+            child: NetworkImageAuth(
+              imageUrl: '${orgsApi.baseUrl}${org.logo!}',
+            ),
           ),
         ),
       ),
@@ -68,7 +71,8 @@ buildHeader(
           Row(
             children: [
               ElevatedButton.icon(
-                onPressed: isPreviewMode || !member.permissions!.canSendMoney
+                onPressed: isPreviewMode ||
+                        member != null && !member.permissions!.canSendMoney
                     ? null
                     : () {
                         Navigator.of(context).push(

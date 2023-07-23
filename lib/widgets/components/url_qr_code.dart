@@ -3,9 +3,9 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 class QRCodeWidget extends StatelessWidget {
   final String url;
-  final String orgLogo;
+  final String? orgLogo;
 
-  const QRCodeWidget({super.key, required this.url, required this.orgLogo});
+  const QRCodeWidget({super.key, required this.url, this.orgLogo});
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +14,10 @@ class QRCodeWidget extends StatelessWidget {
       data: url,
       version: QrVersions.auto,
       gapless: false,
-      embeddedImage: NetworkImage(orgLogo),
-      embeddedImageStyle: const QrEmbeddedImageStyle(size: Size(70, 70)),
+      embeddedImage: orgLogo != null ? NetworkImage(orgLogo!) : null,
+      embeddedImageStyle: orgLogo != null
+          ? const QrEmbeddedImageStyle(size: Size(70, 70))
+          : null,
       errorStateBuilder: (cxt, err) {
         return const Center(
           child: Text(

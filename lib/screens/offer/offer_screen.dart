@@ -39,9 +39,9 @@ class OfferScreen extends StatefulWidget {
 
 class _OfferScreenState extends State<OfferScreen> {
   bool isLoading = false;
-  late Future<Offer?> futureOffer;
   Payment? payment;
   String? offerError;
+  late Future<Offer?> futureOffer;
   late Future<Account?> futureAccount;
 
   @override
@@ -96,8 +96,11 @@ class _OfferScreenState extends State<OfferScreen> {
             clipBehavior: Clip.antiAlias,
             child: FittedBox(
               fit: BoxFit.cover,
-              child: NetworkImageAuth(
-                imageUrl: '${orgsApi.baseUrl}${offer.org.logo!}',
+              child: Hero(
+                tag: 'org-logo-${offer.org.id}',
+                child: NetworkImageAuth(
+                  imageUrl: '${orgsApi.baseUrl}${offer.org.logo!}',
+                ),
               ),
             ),
           ),
