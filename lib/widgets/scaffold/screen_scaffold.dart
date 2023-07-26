@@ -5,11 +5,13 @@ import 'package:iw_app/theme/app_theme.dart';
 class ScreenScaffold extends StatelessWidget {
   final Widget child;
   final String title;
+  final List<Widget>? actions;
 
   const ScreenScaffold({
     super.key,
     required this.title,
     required this.child,
+    this.actions,
   });
 
   @override
@@ -19,6 +21,7 @@ class ScreenScaffold extends StatelessWidget {
       appBar: AppBar(
         systemOverlayStyle: SystemUiOverlayStyle.dark,
         title: Text(title),
+        actions: actions,
       ),
       body: SafeArea(
         child: Padding(
