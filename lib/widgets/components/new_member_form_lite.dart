@@ -187,7 +187,10 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           contentPadding: EdgeInsets.zero,
           title: Row(
             children: [
-              const Text('During the period'),
+              const Text(
+                'During the period',
+                style: TextStyle(color: COLOR_GRAY2),
+              ),
               IconButton(
                 onPressed: () {
                   showBottomInfoSheet(
@@ -201,7 +204,13 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
                 iconSize: 16,
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
-                color: COLOR_GRAY,
+                color: COLOR_GRAY2,
+              ),
+              const Spacer(),
+              const Text(
+                'Coming soon',
+                style:
+                    TextStyle(color: COLOR_BLUE, fontWeight: FontWeight.w700),
               ),
             ],
           ),
@@ -210,16 +219,19 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
             activeColor: Colors.black,
             value: EquityType.DuringPeriod,
             groupValue: member.equity?.type,
-            onChanged: isWithEquity
-                ? (EquityType? type) {
-                    setState(() {
-                      equityPeriodController.text = '';
-                      member.equity?.type = type;
-                      member.equity?.period =
-                          Period(timeframe: PeriodType.Months);
-                    });
-                  }
-                : null,
+
+            // replace null with handler after "Coming soon" is removed
+            onChanged: null,
+            // onChanged: isWithEquity
+            //     ? (EquityType? type) {
+            //         setState(() {
+            //           equityPeriodController.text = '';
+            //           member.equity?.type = type;
+            //           member.equity?.period =
+            //               Period(timeframe: PeriodType.Months);
+            //         });
+            //       }
+            //     : null,
           ),
         ),
         Row(
