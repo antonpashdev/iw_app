@@ -4,6 +4,7 @@ import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/utils/validation.dart';
+import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 import '../../../widgets/buttons/secondary_button.dart';
@@ -121,55 +122,62 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+            Expanded(
+              child: KeyboardDismissableListView(
                 children: [
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  BoardedTextFieldWithTitle(
-                    title: 'Organization name',
-                    onChanged: onNameChanged,
-                    validator: multiValidate([
-                      requiredField('Organization name'),
-                    ]),
-                    onSuffixTap: null,
-                    prefix: '',
-                    suffix: '',
-                    focus: true,
-                    textFieldController: nameController,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  BoardedTextFieldWithTitle(
-                    title: 'Organization description',
-                    onChanged: onDescriptionChanged,
-                    validator: multiValidate([
-                      requiredField('Organization description'),
-                    ]),
-                    onSuffixTap: null,
-                    prefix: '',
-                    suffix: '',
-                    focus: true,
-                    textFieldController: descriptionController,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  BoardedTextFieldWithTitle(
-                    title: 'Organization website',
-                    onChanged: onWebsiteLinkChanged,
-                    validator: multiValidate([
-                      requiredField('Organization website'),
-                    ]),
-                    onSuffixTap: null,
-                    prefix: '',
-                    suffix: '',
-                    focus: true,
-                    textFieldController: websiteLinkController,
-                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      BoardedTextFieldWithTitle(
+                        title: 'Organization name',
+                        onChanged: onNameChanged,
+                        validator: multiValidate([
+                          requiredField('Organization name'),
+                        ]),
+                        onSuffixTap: null,
+                        prefix: '',
+                        suffix: '',
+                        focus: true,
+                        textFieldController: nameController,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      BoardedTextFieldWithTitle(
+                        title: 'Organization description',
+                        onChanged: onDescriptionChanged,
+                        validator: multiValidate([
+                          requiredField('Organization description'),
+                        ]),
+                        onSuffixTap: null,
+                        prefix: '',
+                        suffix: '',
+                        focus: true,
+                        textFieldController: descriptionController,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      BoardedTextFieldWithTitle(
+                        title: 'Organization website',
+                        onChanged: onWebsiteLinkChanged,
+                        validator: multiValidate([
+                          requiredField('Organization website'),
+                        ]),
+                        onSuffixTap: null,
+                        prefix: '',
+                        suffix: '',
+                        focus: true,
+                        textFieldController: websiteLinkController,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
