@@ -74,26 +74,28 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
   Widget build(BuildContext context) {
     return ScreenScaffold(
       title: 'Organization Info',
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => OrgEditScreen(
-                  organization: widget.organization,
+      actions: widget.member.permissions!.canEditOrg
+          ? [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => OrgEditScreen(
+                        organization: widget.organization,
+                      ),
+                    ),
+                  );
+                },
+                style: ButtonStyle(
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                ),
+                child: const Text(
+                  'Edit',
+                  style: TextStyle(color: COLOR_BLUE),
                 ),
               ),
-            );
-          },
-          style: ButtonStyle(
-            overlayColor: MaterialStateProperty.all(Colors.transparent),
-          ),
-          child: const Text(
-            'Edit',
-            style: TextStyle(color: COLOR_BLUE),
-          ),
-        ),
-      ],
+            ]
+          : [],
       child: KeyboardDismissableListView(
         children: [
           buildHeader(context, widget.organization),

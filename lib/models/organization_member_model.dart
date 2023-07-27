@@ -104,12 +104,14 @@ class OrganizationMemberPermissions {
   bool canRaiseMoney;
   bool canInviteMembers;
   bool canChangeTreasury;
+  bool canEditOrg;
 
   OrganizationMemberPermissions({
     this.canSendMoney = false,
     this.canRaiseMoney = false,
     this.canInviteMembers = false,
     this.canChangeTreasury = false,
+    this.canEditOrg = false,
   });
 }
 
@@ -178,6 +180,7 @@ class OrganizationMember {
       canRaiseMoney: isAdmin,
       canInviteMembers: isAdmin,
       canChangeTreasury: isAdmin,
+      canEditOrg: isAdmin,
     );
   }
 
