@@ -3,13 +3,11 @@ import 'package:iw_app/api/models/org_to_update.model.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
-import 'package:iw_app/utils/validation.dart';
-import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
+import 'package:iw_app/screens/organization/org_edit/builders/header.dart';
+import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/components/round_border_container.dart';
+import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
-
-import '../../../widgets/buttons/secondary_button.dart';
-import '../../../widgets/form/boarded_textfield_with_title.dart';
-import '../../../widgets/form/input_form.dart';
 
 class OrgEditScreen extends StatefulWidget {
   final Organization organization;
@@ -28,9 +26,9 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
   late String? description;
   late String? link;
 
-  final nameController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final websiteLinkController = TextEditingController();
+  final nameController = TextEditingController(text: '');
+  final descriptionController = TextEditingController(text: '');
+  final websiteLinkController = TextEditingController(text: '');
 
   @override
   initState() {
@@ -117,89 +115,60 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
   Widget build(BuildContext context) {
     return ScreenScaffold(
       title: 'Edit Organization info',
+      actions: [
+        TextButton(
+          style: ButtonStyle(
+            overlayColor: MaterialStateProperty.all(Colors.transparent),
+          ),
+          onPressed: saving || !isFormDirty() ? null : onSave,
+          child: Text(
+            'Save',
+            style: TextStyle(
+              color: saving || !isFormDirty() ? COLOR_GRAY2 : COLOR_BLUE,
+            ),
+          ),
+        ),
+      ],
+      leading: TextButton(
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.all(Colors.transparent),
+        ),
+        onPressed: onCancel,
+        child: const Text(
+          'Cancel',
+          style: TextStyle(
+            color: COLOR_BLUE,
+          ),
+        ),
+      ),
       child: InputForm(
         formKey: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(
-              child: KeyboardDismissableListView(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      BoardedTextFieldWithTitle(
-                        title: 'Organization name',
-                        onChanged: onNameChanged,
-                        validator: multiValidate([
-                          requiredField('Organization name'),
-                        ]),
-                        onSuffixTap: null,
-                        prefix: '',
-                        suffix: '',
-                        focus: true,
-                        textFieldController: nameController,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      BoardedTextFieldWithTitle(
-                        title: 'Organization description',
-                        onChanged: onDescriptionChanged,
-                        validator: multiValidate([
-                          requiredField('Organization description'),
-                        ]),
-                        onSuffixTap: null,
-                        prefix: '',
-                        suffix: '',
-                        focus: true,
-                        textFieldController: descriptionController,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      BoardedTextFieldWithTitle(
-                        title: 'Organization website',
-                        onChanged: onWebsiteLinkChanged,
-                        validator: multiValidate([
-                          requiredField('Organization website'),
-                        ]),
-                        onSuffixTap: null,
-                        prefix: '',
-                        suffix: '',
-                        focus: true,
-                        textFieldController: websiteLinkController,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                    ],
-                  )
-                ],
+            buildHeader(
+              context,
+              widget.organization,
+              nameController,
+              websiteLinkController,
+              onNameChanged,
+              onWebsiteLinkChanged,
+            ),
+            const SizedBox(height: 20),
+            RoundBorderContainer(
+              child: EditableText(
+                controller: descriptionController,
+                focusNode: FocusNode(),
+                style: const TextStyle(
+                  color: COLOR_ALMOST_BLACK,
+                  fontSize: 16,
+                  height: 1.5,
+                ),
+                cursorColor: COLOR_BLACK,
+                backgroundCursorColor: COLOR_ALMOST_BLACK,
+                onChanged: onDescriptionChanged,
               ),
             ),
-            Column(
-              children: [
-                SizedBox(
-                  width: 290,
-                  child: ElevatedButton(
-                    onPressed: saving || !isFormDirty() ? null : onSave,
-                    child: const Text('Save'),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: 290,
-                  child: SecondaryButton(
-                    onPressed: saving || !isFormDirty() ? null : onCancel,
-                    child: const Text('Cancel'),
-                  ),
-                ),
-              ],
-            )
           ],
         ),
       ),

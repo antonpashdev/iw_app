@@ -6,12 +6,14 @@ class ScreenScaffold extends StatelessWidget {
   final Widget child;
   final String title;
   final List<Widget>? actions;
+  final Widget? leading;
 
   const ScreenScaffold({
     super.key,
     required this.title,
     required this.child,
     this.actions,
+    this.leading,
   });
 
   @override
@@ -22,6 +24,8 @@ class ScreenScaffold extends StatelessWidget {
         systemOverlayStyle: SystemUiOverlayStyle.dark,
         title: Text(title),
         actions: actions,
+        leading: leading,
+        leadingWidth: 70,
       ),
       body: SafeArea(
         child: Padding(
