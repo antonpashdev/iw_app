@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/screens/offer/offer_investor_preview.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/validation.dart';
+import 'package:iw_app/widgets/form/boarded_textfield_with_title.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
-
-import '../../utils/validation.dart';
-import '../../widgets/form/boarded_textfield_with_title.dart';
 
 class OfferInvestorInvestAmount extends StatefulWidget {
   final double maxEquity;
@@ -96,7 +96,11 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
                 [
                   requiredField('You Invest'),
                   numberField('You Invest'),
-                  minInt(widget.offer.investorSettings!.minimalInvestment!),
+                  minInt(
+                    widget.offer.investorSettings!.minimalInvestment!,
+                    errorText:
+                        'Minimal Investment \$${widget.offer.investorSettings!.minimalInvestment}',
+                  ),
                   max(maxInvestment),
                 ],
               ),
@@ -136,6 +140,13 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  Text(
+                    'Minimal Investment \$${NumberFormat('#,###').format(
+                      widget.offer.investorSettings!.minimalInvestment!,
+                    )}',
+                    style: const TextStyle(color: COLOR_GRAY),
+                  ),
+                  const SizedBox(height: 15),
                   SizedBox(
                     width: 290,
                     child: ElevatedButton(

@@ -71,12 +71,12 @@ String? Function(String?) min(double min) {
   };
 }
 
-String? Function(String?) minInt(int min) {
+String? Function(String?) minInt(int min, {String? errorText}) {
   return (value) {
     if (value != null &&
         int.tryParse(value) != null &&
         int.tryParse(value)! < min) {
-      return 'Value must be not less than $min';
+      return errorText ?? 'Value must be not less than $min';
     }
     return null;
   };
