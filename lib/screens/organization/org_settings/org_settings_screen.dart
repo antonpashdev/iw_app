@@ -114,14 +114,6 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
                     ),
               ),
             ),
-          const SizedBox(height: 10),
-          const RoundBorderContainer(
-            child: Text(
-              'Our first collaboration via Equity Wallet',
-              style: TextStyle(fontSize: 18),
-              softWrap: true,
-            ),
-          ),
           const SizedBox(height: 30),
           GrayButton(
             onPressed: widget.member.permissions!.canRaiseMoney
