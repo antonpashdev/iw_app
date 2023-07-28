@@ -73,7 +73,7 @@
   <script>
     const loaderDiv = document.createElement('div');
     loaderDiv.style = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #fff; display: flex; justify-content: center; align-items: center; flex-direction: column;';
-    loaderDiv.innerHTML = '<img src="assets/Loader_Animation.gif" style="width: 200px; height: 200px; margin-bottom: 20px;" />';
+    loaderDiv.innerHTML = '<img alt="loader" src="assets/Loader_Animation.gif" style="width: 50%;" />';
     document.body.appendChild(loaderDiv);
 
     function disableNativeNavSwipe() {
@@ -87,23 +87,23 @@
         e.preventDefault();
       });
     }
-    window.addEventListener('load', function (ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        entrypointUrl: "/main.dart.js",
-        serviceWorker: {
-          serviceWorkerUrl: "/flutter_service_worker.js?v=" +
-            serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function (engineInitializer) {
-          engineInitializer.initializeEngine().then(function (appRunner) {
-            appRunner.runApp();
-            disableNativeNavSwipe();
-            loaderDiv.remove();
-          });
-        }
-      });
-    });
+    // window.addEventListener('load', function (ev) {
+    //   // Download main.dart.js
+    //   _flutter.loader.loadEntrypoint({
+    //     entrypointUrl: "/main.dart.js",
+    //     serviceWorker: {
+    //       serviceWorkerUrl: "/flutter_service_worker.js?v=" +
+    //         serviceWorkerVersion,
+    //     },
+    //     onEntrypointLoaded: function (engineInitializer) {
+    //       engineInitializer.initializeEngine().then(function (appRunner) {
+    //         appRunner.runApp();
+    //         disableNativeNavSwipe();
+    //         loaderDiv.remove();
+    //       });
+    //     }
+    //   });
+    // });
   </script>
 </body>
 
