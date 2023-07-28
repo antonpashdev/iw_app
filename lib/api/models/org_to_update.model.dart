@@ -18,6 +18,7 @@ class OrgToUpdate {
   String? description;
   String? link;
   OrgSettingsToUpdate? settings;
+  String? logo;
 
   OrgToUpdate({
     this.name,
@@ -25,6 +26,7 @@ class OrgToUpdate {
     this.description,
     this.link,
     this.settings,
+    this.logo,
   });
 
   Map<String, dynamic> toMap() {
@@ -34,6 +36,7 @@ class OrgToUpdate {
       'description': description,
       'link': link,
       'settings': settings?.toMap(),
+      'logo': logo,
     };
   }
 }

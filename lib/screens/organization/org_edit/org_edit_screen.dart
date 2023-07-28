@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/models/org_to_update.model.dart';
 import 'package:iw_app/api/orgs_api.dart';
@@ -20,11 +22,14 @@ class OrgEditScreen extends StatefulWidget {
 
 class _OrgEditScreenState extends State<OrgEditScreen> {
   bool saving = false;
+  bool isDirty = false;
+  List<String> images = [];
   final formKey = GlobalKey<FormState>();
 
   late String? name;
   late String? description;
   late String? link;
+  late String? logoLink;
 
   final nameController = TextEditingController(text: '');
   final descriptionController = TextEditingController(text: '');
@@ -43,6 +48,7 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
     name = widget.organization.name;
     description = widget.organization.description;
     link = widget.organization.link;
+    logoLink = widget.organization.logo;
   }
 
   updateOrg() async {
@@ -52,6 +58,7 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
         name: name,
         description: description,
         link: link,
+        logo: logoLink,
       ),
     );
   }
@@ -74,7 +81,40 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
     });
   }
 
+  getCurrentImageName() {
+    String logoUrl = widget.organization.logo!;
+    String uuid =
+        logoUrl.substring('/orgs/logo/'.length, logoUrl.indexOf('.jpg'));
+
+    print(uuid); // Output: '18004f5d-0f2b-4635-9b22-60ac8d3f24e6'
+  }
+
+  removeImages() async {
+    try {
+      await orgsApi.removeLogos(images);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  onLogoChanged(Uint8List logo) async {
+    final response = await orgsApi.uploadLogo(logo);
+    final _logo = response.data;
+
+    print(_logo);
+
+    setState(() {
+      logoLink = _logo;
+      images.add(widget.organization.logo!);
+    });
+    widget.organization.logo = _logo;
+    setState(() {
+      isDirty = true;
+    });
+  }
+
   onSave() async {
+    await removeImages();
     setState(() {
       saving = true;
     });
@@ -96,6 +136,7 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
       } finally {
         setState(() {
           saving = false;
+          images = [];
         });
       }
     }
@@ -108,7 +149,8 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
   bool isFormDirty() {
     return name != widget.organization.name ||
         description != widget.organization.description ||
-        link != widget.organization.link;
+        link != widget.organization.link ||
+        isDirty;
   }
 
   @override
@@ -153,6 +195,7 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
               websiteLinkController,
               onNameChanged,
               onWebsiteLinkChanged,
+              onLogoChanged,
             ),
             const SizedBox(height: 20),
             RoundBorderContainer(

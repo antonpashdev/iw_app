@@ -1,8 +1,8 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/organization_model.dart';
+import 'package:iw_app/screens/organization/org_edit/builders/logo_editor.dart';
 import 'package:iw_app/theme/app_theme.dart';
-import 'package:iw_app/widgets/media/network_image_auth.dart';
 
 buildHeader(
   BuildContext context,
@@ -11,6 +11,7 @@ buildHeader(
   TextEditingController linkController,
   void Function(String)? onNameChanged,
   void Function(String)? onLinkChanged,
+  void Function(Uint8List) onLogoChanged,
 ) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.center,
@@ -19,14 +20,15 @@ buildHeader(
         width: 90,
         height: 90,
         decoration: BoxDecoration(
-          color: COLOR_GRAY,
+          color: const Color.fromRGBO(255, 255, 255, 0.2),
           borderRadius: BorderRadius.circular(20),
         ),
         clipBehavior: Clip.antiAlias,
         child: FittedBox(
           fit: BoxFit.cover,
-          child: NetworkImageAuth(
-            imageUrl: '${orgsApi.baseUrl}${organization.logo}',
+          child: LogoEditor(
+            onLogoChanged: onLogoChanged,
+            organization: organization,
           ),
         ),
       ),

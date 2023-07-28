@@ -199,6 +199,17 @@ class _OrgsApi extends BaseApi {
   Future<Response> updateOrg(String orgId, OrgToUpdate orgToUpdate) {
     return client.put('/orgs/$orgId/update', data: orgToUpdate.toMap());
   }
+
+  Future<Response<String>> uploadLogo(Uint8List logo) {
+    final data = FormData.fromMap({
+      'logo': MultipartFile.fromBytes(logo, filename: 'logo'),
+    });
+    return client.post('/orgs/upload-logo', data: data);
+  }
+
+  Future<Response> removeLogos(List<String> imageNames) {
+    return client.post('/orgs/delete-avatars', data: {'fileName': imageNames});
+  }
 }
 
 final orgsApi = _OrgsApi();
