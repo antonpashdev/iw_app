@@ -96,6 +96,7 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
                 [
                   requiredField('You Invest'),
                   numberField('You Invest'),
+                  minInt(widget.offer.investorSettings!.minimalInvestment!),
                   max(maxInvestment),
                 ],
               ),

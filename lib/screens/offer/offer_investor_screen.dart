@@ -23,11 +23,21 @@ class OfferInvestorScreen extends StatefulWidget {
 class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
   final formKey = GlobalKey<FormState>();
   String? equityError;
+
   Offer offer = Offer(
     type: OfferType.Investor,
     investorSettings: OfferInvestorSettings(),
     availableInvestment: OfferInvestorSettings(),
   );
+
+  TextEditingController minimalInvestmentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    minimalInvestmentController.text =
+        offer.investorSettings!.minimalInvestment.toString();
+  }
 
   buildForm() {
     return InputForm(
@@ -46,6 +56,7 @@ class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
           ),
           const SizedBox(height: 15),
           AppTextFormFieldBordered(
+            autofocus: true,
             prefix: const Text('\$'),
             validator: multiValidate([
               requiredField('Raising'),
@@ -70,6 +81,24 @@ class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
             ]),
             onChanged: (value) {
               offer.investorSettings!.equity = double.tryParse(value);
+            },
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Minimal Investment',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 15),
+          AppTextFormFieldBordered(
+            prefix: const Text('\$'),
+            controller: minimalInvestmentController,
+            inputType: TextInputType.number,
+            validator: multiValidate([
+              requiredField('Minimal Investment'),
+              wholeNumberField('Minimal Investment'),
+            ]),
+            onChanged: (value) {
+              offer.investorSettings!.minimalInvestment = int.tryParse(value);
             },
           ),
         ],

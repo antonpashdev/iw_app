@@ -20,6 +20,17 @@ String? Function(String?) numberField(String fieldName) {
   };
 }
 
+String? Function(String?) wholeNumberField(String fieldName) {
+  return (value) {
+    if (value != null &&
+        value.trim().isNotEmpty &&
+        int.tryParse(value) == null) {
+      return '$fieldName must be a whole number in this field.';
+    }
+    return null;
+  };
+}
+
 String? Function(String?) requiredField(String fieldName) {
   return (value) {
     if (value == null || value.trim().isEmpty) {
@@ -54,6 +65,17 @@ String? Function(String?) min(double min) {
     if (value != null &&
         double.tryParse(value) != null &&
         double.tryParse(value)! < min) {
+      return 'Value must be not less than $min';
+    }
+    return null;
+  };
+}
+
+String? Function(String?) minInt(int min) {
+  return (value) {
+    if (value != null &&
+        int.tryParse(value) != null &&
+        int.tryParse(value)! < min) {
       return 'Value must be not less than $min';
     }
     return null;
