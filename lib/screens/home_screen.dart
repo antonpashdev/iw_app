@@ -329,8 +329,9 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       futureAccountMembers = fetchAccountMembers();
       futureBalance = fetchBalance();
+      futureAccount = fetchAccount();
     });
-    return Future.wait([futureAccountMembers, futureBalance]);
+    return Future.wait([futureAccountMembers, futureBalance, futureAccount]);
   }
 
   onAccountsPressed(Account? account) async {
