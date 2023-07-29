@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/screens/offer/offer_investor_preview.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/input_formatters.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/boarded_textfield_with_title.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -56,7 +58,7 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
     if (!formGlobalKey.currentState!.validate()) {
       return;
     }
-    final amount = double.parse(amountController.text);
+    final amount = double.parse(amountController.text.replaceAll(',', ''));
     final equity = double.parse(equityController.text);
     Navigator.push(
       context,
@@ -87,6 +89,10 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
             const SizedBox(height: 25),
             BoardedTextFieldWithTitle(
               title: 'You Invest',
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                commaSeparatedNumberFormatter,
+              ],
               textFieldController: amountController,
               onSuffixTap: _onMaxTapped,
               prefix: '\$',
@@ -96,7 +102,7 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
                 [
                   requiredField('You Invest'),
                   numberField('You Invest'),
-                  minInt(
+                  min(
                     widget.offer.investorSettings!.minimalInvestment!,
                     errorText:
                         'Minimal Investment \$${widget.offer.investorSettings!.minimalInvestment}',
@@ -105,7 +111,7 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
                 ],
               ),
               onChanged: (value) {
-                final amount = double.tryParse(value);
+                final amount = double.tryParse(value.replaceAll(',', ''));
                 if (amount != null) {
                   final equity =
                       widget.maxEquity * (amount / widget.maxInvestment);
@@ -132,7 +138,8 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
                 if (equity != null) {
                   final amount =
                       widget.maxInvestment * (equity / widget.maxEquity);
-                  amountController.text = amount.toString();
+                  amountController.text =
+                      NumberFormat('#,###.########').format(amount);
                 }
               },
             ),

@@ -11,7 +11,7 @@ TextInputFormatter commaSeparatedNumberFormatter =
       text: '',
     );
   } else {
-    final formatter = NumberFormat('#,###');
+    final formatter = NumberFormat('#,###.########');
     final newString = formatter.format(number);
     return TextEditingValue(
       text: newString,

@@ -102,13 +102,21 @@ class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
           AppTextFormFieldBordered(
             prefix: const Text('\$'),
             controller: minimalInvestmentController,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              commaSeparatedNumberFormatter,
+            ],
             inputType: TextInputType.number,
             validator: multiValidate([
               requiredField('Minimal Investment'),
               numberField('Minimal Investment'),
             ]),
             onChanged: (value) {
-              offer.investorSettings!.minimalInvestment = int.tryParse(value);
+              final val = value.replaceAll(',', '');
+              if (double.tryParse(val) != null) {
+                offer.investorSettings!.minimalInvestment =
+                    double.tryParse(val);
+              }
             },
           ),
         ],

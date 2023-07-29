@@ -60,7 +60,7 @@ String? Function(String?) max(double max) {
   };
 }
 
-String? Function(String?) min(double min) {
+String? Function(String?) min(double min, {String? errorText}) {
   return (value) {
     if (value != null &&
         double.tryParse(value) != null &&

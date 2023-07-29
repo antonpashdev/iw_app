@@ -18,7 +18,7 @@ enum OfferType {
 class OfferInvestorSettings {
   double? amount;
   double? equity;
-  int? minimalInvestment;
+  double? minimalInvestment;
 
   OfferInvestorSettings({
     this.amount = 0,
