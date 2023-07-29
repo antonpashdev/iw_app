@@ -91,7 +91,7 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
               title: 'You Invest',
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
-                commaSeparatedNumberFormatter,
+                commaSeparatedDoubleFormatter,
               ],
               textFieldController: amountController,
               onSuffixTap: _onMaxTapped,
