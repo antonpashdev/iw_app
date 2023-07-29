@@ -90,6 +90,7 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
   }
 
   removeImages() async {
+    if (images.isEmpty) return;
     try {
       await orgsApi.removeLogos(images);
     } catch (e) {

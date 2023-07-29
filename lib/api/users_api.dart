@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:iw_app/api/base_api.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
+import 'package:iw_app/api/models/user_to_update.dart';
 import 'package:iw_app/models/user_model.dart';
 
 class _UsersApi extends BaseApi {
@@ -150,6 +152,31 @@ class _UsersApi extends BaseApi {
 
   Future<Response> loginWithToken() {
     return client.post('/users/login');
+  }
+
+  Future<Response<String>> uploadAvatar(Uint8List? avatar) {
+    if (avatar == null) {
+      return Future.value(
+        Response(
+          statusCode: 200,
+          data: '',
+          requestOptions: RequestOptions(),
+        ),
+      );
+    }
+
+    final data = FormData.fromMap({
+      'avatar': MultipartFile.fromBytes(avatar, filename: 'avatar'),
+    });
+    return client.post('/users/upload-avatar', data: data);
+  }
+
+  Future<Response> removeLogos(List<String> imageNames) {
+    return client.post('/users/delete-avatars', data: {'fileName': imageNames});
+  }
+
+  Future<Response> updateUser(UserToUpdate user) {
+    return client.put('/users/update', data: user.toMap());
   }
 }
 
