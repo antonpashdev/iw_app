@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/config_model.dart';
@@ -158,7 +159,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
                         Text(
-                          '\$$raisingAmount',
+                          '\$${NumberFormat("#,###").format(raisingAmount)}',
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ],

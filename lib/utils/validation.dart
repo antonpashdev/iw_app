@@ -11,9 +11,9 @@ AppLocalizations? _appLocalizations = lookupAppLocalizations(
 
 String? Function(String?) numberField(String fieldName) {
   return (value) {
-    if (value != null &&
-        value.trim().isNotEmpty &&
-        double.tryParse(value) == null) {
+    final val = value?.replaceAll(',', '') ?? '';
+
+    if (val.trim().isNotEmpty && double.tryParse(val) == null) {
       return '$fieldName must be a number';
     }
     return null;
@@ -22,9 +22,9 @@ String? Function(String?) numberField(String fieldName) {
 
 String? Function(String?) wholeNumberField(String fieldName) {
   return (value) {
-    if (value != null &&
-        value.trim().isNotEmpty &&
-        int.tryParse(value) == null) {
+    final val = value?.replaceAll(',', '') ?? '';
+
+    if (val.trim().isNotEmpty && int.tryParse(val) == null) {
       return '$fieldName must be a whole number in this field.';
     }
     return null;

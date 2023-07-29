@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iw_app/theme/app_theme.dart';
 
 class InputForm extends StatelessWidget {
@@ -204,6 +205,7 @@ class AppTextFormFieldBordered extends StatelessWidget {
   final bool autofocus;
   final bool readOnly;
   final String? errorText;
+  final List<TextInputFormatter>? inputFormatters;
 
   const AppTextFormFieldBordered({
     Key? key,
@@ -227,6 +229,7 @@ class AppTextFormFieldBordered extends StatelessWidget {
     this.autofocus = false,
     this.readOnly = false,
     this.errorText,
+    this.inputFormatters = const [],
   }) : super(key: key);
 
   @override
@@ -240,6 +243,7 @@ class AppTextFormFieldBordered extends StatelessWidget {
     );
 
     return TextFormField(
+      inputFormatters: inputFormatters,
       enabled: enabled,
       controller: controller,
       keyboardType: inputType,

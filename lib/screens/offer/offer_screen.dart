@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
@@ -185,7 +186,7 @@ class _OfferScreenState extends State<OfferScreen> {
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
                         Text(
-                          '\$${offer.investorSettings!.amount}',
+                          '\$${NumberFormat('#,###').format(offer.investorSettings!.amount)}',
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ],
