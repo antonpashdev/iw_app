@@ -9,6 +9,7 @@ import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
+import 'package:iw_app/screens/withdraw/withdraw_sreen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/utils/numbers.dart';
@@ -191,7 +192,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         ),
         const SizedBox(height: 20),
         ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 330),
+          constraints: const BoxConstraints(maxWidth: 360),
           child: Row(
             children: [
               Expanded(
@@ -233,6 +234,29 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                     ),
                     visualDensity: const VisualDensity(vertical: -1),
                     backgroundColor: BTN_BLUE_BG,
+                    textStyle:
+                        Theme.of(context).textTheme.bodySmall?.copyWith(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 5),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const WithdrawScreen(),
+                      ),
+                    );
+                  },
+                  icon: SvgPicture.asset('assets/icons/arrow_right_box.svg'),
+                  label: const Text('Withdraw'),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    visualDensity: const VisualDensity(vertical: -1),
+                    backgroundColor: BTN_GREEN_BG,
                     textStyle:
                         Theme.of(context).textTheme.bodySmall?.copyWith(),
                   ),
@@ -497,14 +521,14 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                       return buildHeader(account!, snapshot.data);
                     },
                   ),
-                  SliverToBoxAdapter(
-                    child: Column(
-                      children: [
-                        buildIWCard(),
-                        const SizedBox(height: 30),
-                      ],
-                    ),
-                  ),
+                  // SliverToBoxAdapter(
+                  //   child: Column(
+                  //     children: [
+                  //       buildIWCard(),
+                  //       const SizedBox(height: 30),
+                  //     ],
+                  //   ),
+                  // ),
                   FutureBuilder(
                     future: futureHistory,
                     builder: (_, snapshot) {

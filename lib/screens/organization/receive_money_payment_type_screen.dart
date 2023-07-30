@@ -12,40 +12,43 @@ class ReceiveMoneyPaymentTypeScreen extends StatelessWidget {
 
   onTypeSelect(BuildContext ctx, PaymentType type) {
     Navigator.push(
-        ctx,
-        MaterialPageRoute(
-            builder: (context) => ReceiveMoneyScreen(
-                  organization: organization,
-                  paymentType: type,
-                ),),);
+      ctx,
+      MaterialPageRoute(
+        builder: (context) => ReceiveMoneyScreen(
+          organization: organization,
+          paymentType: type,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-        title: 'Type of Patment',
-        child: Padding(
-          padding: const EdgeInsets.only(top: 35.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              TextButton.icon(
-                onPressed: () {
-                  onTypeSelect(context, PaymentType.InStore);
-                },
-                icon: SvgPicture.asset('assets/icons/in-store-icon.svg'),
-                label: const Text('In-Store Payment'),
-              ),
-              const SizedBox(height: 40),
-              TextButton.icon(
-                onPressed: () {
-                  onTypeSelect(context, PaymentType.Online);
-                },
-                icon: SvgPicture.asset('assets/icons/online-payment.svg'),
-                label: const Text('On-Line Payment'),
-              )
-            ],
-          ),
-        ),);
+      title: 'Type of Payment',
+      child: Padding(
+        padding: const EdgeInsets.only(top: 35.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            TextButton.icon(
+              onPressed: () {
+                onTypeSelect(context, PaymentType.InStore);
+              },
+              icon: SvgPicture.asset('assets/icons/in-store-icon.svg'),
+              label: const Text('In-Store Payment'),
+            ),
+            const SizedBox(height: 40),
+            TextButton.icon(
+              onPressed: () {
+                onTypeSelect(context, PaymentType.Online);
+              },
+              icon: SvgPicture.asset('assets/icons/online-payment.svg'),
+              label: const Text('On-Line Payment'),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

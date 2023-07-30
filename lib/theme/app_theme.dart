@@ -141,3 +141,4 @@ const Color COLOR_PINK = Color(0xffDE68A5);
 const Color APP_BODY_BG = COLOR_WHITE;
 const Color BTN_BLUE_BG = COLOR_BLUE;
 const Color BTN_GRAY_GB = COLOR_LIGHT_GRAY3;
+const Color BTN_GREEN_BG = COLOR_GREEN;
