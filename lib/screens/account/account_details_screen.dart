@@ -196,6 +196,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
           child: Row(
             children: [
               Expanded(
+                flex: 6,
                 child: ElevatedButton.icon(
                   onPressed: () {
                     Navigator.of(context).push(
@@ -222,8 +223,9 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 5),
+              const SizedBox(width: 3),
               Expanded(
+                flex: 7,
                 child: ElevatedButton.icon(
                   onPressed: () {},
                   icon: SvgPicture.asset('assets/icons/arrow_down_box.svg'),
@@ -239,8 +241,9 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 5),
+              const SizedBox(width: 3),
               Expanded(
+                flex: 8,
                 child: ElevatedButton.icon(
                   onPressed: () {
                     Navigator.of(context).push(

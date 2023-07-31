@@ -19,7 +19,7 @@ class WithdrawScreen extends StatelessWidget {
           right: 20,
         ),
         content: const Text(
-          'Coming soon',
+          'Coming soon...',
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white),
         ),
@@ -78,7 +78,7 @@ class WithdrawScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           TextButton.icon(
             style: ButtonStyle(
               overlayColor: MaterialStateProperty.all<Color>(
