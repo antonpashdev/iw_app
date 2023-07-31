@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/offer/offer_preview_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/input_formatters.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
@@ -23,11 +25,21 @@ class OfferInvestorScreen extends StatefulWidget {
 class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
   final formKey = GlobalKey<FormState>();
   String? equityError;
+
   Offer offer = Offer(
     type: OfferType.Investor,
     investorSettings: OfferInvestorSettings(),
     availableInvestment: OfferInvestorSettings(),
   );
+
+  TextEditingController minimalInvestmentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    minimalInvestmentController.text =
+        offer.investorSettings!.minimalInvestment.toString();
+  }
 
   buildForm() {
     return InputForm(
@@ -46,13 +58,21 @@ class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
           ),
           const SizedBox(height: 15),
           AppTextFormFieldBordered(
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              commaSeparatedNumberFormatter,
+            ],
+            autofocus: true,
             prefix: const Text('\$'),
             validator: multiValidate([
               requiredField('Raising'),
               numberField('Raising'),
             ]),
             onChanged: (value) {
-              offer.investorSettings!.amount = double.tryParse(value);
+              final val = value.replaceAll(',', '');
+              if (double.tryParse(val) != null) {
+                offer.investorSettings!.amount = double.tryParse(val);
+              }
             },
           ),
           const SizedBox(height: 20),
@@ -67,9 +87,36 @@ class _OfferInvestorScreenState extends State<OfferInvestorScreen> {
             validator: multiValidate([
               requiredField('Equity Allocation'),
               numberField('Equity Allocation'),
+              max(100),
             ]),
             onChanged: (value) {
               offer.investorSettings!.equity = double.tryParse(value);
+            },
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Minimal Investment',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 15),
+          AppTextFormFieldBordered(
+            prefix: const Text('\$'),
+            controller: minimalInvestmentController,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              commaSeparatedNumberFormatter,
+            ],
+            inputType: TextInputType.number,
+            validator: multiValidate([
+              requiredField('Minimal Investment'),
+              numberField('Minimal Investment'),
+            ]),
+            onChanged: (value) {
+              final val = value.replaceAll(',', '');
+              if (double.tryParse(val) != null) {
+                offer.investorSettings!.minimalInvestment =
+                    double.tryParse(val);
+              }
             },
           ),
         ],

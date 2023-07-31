@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
@@ -186,7 +187,7 @@ class _OfferInvestorPreviewState extends State<OfferInvestorPreview> {
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        '${widget.amount} USDC',
+                        '${NumberFormat('#,###.########').format(widget.amount)} USDC',
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ],

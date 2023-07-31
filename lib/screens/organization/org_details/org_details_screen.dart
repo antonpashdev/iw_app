@@ -1,14 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/config_model.dart';
-import 'package:iw_app/models/contribution_model.dart';
 import 'package:iw_app/models/org_events_history_item_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
-import 'package:iw_app/screens/contribution/contribution_memo_screen.dart';
-import 'package:iw_app/screens/contribution/contribution_screen.dart';
 import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
 import 'package:iw_app/screens/organization/members_details_lite_screen.dart';
 import 'package:iw_app/screens/organization/members_details_screen.dart';
@@ -106,50 +102,8 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     );
   }
 
-  handleStartContributingPressed(Organization org) async {
-    Config config = ConfigState.of(context).config;
-    if (config.mode == Mode.Lite) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => ContributionMemoScreen(
-            contribution: Contribution(
-              org: org,
-            ),
-          ),
-        ),
-      );
-      return;
-    }
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      final response =
-          await orgsApi.startContribution(widget.orgId, widget.member!.id!);
-      final contribution = Contribution.fromJson(response.data);
-      if (context.mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (_) => ContributionScreen(
-              contribution: contribution,
-              showSnackBar: true,
-            ),
-          ),
-          (route) => false,
-        );
-      }
-    } catch (error) {
-      print(error);
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    Config config = ConfigState.of(context).config;
     return FutureBuilder<List<dynamic>>(
       future: Future.wait([
         futureOrg,
@@ -207,7 +161,9 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                   child: Column(
                                     children: [
                                       buildWalletSection(
-                                          context, snapshot.data?[0]),
+                                        context,
+                                        snapshot.data?[0],
+                                      ),
                                       const SizedBox(height: 10),
                                       AppPadding(
                                         child: buildHeader(
@@ -311,35 +267,6 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                               child: SizedBox(height: 80),
                             ),
                           ],
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 30,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: SizedBox(
-                            width: 290,
-                            child: ElevatedButton(
-                              onPressed: isLoading ||
-                                      widget.isPreviewMode ||
-                                      widget.member!.role == MemberRole.Investor
-                                  ? null
-                                  : () => handleStartContributingPressed(
-                                        snapshot.data![0],
-                                      ),
-                              child: isLoading
-                                  ? const Center(
-                                      child:
-                                          CircularProgressIndicator.adaptive(),
-                                    )
-                                  : Text(
-                                      config.mode == Mode.Pro
-                                          ? 'Start Contributing'
-                                          : 'Tell what you\'ve done',
-                                    ),
-                            ),
-                          ),
                         ),
                       ),
                     ],

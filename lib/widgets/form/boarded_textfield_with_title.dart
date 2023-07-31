@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../theme/app_theme.dart';
 import 'input_form.dart';
@@ -12,6 +13,7 @@ class BoardedTextFieldWithTitle extends StatelessWidget {
   final dynamic Function(String)? onChanged;
   final String? Function(String?)? validator;
   final bool focus;
+  final List<TextInputFormatter>? inputFormatters;
 
   const BoardedTextFieldWithTitle({
     Key? key,
@@ -23,6 +25,7 @@ class BoardedTextFieldWithTitle extends StatelessWidget {
     this.onChanged,
     this.focus = false,
     this.validator,
+    this.inputFormatters,
   }) : super(key: key);
 
   @override
@@ -40,6 +43,7 @@ class BoardedTextFieldWithTitle extends StatelessWidget {
         ),
         const SizedBox(height: 7),
         AppTextFormFieldBordered(
+          inputFormatters: inputFormatters,
           autofocus: focus,
           validator: validator,
           controller: textFieldController,

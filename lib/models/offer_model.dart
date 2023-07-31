@@ -18,19 +18,26 @@ enum OfferType {
 class OfferInvestorSettings {
   double? amount;
   double? equity;
+  double? minimalInvestment;
 
   OfferInvestorSettings({
     this.amount = 0,
     this.equity = 0,
+    this.minimalInvestment = 1,
   });
 
   OfferInvestorSettings.fromJson(Map<String, dynamic> json) {
     amount = intToDouble(json['amount']);
     equity = intToDouble(json['equity']);
+    minimalInvestment = json['minimalInvestment'];
   }
 
   Map<String, dynamic> toJson() {
-    return {'amount': amount, 'equity': equity};
+    return {
+      'amount': amount,
+      'equity': equity,
+      'minimalInvestment': minimalInvestment
+    };
   }
 }
 

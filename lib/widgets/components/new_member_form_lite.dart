@@ -187,7 +187,10 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           contentPadding: EdgeInsets.zero,
           title: Row(
             children: [
-              const Text('During the period'),
+              const Text(
+                'During the period',
+                style: TextStyle(color: COLOR_GRAY2),
+              ),
               IconButton(
                 onPressed: () {
                   showBottomInfoSheet(
@@ -201,7 +204,13 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
                 iconSize: 16,
                 splashColor: Colors.transparent,
                 highlightColor: Colors.transparent,
-                color: COLOR_GRAY,
+                color: COLOR_GRAY2,
+              ),
+              const Spacer(),
+              const Text(
+                'Coming soon',
+                style:
+                    TextStyle(color: COLOR_BLUE, fontWeight: FontWeight.w700),
               ),
             ],
           ),
@@ -210,16 +219,19 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
             activeColor: Colors.black,
             value: EquityType.DuringPeriod,
             groupValue: member.equity?.type,
-            onChanged: isWithEquity
-                ? (EquityType? type) {
-                    setState(() {
-                      equityPeriodController.text = '';
-                      member.equity?.type = type;
-                      member.equity?.period =
-                          Period(timeframe: PeriodType.Months);
-                    });
-                  }
-                : null,
+
+            // replace null with handler after "Coming soon" is removed
+            onChanged: null,
+            // onChanged: isWithEquity
+            //     ? (EquityType? type) {
+            //         setState(() {
+            //           equityPeriodController.text = '';
+            //           member.equity?.type = type;
+            //           member.equity?.period =
+            //               Period(timeframe: PeriodType.Months);
+            //         });
+            //       }
+            //     : null,
           ),
         ),
         Row(
@@ -293,187 +305,6 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
     );
   }
 
-  buildCompensationSection() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Compensation',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            CupertinoSwitch(
-              value: isMonthlyCompensated,
-              activeColor: COLOR_GREEN,
-              onChanged: (bool? value) {
-                onIsMonthlyCompensatedChanged(value!);
-              },
-            ),
-          ],
-        ),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Row(
-            children: [
-              const Text('Paycheck per month'),
-              IconButton(
-                onPressed: () {
-                  showBottomInfoSheet(
-                    context,
-                    title: 'Paycheck per month',
-                    description:
-                        'The sum that will be sent to the member’s wallet from the organization’s wallet on the first of every month. (That is why Organization needs Treasury)',
-                  );
-                },
-                icon: const Icon(Icons.info_outline_rounded),
-                iconSize: 16,
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                color: COLOR_GRAY,
-              ),
-            ],
-          ),
-          minLeadingWidth: 0,
-          leading: Radio(
-            activeColor: Colors.black,
-            value: CompensationType.PerMonth,
-            groupValue: member.compensation?.type,
-            onChanged: isMonthlyCompensated
-                ? (CompensationType? type) {
-                    setState(() {
-                      compensationPeriodController.text = '';
-                      member.compensation?.type = type;
-                      member.compensation?.period = null;
-                    });
-                  }
-                : null,
-          ),
-        ),
-        AppTextFormFieldBordered(
-          enabled: isMonthlyCompensated &&
-              member.compensation?.type == CompensationType.PerMonth,
-          prefix: const Text('\$'),
-          inputType: const TextInputType.numberWithOptions(decimal: true),
-          validator: isMonthlyCompensated &&
-                  member.compensation?.type == CompensationType.PerMonth
-              ? multiValidate([
-                  requiredField('Compensation'),
-                  numberField('Compensation'),
-                ])
-              : (_) => null,
-          onChanged: onMonthlyCompensationChanged,
-        ),
-        const SizedBox(height: 10),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Row(
-            children: [
-              const Text('One-time payment'),
-              IconButton(
-                onPressed: () {
-                  showBottomInfoSheet(
-                    context,
-                    title: 'One-time payment',
-                    description:
-                        'This sum will be broken down equally into amount of days. Every day during the period a member will get a part of this sum. For example: \$100 during 100 days. It means that a member will get \$1 every day during 100 days.',
-                  );
-                },
-                icon: const Icon(Icons.info_outline_rounded),
-                iconSize: 16,
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                color: COLOR_GRAY,
-              ),
-            ],
-          ),
-          minLeadingWidth: 0,
-          leading: Radio(
-            activeColor: Colors.black,
-            value: CompensationType.OneTime,
-            groupValue: member.compensation?.type,
-            onChanged: isMonthlyCompensated
-                ? (CompensationType? type) {
-                    setState(() {
-                      compensationPeriodController.text = '';
-                      member.compensation?.type = type;
-                      member.compensation?.period = Period(
-                        timeframe: PeriodType.Months,
-                      );
-                    });
-                  }
-                : null,
-          ),
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: AppTextFormFieldBordered(
-                enabled: isMonthlyCompensated &&
-                    member.compensation?.type == CompensationType.OneTime,
-                prefix: const Text('\$'),
-                inputType: const TextInputType.numberWithOptions(decimal: true),
-                validator: isMonthlyCompensated &&
-                        member.compensation?.type == CompensationType.OneTime
-                    ? multiValidate([
-                        requiredField('Compensation'),
-                        numberField('Compensation'),
-                      ])
-                    : (_) => null,
-                onChanged: onMonthlyCompensationChanged,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: AppTextFormFieldBordered(
-                controller: compensationPeriodController,
-                enabled: isMonthlyCompensated &&
-                    member.compensation?.type == CompensationType.OneTime,
-                labelText: 'period',
-                validator: isMonthlyCompensated &&
-                        member.compensation?.type == CompensationType.OneTime
-                    ? multiValidate([
-                        requiredField('Period'),
-                        numberField('Period'),
-                      ])
-                    : (_) => null,
-                onChanged: onCompensationPeriodChanged,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: ModalFormField<Map>(
-                enabled: isMonthlyCompensated &&
-                    member.compensation?.type == CompensationType.OneTime,
-                screenFactory: (value) => GenericScreen(
-                  title: 'Select',
-                  child: AppSelect(
-                    value,
-                    options: widget.timeframeOptions,
-                    onChanged: (value) {
-                      Navigator.of(context).pop(value);
-                    },
-                  ),
-                ),
-                valueToText: (value) => value?['title'],
-                labelText: 'timeframe',
-                initialValue: member.compensation?.period != null
-                    ? {
-                        'title': member.compensation?.period?.timeframe?.name
-                            .toLowerCase(),
-                        'value': member.compensation?.period?.timeframe,
-                      }
-                    : null,
-                onChanged: onCompensationTimeframeChanged,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   buildForm(BuildContext context) {
     return InputForm(
       formKey: widget.formKey,
@@ -498,8 +329,6 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           ),
           const SizedBox(height: 30),
           buildEquitySection(),
-          const SizedBox(height: 30),
-          buildCompensationSection(),
         ],
       ),
     );

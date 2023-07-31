@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/offer/offer_investor_screen.dart';
 import 'package:iw_app/screens/offer/offer_new_member_screen.dart';
 import 'package:iw_app/screens/organization/change_treasury_screen.dart';
+import 'package:iw_app/screens/organization/org_edit/org_edit_screen.dart';
 import 'package:iw_app/screens/organization/org_settings/api.dart';
 import 'package:iw_app/screens/organization/org_settings/builders/header.dart';
 import 'package:iw_app/screens/organization/org_settings/builders/pending_offers_list.dart';
@@ -74,6 +74,28 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
   Widget build(BuildContext context) {
     return ScreenScaffold(
       title: 'Organization Info',
+      actions: widget.member.permissions!.canEditOrg
+          ? [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => OrgEditScreen(
+                        organization: widget.organization,
+                      ),
+                    ),
+                  );
+                },
+                style: ButtonStyle(
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                ),
+                child: const Text(
+                  'Edit',
+                  style: TextStyle(color: COLOR_BLUE),
+                ),
+              ),
+            ]
+          : [],
       child: KeyboardDismissableListView(
         children: [
           buildHeader(context, widget.organization),
@@ -92,14 +114,6 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
                     ),
               ),
             ),
-          const SizedBox(height: 10),
-          const RoundBorderContainer(
-            child: Text(
-              'Our first collaboration via Equity Wallet',
-              style: TextStyle(fontSize: 18),
-              softWrap: true,
-            ),
-          ),
           const SizedBox(height: 30),
           GrayButton(
             onPressed: widget.member.permissions!.canRaiseMoney

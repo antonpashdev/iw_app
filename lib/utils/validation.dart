@@ -11,10 +11,21 @@ AppLocalizations? _appLocalizations = lookupAppLocalizations(
 
 String? Function(String?) numberField(String fieldName) {
   return (value) {
-    if (value != null &&
-        value.trim().isNotEmpty &&
-        double.tryParse(value) == null) {
+    final val = value?.replaceAll(',', '') ?? '';
+
+    if (val.trim().isNotEmpty && double.tryParse(val) == null) {
       return '$fieldName must be a number';
+    }
+    return null;
+  };
+}
+
+String? Function(String?) wholeNumberField(String fieldName) {
+  return (value) {
+    final val = value?.replaceAll(',', '') ?? '';
+
+    if (val.trim().isNotEmpty && int.tryParse(val) == null) {
+      return '$fieldName must be a whole number in this field.';
     }
     return null;
   };
@@ -49,12 +60,23 @@ String? Function(String?) max(double max) {
   };
 }
 
-String? Function(String?) min(double min) {
+String? Function(String?) min(double min, {String? errorText}) {
   return (value) {
     if (value != null &&
         double.tryParse(value) != null &&
         double.tryParse(value)! < min) {
       return 'Value must be not less than $min';
+    }
+    return null;
+  };
+}
+
+String? Function(String?) minInt(int min, {String? errorText}) {
+  return (value) {
+    if (value != null &&
+        int.tryParse(value) != null &&
+        int.tryParse(value)! < min) {
+      return errorText ?? 'Value must be not less than $min';
     }
     return null;
   };

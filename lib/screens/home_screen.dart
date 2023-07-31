@@ -17,7 +17,7 @@ import 'package:iw_app/screens/assets/asset_screen.dart';
 import 'package:iw_app/screens/offer/offer_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
-import 'package:iw_app/screens/settings_screen.dart';
+import 'package:iw_app/screens/account_settings/settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/numbers.dart';
 import 'package:iw_app/widgets/components/accounts_list.dart';
@@ -329,8 +329,9 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       futureAccountMembers = fetchAccountMembers();
       futureBalance = fetchBalance();
+      futureAccount = fetchAccount();
     });
-    return Future.wait([futureAccountMembers, futureBalance]);
+    return Future.wait([futureAccountMembers, futureBalance, futureAccount]);
   }
 
   onAccountsPressed(Account? account) async {
@@ -442,18 +443,30 @@ class _HomeScreenState extends State<HomeScreen> {
           color: COLOR_ALMOST_BLACK,
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return const SettingsSreen();
-                  },
-                ),
+          FutureBuilder(
+            future: futureAccount,
+            builder: (ctx, snp) {
+              if (!snp.hasData) {
+                return Container();
+              }
+
+              final account = snp.data;
+              return IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return SettingsSreen(
+                          account: account,
+                        );
+                      },
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.settings_outlined),
               );
             },
-            icon: const Icon(Icons.settings_outlined),
           ),
         ],
       ),

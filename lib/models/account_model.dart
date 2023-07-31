@@ -1,3 +1,4 @@
+import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/user_model.dart';
 
 class Account {
@@ -8,6 +9,7 @@ class Account {
   bool? isUser;
   String? image;
   User? user;
+  Organization? organization;
 
   Account({
     this.id,
@@ -17,6 +19,7 @@ class Account {
     this.isUser,
     this.image,
     this.user,
+    this.organization,
   });
 
   Account.fromJson(Map<String, dynamic> json) {
@@ -27,5 +30,8 @@ class Account {
     isUser = json['isUser'];
     image = json['image'];
     user = json['user'] is Map ? User.fromJson(json['user']) : null;
+    organization = json['organization'] is Map
+        ? Organization.fromJson(json['organization'])
+        : null;
   }
 }
