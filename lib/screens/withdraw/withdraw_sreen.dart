@@ -67,7 +67,7 @@ class WithdrawScreen extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              _launchURL(
+              launchURL(
                 Uri.parse(
                   'https://www.equitywallet.org/withdraw-cash-with-moneygram',
                 ),
