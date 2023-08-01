@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
@@ -160,7 +161,10 @@ class OrgMemberCardLite extends StatelessWidget {
             style: textStyle,
           ),
           contentPadding: const EdgeInsets.all(0),
-          trailing: Text('WIP', style: textStyle),
+          trailing: Text(
+            '${(NumberFormat('#,###.##').format(member?.profit ?? 0))}\$',
+            style: textStyle,
+          ),
           visualDensity:
               const VisualDensity(vertical: VisualDensity.minimumDensity),
         ),

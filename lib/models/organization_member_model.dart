@@ -132,6 +132,7 @@ class OrganizationMember {
   Compensation? compensation;
   String? createdAt;
   OrganizationMemberPermissions? permissions;
+  double? profit;
 
   OrganizationMember({
     this.occupation,
@@ -147,6 +148,7 @@ class OrganizationMember {
     this.equity,
     this.compensation,
     this.permissions,
+    this.profit = 0,
   });
 
   OrganizationMember.fromJson(Map<String, dynamic> json) {
@@ -182,6 +184,7 @@ class OrganizationMember {
       canChangeTreasury: isAdmin,
       canEditOrg: isAdmin,
     );
+    profit = json['profit'] ?? 0;
   }
 
   String? get image {
