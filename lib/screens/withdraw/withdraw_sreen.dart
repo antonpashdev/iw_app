@@ -1,18 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/url.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class WithdrawScreen extends StatelessWidget {
   const WithdrawScreen({super.key});
-
-  void _launchURL(Uri url) async {
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.platformDefault);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +24,7 @@ class WithdrawScreen extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              _launchURL(
+              launchURL(
                 Uri.parse(
                   'https://www.equitywallet.org/withdraw-bank-transfer',
                 ),

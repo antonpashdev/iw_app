@@ -13,6 +13,7 @@ import 'package:iw_app/screens/withdraw/withdraw_sreen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/utils/numbers.dart';
+import 'package:iw_app/utils/url.dart';
 import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
@@ -190,7 +191,28 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 20),
+        TextButton(
+          onPressed: () {
+            launchURL(
+              Uri.parse(
+                'https://explorer.solana.com/address/${account.wallet}/tokens',
+              ),
+            );
+          },
+          style: ButtonStyle(
+            overlayColor: MaterialStateProperty.all(Colors.transparent),
+          ),
+          child: const Text(
+            'View your wallet on blockchain »',
+            style: TextStyle(
+              color: COLOR_LIGHT_GRAY2,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
         ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 360),
           child: Row(
