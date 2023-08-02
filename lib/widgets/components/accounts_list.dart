@@ -16,6 +16,11 @@ class AccountsListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<OrganizationMemberWithOtherMembers> filteredItems = orgs
+            is List<OrganizationMemberWithOtherMembers>
+        ? orgs!.where((item) => item.member?.role == MemberRole.Admin).toList()
+        : [];
+
     return Flex(
       direction: Axis.vertical,
       children: [
@@ -59,27 +64,29 @@ class AccountsListWidget extends StatelessWidget {
           alignment: Alignment.center,
           padding: const EdgeInsets.symmetric(vertical: 16),
           child: ListView.builder(
-            itemCount: orgs?.length ?? 0,
+            itemCount: filteredItems.length,
             itemBuilder: (BuildContext context, int index) {
               return InkWell(
                 onTap: () {
-                  Navigator.of(context).pop(orgs?[index]);
+                  Navigator.of(context).pop(filteredItems[index]);
                 },
                 child: GenericListTile(
-                  title: orgs?[index].member?.org.name ?? '',
-                  subtitle: '@${orgs?[index].member?.org.username ?? ''}',
+                  title: filteredItems[index].member?.org.name ?? '',
+                  subtitle:
+                      '@${filteredItems[index].member?.org.username ?? ''}',
                   showMiniIcon: false,
                   image: NetworkImageAuth(
                     imageUrl:
-                        '${usersApi.baseUrl}${orgs?[index].member?.org.logo}',
+                        '${usersApi.baseUrl}${filteredItems[index].member?.org.logo}',
                   ),
-                  trailing: currentAccount?.id == orgs?[index].member?.org.id
-                      ? const Icon(
-                          Icons.check_circle_rounded,
-                          color: COLOR_BLUE,
-                          size: 25,
-                        )
-                      : null,
+                  trailing:
+                      currentAccount?.id == filteredItems[index].member?.org.id
+                          ? const Icon(
+                              Icons.check_circle_rounded,
+                              color: COLOR_BLUE,
+                              size: 25,
+                            )
+                          : null,
                 ),
               );
             },
