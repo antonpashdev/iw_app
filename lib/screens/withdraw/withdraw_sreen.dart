@@ -1,36 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/url.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class WithdrawScreen extends StatelessWidget {
   const WithdrawScreen({super.key});
-
-  showComingSoonDialog(BuildContext context) {
-    _callSnackBar(context);
-  }
-
-  _callSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 80,
-          left: 20,
-          right: 20,
-        ),
-        content: const Text(
-          'Coming soon...',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white),
-        ),
-        duration: const Duration(seconds: 1),
-        backgroundColor: Colors.black.withOpacity(0.6),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +24,11 @@ class WithdrawScreen extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              showComingSoonDialog(context);
+              launchURL(
+                Uri.parse(
+                  'https://www.equitywallet.org/withdraw-bank-transfer',
+                ),
+              );
             },
             icon: const Icon(
               Icons.account_balance,
@@ -89,7 +67,11 @@ class WithdrawScreen extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              showComingSoonDialog(context);
+              launchURL(
+                Uri.parse(
+                  'https://www.equitywallet.org/withdraw-cash-with-moneygram',
+                ),
+              );
             },
             icon: Image.asset('assets/icons/money_gram_icon.png'),
             label: Padding(
