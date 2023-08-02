@@ -42,7 +42,8 @@ String? Function(String?) requiredField(String fieldName) {
 
 String? Function(String?) walletAddres() {
   return (value) {
-    if (value != null && value.trim().length != 44) {
+    if (value != null &&
+        (value.trim().length < 32 || value.trim().length > 44)) {
       return 'Wallet address is not valid';
     }
     return null;

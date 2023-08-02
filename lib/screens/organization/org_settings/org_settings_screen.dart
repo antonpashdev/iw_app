@@ -101,17 +101,11 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
           buildHeader(context, widget.organization),
           const SizedBox(height: 20),
           if (widget.organization.description != null)
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: COLOR_LIGHT_GRAY3,
-                borderRadius: BorderRadius.circular(20),
-              ),
+            RoundBorderContainer(
               child: Text(
                 widget.organization.description!,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                style: const TextStyle(fontSize: 18),
+                softWrap: true,
               ),
             ),
           const SizedBox(height: 30),
