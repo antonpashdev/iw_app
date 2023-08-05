@@ -28,7 +28,7 @@ class AssetScreen extends StatefulWidget {
 }
 
 class _AssetScreenState extends State<AssetScreen> {
-  late Future<MemberEquity?> futureEquity;
+  late Future<double?> futureEquity;
   late Future<List<TxnHistoryItem>> futureHistory;
 
   Config get config => ConfigState.of(context).config;
@@ -40,21 +40,13 @@ class _AssetScreenState extends State<AssetScreen> {
     futureHistory = fetchHistory();
   }
 
-  Future<MemberEquity?> fetchEquity() async {
-    if (config.mode == Mode.Lite) {
-      return Future.value(
-        MemberEquity(
-          lamportsEarned: 0,
-          equity: widget.memberWithEquity.member!.equity?.amount ?? 0,
-        ),
-      );
-    }
+  Future<double?> fetchEquity() async {
     try {
       final response = await orgsApi.getMemberEquity(
         widget.memberWithEquity.member!.org.id,
         widget.memberWithEquity.member!.id!,
       );
-      return MemberEquity.fromJson(response.data);
+      return response.data;
     } catch (e) {
       print(e);
     }
@@ -160,18 +152,15 @@ class _AssetScreenState extends State<AssetScreen> {
     );
   }
 
-  buildAmounts(BuildContext context, MemberEquity? memberEquity) {
+  buildAmounts(BuildContext context, double? memberEquity) {
     if (memberEquity == null) {
       return Container();
     }
-    final tokensAmount = (memberEquity.lamportsEarned! / LAMPORTS_IN_SOL)
-        .toStringAsFixed(4)
-        .replaceAll(trimZeroesRegExp, '');
     String equityStr;
     if (config.mode == Mode.Lite) {
-      equityStr = memberEquity.equity!.toStringAsFixed(1);
+      equityStr = memberEquity.toStringAsFixed(1);
     } else {
-      equityStr = (memberEquity.equity! * 100).toStringAsFixed(1);
+      equityStr = memberEquity.toStringAsFixed(1);
     }
     return Row(
       children: [
@@ -183,7 +172,9 @@ class _AssetScreenState extends State<AssetScreen> {
                   child: buildAmount(
                     context,
                     'Impact Shares',
-                    tokensAmount,
+                    memberEquity
+                        .toStringAsFixed(4)
+                        .replaceAll(trimZeroesRegExp, ''),
                     COLOR_BLUE,
                     COLOR_LIGHT_GRAY,
                   ),
@@ -404,7 +395,7 @@ class _AssetScreenState extends State<AssetScreen> {
                     children: [
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: snapshot.data!.equity == 0
+                          onPressed: snapshot.data! == 0
                               ? null
                               : handleSendAssetPressed,
                           child: const Text('Send Asset'),
@@ -413,7 +404,7 @@ class _AssetScreenState extends State<AssetScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: snapshot.data!.equity == 0
+                          onPressed: snapshot.data! == 0
                               ? null
                               : () {
                                   Navigator.of(context).push(
@@ -447,7 +438,7 @@ class _AssetScreenState extends State<AssetScreen> {
 }
 
 class _HeaderDelegate extends SliverPersistentHeaderDelegate {
-  final MemberEquity? equity;
+  final double? equity;
   final Widget child;
 
   _HeaderDelegate({required this.equity, required this.child});

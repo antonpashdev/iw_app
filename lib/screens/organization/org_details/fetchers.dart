@@ -12,7 +12,7 @@ Future<Organization> fetchOrg(String orgId) async {
 
 Future<List<OrganizationMemberWithEquity>> fetchMembers(String orgId) async {
   final response = await orgsApi.getOrgMembers(orgId);
-  return (response.data as List).map((memberJson) {
+  return (response.data['list'] as List).map((memberJson) {
     final member = OrganizationMember.fromJson(memberJson);
     return OrganizationMemberWithEquity(
       member: member,
@@ -33,9 +33,10 @@ Future<List<OrgEventsHistoryItem>> fetchHistory(String orgId) async {
   return [];
 }
 
-Future<MemberEquity> fetchMemberEquity(OrganizationMember member) async {
+Future<double> fetchMemberEquity(OrganizationMember member) async {
   final response = await orgsApi.getMemberEquity(member.org, member.id!);
-  return MemberEquity.fromJson(response.data);
+  final equity = double.tryParse(response.data) ?? 0;
+  return equity;
 }
 
 Future<double> fetchBalance(String orgId) async {

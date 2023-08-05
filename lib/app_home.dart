@@ -26,7 +26,10 @@ class _AppHomeState extends State<AppHome> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: authApi.token,
+      future: Future.wait([
+        authApi.token,
+        authApi.getMe(),
+      ]),
       builder: (context, snapshot) {
         final url = Uri.base.toString();
         if (isOfferUrl(url)) {
@@ -45,7 +48,7 @@ class _AppHomeState extends State<AppHome> {
             ),
           );
         }
-        if (snapshot.data == null) {
+        if (snapshot.data![0] == null) {
           return const LoginScreen();
         }
         return const HomeScreen();

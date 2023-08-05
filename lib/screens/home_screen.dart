@@ -86,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
     String id,
   ) async {
     Response response = await getMemberships(id);
-    final members = (response.data as List).map((member) {
+    final members = (response.data['list'] as List).map((member) {
       final m = OrganizationMember.fromJson(member);
       final memberWithOther = OrganizationMemberWithOtherMembers(
         member: m,
@@ -117,28 +117,23 @@ class _HomeScreenState extends State<HomeScreen> {
     return fetchMembers(usersApi.getMemberships, userId!);
   }
 
-  Future<List<OrganizationMember>> fetchOtherMembers(String orgId) async {
-    final response = await orgsApi.getOrgMembers(orgId);
-    return (response.data as List)
-        .map((member) => OrganizationMember.fromJson(member))
-        .toList();
+  Future<Map<String, dynamic>> fetchOtherMembers(String orgId) async {
+    final response = await orgsApi.getOrgMembers(orgId, limit: 3);
+    return {
+      'members': (response.data['list'] as List)
+          .map((member) => OrganizationMember.fromJson(member))
+          .toList(),
+      'total': response.data['total'],
+    };
   }
 
-  Future<MemberEquity> fetchMemberEquity(
+  Future<double> fetchMemberEquity(
     String orgId,
     String memberId,
     OrganizationMemberWithOtherMembers member,
   ) async {
-    MemberEquity equity;
-    if (config.mode == Mode.Lite) {
-      equity = MemberEquity(
-        lamportsEarned: 0,
-        equity: member.member!.equity?.amount ?? 0,
-      );
-    } else {
-      final response = await orgsApi.getMemberEquity(orgId, memberId);
-      equity = MemberEquity.fromJson(response.data);
-    }
+    final response = await orgsApi.getMemberEquity(orgId, memberId);
+    double equity = double.tryParse(response.data) ?? 0;
     member.equity = equity;
     return equity;
   }
@@ -172,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
   buildOrganizationCard(
     BuildContext context,
     OrganizationMember member,
-    Future<List<OrganizationMember>> futureOtherMembers,
+    Future<Map<String, dynamic>> futureOtherMembers,
     bool isFirst,
     bool isLast,
   ) {
@@ -234,23 +229,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   buildAsset(OrganizationMemberWithOtherMembers omm) {
-    Config config = ConfigState.of(context).config;
     return FutureBuilder(
-      future: config.mode == Mode.Pro
-          ? omm.futureEquity
-          : Future.value(MemberEquity()),
+      future: omm.futureEquity,
       builder: (_, snapshot) {
         if (!snapshot.hasData) {
           return Container();
         }
-        String? tokensAmount;
-        if (config.mode == Mode.Pro) {
-          tokensAmount =
-              trimZeros(snapshot.data!.lamportsEarned! / LAMPORTS_IN_SOL);
-        }
-        final equity = config.mode == Mode.Pro
-            ? (snapshot.data!.equity! * 100).toStringAsFixed(1)
-            : (omm.member!.equity!.amount!).toStringAsFixed(1);
+        final equity = trimZeros(snapshot.data!);
         return InkWell(
           onTap: () {
             Navigator.push(
@@ -278,7 +263,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             name: omm.member!.org.name,
             account: '@${omm.member!.org.username}',
-            tokensAmount: tokensAmount,
             equity: '$equity%',
           ),
         );

@@ -84,9 +84,6 @@ class MemberDeitailsLite extends StatelessWidget {
     final compensationStr = memeberWithEquity.member!.compensation != null
         ? '\$${memeberWithEquity.member!.compensation!.amount} ${memeberWithEquity.member!.compensation!.type == CompensationType.PerMonth ? 'per month' : 'for ${memeberWithEquity.member!.compensation!.period!.value} ${memeberWithEquity.member!.compensation!.period!.timeframe!.name.toLowerCase()}'}'
         : '-';
-    final equityStr = memeberWithEquity.member!.equity != null
-        ? '${memeberWithEquity.member!.equity!.amount}%'
-        : '-';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 25),
@@ -145,16 +142,26 @@ class MemberDeitailsLite extends StatelessWidget {
                           style: defaultDetailDataItemTextStyle,
                         ),
                       ),
-                      DetailDataItem(
-                        title: 'Equity',
-                        data: Text(
-                          equityStr,
-                          style: const TextStyle(
-                            color: COLOR_GREEN,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                      FutureBuilder(
+                        future: memeberWithEquity.futureEquity,
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const SizedBox.shrink();
+                          }
+                          final equityStr =
+                              snapshot.data != 0 ? '${snapshot.data}%' : '-';
+                          return DetailDataItem(
+                            title: 'Equity',
+                            data: Text(
+                              equityStr,
+                              style: const TextStyle(
+                                color: COLOR_GREEN,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),

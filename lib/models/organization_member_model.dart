@@ -232,25 +232,10 @@ hoursPerWeek: $hoursPerWeek
   }
 }
 
-class MemberEquity {
-  double? lamportsEarned;
-  double? equity;
-
-  MemberEquity({
-    this.lamportsEarned,
-    this.equity,
-  });
-
-  MemberEquity.fromJson(Map<String, dynamic> json) {
-    lamportsEarned = intToDouble(json['lamportsEarned']);
-    equity = intToDouble(json['equity']);
-  }
-}
-
 class OrganizationMemberWithEquity {
   OrganizationMember? member;
-  MemberEquity? equity;
-  Future<MemberEquity>? futureEquity;
+  double? equity;
+  Future<double>? futureEquity;
 
   OrganizationMemberWithEquity({
     this.member,
@@ -261,14 +246,14 @@ class OrganizationMemberWithEquity {
 
 class OrganizationMemberWithOtherMembers extends OrganizationMemberWithEquity {
   List<OrganizationMember>? otherMembers;
-  Future<List<OrganizationMember>>? futureOtherMembers;
+  Future<Map<String, dynamic>>? futureOtherMembers;
 
   OrganizationMemberWithOtherMembers({
     OrganizationMember? member,
     this.futureOtherMembers,
     this.otherMembers,
-    MemberEquity? equity,
-    Future<MemberEquity>? futureEquity,
+    double? equity,
+    Future<double>? futureEquity,
   }) : super(
           member: member,
           equity: equity,
