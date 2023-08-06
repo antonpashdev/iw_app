@@ -19,7 +19,6 @@ import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
 import 'package:iw_app/screens/account_settings/settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
-import 'package:iw_app/utils/numbers.dart';
 import 'package:iw_app/widgets/components/accounts_list.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_custom.dart';
 import 'package:iw_app/widgets/components/org_member_card.dart';
@@ -44,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<Account> futureAccount;
   late Future<List<OrganizationMemberWithOtherMembers>> futureAccountMembers;
   late Future<List<OrganizationMemberWithOtherMembers>> futureUserMembers;
-  late Future<double> futureBalance;
+  late Future<String?> futureBalance;
 
   @override
   void initState() {
@@ -127,20 +126,21 @@ class _HomeScreenState extends State<HomeScreen> {
     };
   }
 
-  Future<double> fetchMemberEquity(
+  Future<String> fetchMemberEquity(
     String orgId,
     String memberId,
     OrganizationMemberWithOtherMembers member,
   ) async {
     final response = await orgsApi.getMemberEquity(orgId, memberId);
-    double equity = double.tryParse(response.data) ?? 0;
+    final tokenAmount = TokenAmount.fromJson(response.data);
+    final equity = tokenAmount.uiAmountString;
     member.equity = equity;
-    return equity;
+    return equity!;
   }
 
-  Future<double> fetchBalance() async {
+  Future<String?> fetchBalance() async {
     final response = await usersApi.getBalance();
-    return response.data['balance'];
+    return TokenAmount.fromJson(response.data['balance']).uiAmountString;
   }
 
   navigateToCreateOrg() async {
@@ -235,7 +235,6 @@ class _HomeScreenState extends State<HomeScreen> {
         if (!snapshot.hasData) {
           return Container();
         }
-        final equity = trimZeros(snapshot.data!);
         return InkWell(
           onTap: () {
             Navigator.push(
@@ -263,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             name: omm.member!.org.name,
             account: '@${omm.member!.org.username}',
-            equity: '$equity%',
+            equity: '${snapshot.data}%',
           ),
         );
       },
@@ -297,11 +296,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   buildAssets(List<OrganizationMemberWithOtherMembers> members) {
-    Config config = ConfigState.of(context).config;
     List<OrganizationMemberWithOtherMembers> assets = members;
-    if (config.mode == Mode.Lite) {
-      assets = members.where((m) => m.member!.equity != null).toList();
-    }
     return Column(
       children: [
         ...assets.map((m) => buildAsset(m)).toList(),
@@ -482,7 +477,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return const CircularProgressIndicator
                                     .adaptive();
                               }
-                              final balance = '\$${trimZeros(snapshot.data!)}';
+                              final balance = '\$${snapshot.data}';
                               return InkWell(
                                 onTap: () {
                                   Navigator.of(context).push(

@@ -149,7 +149,7 @@ class MemberDeitailsLite extends StatelessWidget {
                             return const SizedBox.shrink();
                           }
                           final equityStr =
-                              snapshot.data != 0 ? '${snapshot.data}%' : '-';
+                              snapshot.data != '0' ? '${snapshot.data}%' : '-';
                           return DetailDataItem(
                             title: 'Equity',
                             data: Text(

@@ -67,7 +67,7 @@ buildMember(BuildContext context, OrganizationMemberWithEquity data) {
                   borderRadius: BorderRadius.circular(7),
                 ),
                 child: Text(
-                  '${snapshot.data!.toStringAsFixed(1)}%',
+                  '${snapshot.data}%',
                   style: Theme.of(context)
                       .textTheme
                       .labelMedium

@@ -2,7 +2,6 @@ import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/org_events_history_item_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
-import 'package:iw_app/utils/numbers.dart';
 
 Future<Organization> fetchOrg(String orgId) async {
   final response = await orgsApi.getOrgById(orgId);
@@ -33,13 +32,13 @@ Future<List<OrgEventsHistoryItem>> fetchHistory(String orgId) async {
   return [];
 }
 
-Future<double> fetchMemberEquity(OrganizationMember member) async {
-  final response = await orgsApi.getMemberEquity(member.org, member.id!);
-  final equity = double.tryParse(response.data) ?? 0;
-  return equity;
+Future<String> fetchMemberEquity(OrganizationMember member) async {
+  final response = await orgsApi.getMemberEquity(member.org.id, member.id!);
+  final tokenAmount = TokenAmount.fromJson(response.data);
+  return tokenAmount.uiAmountString!;
 }
 
-Future<double> fetchBalance(String orgId) async {
+Future<String?> fetchBalance(String orgId) async {
   final response = await orgsApi.getBalance(orgId);
-  return intToDouble(response.data['balance'])!;
+  return TokenAmount.fromJson(response.data['balance']).uiAmountString;
 }

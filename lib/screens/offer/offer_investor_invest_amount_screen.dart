@@ -34,7 +34,7 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
   double get allocatedEquity {
     return widget.offer.memberProspects!.isNotEmpty
         ? widget.offer.memberProspects!
-            .map((m) => m.equity!.amount!)
+            .map((m) => m.equityAmount!)
             .reduce((value, element) => value + element)
         : 0;
   }

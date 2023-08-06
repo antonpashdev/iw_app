@@ -157,7 +157,7 @@ class MemberDeitails extends StatelessWidget {
                             }
 
                             return Text(
-                              '${snapshot.data!.toStringAsFixed(1)}%',
+                              '${snapshot.data}%',
                               style: const TextStyle(
                                 color: COLOR_GREEN,
                                 fontSize: 16,

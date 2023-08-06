@@ -21,6 +21,27 @@ enum EquityType { Immediately, DuringPeriod }
 
 enum CompensationType { PerMonth, OneTime }
 
+class TokenAmount {
+  String? amount;
+  int? decimals;
+  double? uiAmount;
+  String? uiAmountString;
+
+  TokenAmount({
+    this.amount,
+    this.decimals,
+    this.uiAmount,
+    this.uiAmountString,
+  });
+
+  TokenAmount.fromJson(Map<String, dynamic> json) {
+    amount = json['amount'];
+    decimals = json['decimals'];
+    uiAmount = intToDouble(json['uiAmount']);
+    uiAmountString = json['uiAmountString'];
+  }
+}
+
 class Period {
   double? value;
   PeriodType? timeframe;
@@ -39,34 +60,6 @@ class Period {
     return {
       'value': value,
       'timeframe': timeframe?.name,
-    };
-  }
-}
-
-class Equity {
-  double? amount;
-  EquityType? type;
-  Period? period;
-
-  Equity({
-    this.amount,
-    this.type,
-    this.period,
-  });
-
-  Equity.fromJson(Map<String, dynamic> json) {
-    amount = intToDouble(json['amount']);
-    type = CommonUtils.stringToEnum(json['type'], EquityType.values);
-    period = json['period'] is Map
-        ? Period.fromJson(json['period'])
-        : json['period'];
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'amount': amount,
-      'type': type?.name,
-      'period': period?.toJson(),
     };
   }
 }
@@ -128,7 +121,9 @@ class OrganizationMember {
   double? contributed;
   InvestorSettings? investorSettings;
   double? lamportsEarned;
-  Equity? equity;
+  double? equityAmount;
+  EquityType? equityType;
+  Period? equityPeriod;
   Compensation? compensation;
   String? createdAt;
   OrganizationMemberPermissions? permissions;
@@ -145,7 +140,9 @@ class OrganizationMember {
     this.contributed = 0,
     this.investorSettings,
     this.lamportsEarned,
-    this.equity,
+    this.equityAmount,
+    this.equityType,
+    this.equityPeriod,
     this.compensation,
     this.permissions,
     this.profit = 0,
@@ -168,9 +165,12 @@ class OrganizationMember {
     investorSettings = json['investorSettings'] is Map
         ? InvestorSettings.fromJson(json['investorSettings'])
         : json['investorSettings'];
-    equity = json['equity'] is Map
-        ? Equity.fromJson(json['equity'])
-        : json['equity'];
+    equityAmount = intToDouble(json['equityAmount']);
+    equityType =
+        CommonUtils.stringToEnum(json['equityType'], EquityType.values);
+    equityPeriod = json['equityPeriod'] is Map
+        ? Period.fromJson(json['period'])
+        : json['period'];
     compensation = json['compensation'] is Map
         ? Compensation.fromJson(json['compensation'])
         : json['compensation'];
@@ -226,7 +226,9 @@ hoursPerWeek: $hoursPerWeek
       'user': user,
       'org': org,
       'investorSettings': investorSettings?.toJson(),
-      'equity': equity?.toJson(),
+      'equityAmount': equityAmount,
+      'equityType': equityType?.name,
+      'equityPeriod': equityPeriod?.toJson(),
       'compensation': compensation?.toJson(),
     };
   }
@@ -234,8 +236,8 @@ hoursPerWeek: $hoursPerWeek
 
 class OrganizationMemberWithEquity {
   OrganizationMember? member;
-  double? equity;
-  Future<double>? futureEquity;
+  String? equity;
+  Future<String>? futureEquity;
 
   OrganizationMemberWithEquity({
     this.member,
@@ -252,8 +254,8 @@ class OrganizationMemberWithOtherMembers extends OrganizationMemberWithEquity {
     OrganizationMember? member,
     this.futureOtherMembers,
     this.otherMembers,
-    double? equity,
-    Future<double>? futureEquity,
+    String? equity,
+    Future<String>? futureEquity,
   }) : super(
           member: member,
           equity: equity,
