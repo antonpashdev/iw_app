@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
 import 'package:iw_app/screens/account/builders/history_item.dart';
+import 'package:iw_app/theme/app_theme.dart';
 
 class InfiniteScrollListWidget extends StatefulWidget {
   final Future<dynamic> Function() onRefresh;
@@ -52,7 +53,7 @@ class InfiniteScrollListWidgetState extends State<InfiniteScrollListWidget> {
         return;
       }
 
-      if (items.length < limit) {
+      if (historyItems.length < limit) {
         hasMore = false;
       }
 
@@ -110,7 +111,17 @@ class InfiniteScrollListWidgetState extends State<InfiniteScrollListWidget> {
               return Center(
                 child: hasMore
                     ? const CircularProgressIndicator.adaptive()
-                    : const Text('No more items'),
+                    : const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'That\'s all!',
+                          style: TextStyle(
+                            color: COLOR_ALMOST_BLACK,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
               );
             } else {
               return buildHistoryItem(
