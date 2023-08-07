@@ -2,8 +2,17 @@ import 'package:dio/dio.dart';
 import 'package:iw_app/api/base_api.dart';
 
 class _AccountApi extends BaseApi {
-  Future<Response> getUsdcHistory() {
-    return client.get('/account/usdc/history');
+  Future<Response> getUsdcHistory(String before, {int? limit = 10}) {
+    Map<String, dynamic> queryParameters = before.isEmpty
+        ? {}
+        : {
+            'before': before,
+            'limit': limit,
+          };
+    return client.get(
+      '/account/usdc/history',
+      queryParameters: queryParameters,
+    );
   }
 }
 
