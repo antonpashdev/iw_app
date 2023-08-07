@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
 import 'package:iw_app/screens/account/builders/history_item.dart';
@@ -65,8 +66,8 @@ class InfiniteScrollListWidgetState extends State<InfiniteScrollListWidget> {
     } catch (e) {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('An error occurred'),
+        SnackBar(
+          content: Text('An error occurred: ${(e as DioError).message}'),
           backgroundColor: Colors.red,
         ),
       );
@@ -112,16 +113,16 @@ class InfiniteScrollListWidgetState extends State<InfiniteScrollListWidget> {
                 child: hasMore
                     ? const CircularProgressIndicator.adaptive()
                     : const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'That\'s all!',
-                          style: TextStyle(
-                            color: COLOR_ALMOST_BLACK,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'That\'s all!',
+                    style: TextStyle(
+                      color: COLOR_ALMOST_BLACK,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
               );
             } else {
               return buildHistoryItem(
