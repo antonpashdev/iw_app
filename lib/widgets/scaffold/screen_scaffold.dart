@@ -4,7 +4,7 @@ import 'package:iw_app/theme/app_theme.dart';
 
 class ScreenScaffold extends StatelessWidget {
   final Widget child;
-  final String title;
+  final dynamic title;
   final List<Widget>? actions;
   final Widget? leading;
 
@@ -22,7 +22,7 @@ class ScreenScaffold extends StatelessWidget {
       backgroundColor: APP_BODY_BG,
       appBar: AppBar(
         systemOverlayStyle: SystemUiOverlayStyle.dark,
-        title: Text(title),
+        title: title is String ? Text(title) : title,
         actions: actions,
         leading: leading,
         leadingWidth: 70,
