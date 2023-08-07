@@ -12,7 +12,7 @@ import 'package:iw_app/widgets/state/config.dart';
 class OrgMemberCard extends StatelessWidget {
   final Function()? onTap;
   final OrganizationMember? member;
-  final Future<List<OrganizationMember>>? futureOtherMembers;
+  final Future<Map<String, dynamic>>? futureOtherMembers;
 
   const OrgMemberCard({
     Key? key,
@@ -154,7 +154,7 @@ class OrgMemberCard extends StatelessWidget {
               height: 30,
               child: Stack(
                 children: [
-                  ...snapshot.data!
+                  ...snapshot.data?['members']
                       .asMap()
                       .map((i, member) {
                         return MapEntry(

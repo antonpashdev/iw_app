@@ -38,7 +38,7 @@ class OrgDetailsScreen extends StatefulWidget {
 class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   late Future<Organization> futureOrg;
   late Future<List<OrganizationMemberWithEquity>> futureMembers;
-  Future<double>? futureBalance;
+  Future<String?>? futureBalance;
   late Future<List<OrgEventsHistoryItem>> futureHistory;
 
   bool isLoading = false;
@@ -64,7 +64,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
       }
       futureHistory = fetchHistory(widget.orgId);
     });
-    final futures = [
+    final List<Future<Object?>> futures = [
       futureOrg,
       futureMembers,
       futureHistory,

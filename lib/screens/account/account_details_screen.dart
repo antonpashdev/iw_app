@@ -7,6 +7,7 @@ import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/account_model.dart';
+import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/screens/withdraw/withdraw_sreen.dart';
@@ -29,7 +30,7 @@ class AccountDetailsScreen extends StatefulWidget {
 
 class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   late Future<Account?> futureAccount;
-  late Future<double> futureBalance;
+  late Future<String?> futureBalance;
   late Future<List<TxnHistoryItem>> futureHistory;
 
   @override
@@ -50,9 +51,9 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     return null;
   }
 
-  Future<double> fetchBalance() async {
+  Future<String?> fetchBalance() async {
     final response = await usersApi.getBalance();
-    return response.data['balance'];
+    return TokenAmount.fromJson(response.data['balance']).uiAmountString;
   }
 
   Future<List<TxnHistoryItem>> fetchHistory() async {
@@ -328,12 +329,12 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                         FutureBuilder(
                           future: futureBalance,
                           builder: (_, snapshot) {
-                            double amount = 0;
+                            String amount = '0';
                             if (snapshot.hasData) {
                               amount = snapshot.data!;
                             }
                             return Text(
-                              '\$${trimZeros(amount)}',
+                              '\$$amount',
                               style:
                                   const TextStyle(fontWeight: FontWeight.w500),
                             );
@@ -458,7 +459,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     return Future.wait([futureAccount, futureBalance, futureHistory]);
   }
 
-  buildHeader(Account account, double? balance) {
+  buildHeader(Account account, String? balance) {
     return SliverPersistentHeader(
       key: Key(balance != null ? balance.toString() : 'na'),
       pinned: true,
@@ -472,7 +473,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                 child: balance == null
                     ? const CircularProgressIndicator.adaptive()
                     : Text(
-                        '\$${trimZeros(balance)}',
+                        '\$$balance',
                         style: Theme.of(context).textTheme.headlineLarge,
                       ),
               ),

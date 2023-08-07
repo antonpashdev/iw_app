@@ -39,36 +39,38 @@ class SettingsItem extends StatelessWidget {
                   ),
                 ),
               ),
-              child: Row(children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: icon != null
-                      ? Icon(
-                          icon,
-                          color: COLOR_GRAY,
-                          size: 16,
-                        )
-                      : image,
-                ),
-                const SizedBox(width: 20),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: COLOR_ALMOST_BLACK,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: icon != null
+                        ? Icon(
+                            icon,
+                            color: COLOR_GRAY,
+                            size: 16,
+                          )
+                        : image,
                   ),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.arrow_forward_ios,
-                    color: COLOR_GRAY,
-                    size: 16,
+                  const SizedBox(width: 20),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: COLOR_ALMOST_BLACK,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              ]),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.arrow_forward_ios,
+                      color: COLOR_GRAY,
+                      size: 16,
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
   }

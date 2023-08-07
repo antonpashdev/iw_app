@@ -8,7 +8,6 @@ import 'package:iw_app/screens/organization/org_details/org_details_screen.dart'
 import 'package:iw_app/screens/organization/receive_money_payment_type_screen.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
-import 'package:iw_app/utils/numbers.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 
 buildHeader(
@@ -16,7 +15,7 @@ buildHeader(
   Organization org,
   OrganizationMember? member,
   bool isPreviewMode,
-  Future<double>? futureBalance,
+  Future<String?>? futureBalance,
 ) {
   return Row(
     children: [
@@ -50,7 +49,7 @@ buildHeader(
                   return const CircularProgressIndicator.adaptive();
                 }
                 return Text(
-                  '\$${trimZeros(snapshot.data!)}',
+                  '\$${snapshot.data}',
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge
