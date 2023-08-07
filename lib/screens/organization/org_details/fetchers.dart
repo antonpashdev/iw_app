@@ -33,7 +33,8 @@ Future<List<OrgEventsHistoryItem>> fetchHistory(String orgId) async {
 }
 
 Future<String> fetchMemberEquity(OrganizationMember member) async {
-  final response = await orgsApi.getMemberEquity(member.org.id, member.id!);
+  final orgId = member.org?.id ?? member.org;
+  final response = await orgsApi.getMemberEquity(orgId, member.id!);
   final tokenAmount = TokenAmount.fromJson(response.data);
   return tokenAmount.uiAmountString!;
 }
