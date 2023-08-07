@@ -6,6 +6,7 @@ class TxnHistoryItem {
   String? img;
   double? amount;
   String? description;
+  String? transactionSignature;
 
   TxnHistoryItem({
     this.processedAt,
@@ -13,6 +14,7 @@ class TxnHistoryItem {
     this.img,
     this.amount,
     this.description,
+    this.transactionSignature,
   });
 
   TxnHistoryItem.fromJson(Map<String, dynamic> json) {
@@ -21,5 +23,6 @@ class TxnHistoryItem {
     img = json['img'];
     amount = intToDouble(json['amount']);
     description = json['description'];
+    transactionSignature = json['transactionSignature'];
   }
 }
