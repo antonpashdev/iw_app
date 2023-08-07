@@ -45,8 +45,12 @@ class _OrgsApi extends BaseApi {
     return client.post('/orgs/$orgId/members', data: body);
   }
 
-  Future<Response> getOrgMembers(String orgId) {
-    return client.get('/orgs/$orgId/members');
+  Future<Response> getOrgMembers(String orgId, {int? limit}) {
+    final Map<String, dynamic> params = {};
+    if (limit != null) {
+      params['limit'] = limit;
+    }
+    return client.get('/orgs/$orgId/members', queryParameters: params);
   }
 
   Future<Response> getMemberEquity(String orgId, String memberId) {

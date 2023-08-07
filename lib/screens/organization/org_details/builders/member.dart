@@ -1,13 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/users_api.dart';
-import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
-import 'package:iw_app/widgets/state/config.dart';
 
 buildMember(BuildContext context, OrganizationMemberWithEquity data) {
-  Config config = ConfigState.of(context).config;
   return SizedBox(
     width: 100,
     child: Stack(
@@ -52,39 +49,34 @@ buildMember(BuildContext context, OrganizationMemberWithEquity data) {
             ),
           ],
         ),
-        if (config.mode == Mode.Pro || data.member!.equity != null)
-          FutureBuilder(
-            future: config.mode == Mode.Pro
-                ? data.futureEquity
-                : Future.value(MemberEquity()),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return Container();
-              }
-              return Positioned(
-                top: -5,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: COLOR_ALMOST_BLACK,
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  child: Text(
-                    config.mode == Mode.Pro
-                        ? '${(snapshot.data!.equity! * 100).toStringAsFixed(1)}%'
-                        : '${data.member!.equity!.amount!.toStringAsFixed(1)}%',
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelMedium
-                        ?.copyWith(color: COLOR_WHITE),
-                  ),
+        FutureBuilder(
+          future: data.futureEquity,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Container();
+            }
+            return Positioned(
+              top: -5,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 3,
                 ),
-              );
-            },
-          ),
+                decoration: BoxDecoration(
+                  color: COLOR_ALMOST_BLACK,
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Text(
+                  '${snapshot.data}%',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium
+                      ?.copyWith(color: COLOR_WHITE),
+                ),
+              ),
+            );
+          },
+        ),
       ],
     ),
   );

@@ -98,17 +98,15 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
     }
   }
 
-  onLogoChanged(Uint8List logo) async {
-    final response = await orgsApi.uploadLogo(logo);
-    final _logo = response.data;
-
-    print(_logo);
+  onLogoChanged(Uint8List pickedLogo) async {
+    final response = await orgsApi.uploadLogo(pickedLogo);
+    final logo = response.data;
 
     setState(() {
-      logoLink = _logo;
+      logoLink = logo;
       images.add(widget.organization.logo!);
     });
-    widget.organization.logo = _logo;
+    widget.organization.logo = logo;
     setState(() {
       isDirty = true;
     });

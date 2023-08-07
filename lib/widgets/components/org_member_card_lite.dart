@@ -11,7 +11,7 @@ import 'package:iw_app/widgets/media/network_image_auth.dart';
 class OrgMemberCardLite extends StatelessWidget {
   final Function()? onTap;
   final OrganizationMember? member;
-  final Future<List<OrganizationMember>>? futureOtherMembers;
+  final Future<Map<String, dynamic>>? futureOtherMembers;
 
   const OrgMemberCardLite({
     Key? key,
@@ -180,7 +180,7 @@ class OrgMemberCardLite extends StatelessWidget {
               height: 30,
               child: Stack(
                 children: [
-                  ...snapshot.data!
+                  ...snapshot.data?['members']
                       .asMap()
                       .map((i, member) {
                         return MapEntry(
@@ -193,10 +193,11 @@ class OrgMemberCardLite extends StatelessWidget {
                   Positioned(
                     top: 0,
                     bottom: 0,
-                    left: 30 + ((snapshot.data!.length - 1) * 10) + 5,
+                    left:
+                        30 + ((snapshot.data?['members'].length - 1) * 10) + 5,
                     child: Center(
                       child: Text(
-                        '${snapshot.data!.length} members',
+                        '${snapshot.data?['total']} members',
                         style:
                             Theme.of(context).textTheme.labelMedium?.copyWith(
                                   fontWeight: FontWeight.w700,

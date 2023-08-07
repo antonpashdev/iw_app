@@ -1,12 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/account_api.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/account_model.dart';
+import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
 import 'package:iw_app/screens/account/builders/header.dart';
-import 'package:iw_app/screens/account/builders/history_item.dart';
 import 'package:iw_app/screens/account/builders/title.dart';
 import 'package:iw_app/screens/account/builders/title_shimmer.dart';
 import 'package:iw_app/screens/account/widgets/infine_scroll.dart';
@@ -21,7 +20,7 @@ class AccountDetailsScreen extends StatefulWidget {
 
 class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   late Future<Account?> futureAccount;
-  late Future<double> futureBalance;
+  late Future<String?> futureBalance;
   late Future<List<TxnHistoryItem>> futureHistory;
 
   @override
@@ -42,9 +41,9 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     return null;
   }
 
-  Future<double> fetchBalance() async {
+  Future<String?> fetchBalance() async {
     final response = await usersApi.getBalance();
-    return response.data['balance'];
+    return TokenAmount.fromJson(response.data['balance']).uiAmountString;
   }
 
   Future<List<TxnHistoryItem>> fetchHistory() async {

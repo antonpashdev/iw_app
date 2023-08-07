@@ -53,13 +53,13 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
 
   onEquityChanged(String value) {
     setState(() {
-      member.equity?.amount = double.tryParse(value) ?? 0;
+      member.equityAmount = double.tryParse(value) ?? 0;
     });
   }
 
   onEquityPeriodChanged(String value) {
     setState(() {
-      member.equity?.period?.value = double.tryParse(value) ?? 0;
+      member.equityPeriod?.value = double.tryParse(value) ?? 0;
     });
   }
 
@@ -71,7 +71,7 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
 
   onEquityTimeframeChanged(Map? value) {
     setState(() {
-      member.equity?.period?.timeframe = value?['value'];
+      member.equityPeriod?.timeframe = value?['value'];
     });
   }
 
@@ -102,9 +102,10 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
     setState(() {
       isWithEquity = value;
       if (value) {
-        member.equity = Equity(type: EquityType.Immediately);
+        member.equityType = EquityType.Immediately;
       } else {
-        member.equity = null;
+        member.equityAmount = null;
+        member.equityType = null;
       }
     });
   }
@@ -154,32 +155,30 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           leading: Radio(
             activeColor: Colors.black,
             value: EquityType.Immediately,
-            groupValue: member.equity?.type,
+            groupValue: member.equityType,
             onChanged: isWithEquity
                 ? (EquityType? type) {
                     setState(() {
                       equityPeriodController.text = '';
-                      member.equity?.type = type;
-                      member.equity?.period = null;
+                      member.equityType = type;
+                      member.equityPeriod = null;
                     });
                   }
                 : null,
           ),
         ),
         AppTextFormFieldBordered(
-          enabled:
-              isWithEquity && member.equity?.type == EquityType.Immediately,
+          enabled: isWithEquity && member.equityType == EquityType.Immediately,
           prefix: const Text('%'),
           inputType: const TextInputType.numberWithOptions(decimal: true),
-          validator:
-              isWithEquity && member.equity?.type == EquityType.Immediately
-                  ? multiValidate([
-                      requiredField('Equity'),
-                      numberField('Equity'),
-                      max(100),
-                      min(0),
-                    ])
-                  : (_) => null,
+          validator: isWithEquity && member.equityType == EquityType.Immediately
+              ? multiValidate([
+                  requiredField('Equity'),
+                  numberField('Equity'),
+                  max(100),
+                  min(0),
+                ])
+              : (_) => null,
           onChanged: onEquityChanged,
         ),
         const SizedBox(height: 10),
@@ -218,7 +217,7 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
           leading: Radio(
             activeColor: Colors.black,
             value: EquityType.DuringPeriod,
-            groupValue: member.equity?.type,
+            groupValue: member.equityType,
 
             // replace null with handler after "Coming soon" is removed
             onChanged: null,
@@ -240,18 +239,18 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
             Expanded(
               child: AppTextFormFieldBordered(
                 enabled: isWithEquity &&
-                    member.equity?.type == EquityType.DuringPeriod,
+                    member.equityType == EquityType.DuringPeriod,
                 prefix: const Text('%'),
                 inputType: const TextInputType.numberWithOptions(decimal: true),
-                validator: isWithEquity &&
-                        member.equity?.type == EquityType.DuringPeriod
-                    ? multiValidate([
-                        requiredField('Equity'),
-                        numberField('Equity'),
-                        max(100),
-                        min(0),
-                      ])
-                    : (_) => null,
+                validator:
+                    isWithEquity && member.equityType == EquityType.DuringPeriod
+                        ? multiValidate([
+                            requiredField('Equity'),
+                            numberField('Equity'),
+                            max(100),
+                            min(0),
+                          ])
+                        : (_) => null,
                 onChanged: onEquityChanged,
               ),
             ),
@@ -260,15 +259,15 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
               child: AppTextFormFieldBordered(
                 controller: equityPeriodController,
                 enabled: isWithEquity &&
-                    member.equity?.type == EquityType.DuringPeriod,
+                    member.equityType == EquityType.DuringPeriod,
                 labelText: 'period',
-                validator: isWithEquity &&
-                        member.equity?.type == EquityType.DuringPeriod
-                    ? multiValidate([
-                        requiredField('Period'),
-                        numberField('Period'),
-                      ])
-                    : (_) => null,
+                validator:
+                    isWithEquity && member.equityType == EquityType.DuringPeriod
+                        ? multiValidate([
+                            requiredField('Period'),
+                            numberField('Period'),
+                          ])
+                        : (_) => null,
                 onChanged: onEquityPeriodChanged,
               ),
             ),
@@ -276,7 +275,7 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
             Expanded(
               child: ModalFormField<Map>(
                 enabled: isWithEquity &&
-                    member.equity?.type == EquityType.DuringPeriod,
+                    member.equityType == EquityType.DuringPeriod,
                 screenFactory: (value) => GenericScreen(
                   title: 'Select',
                   child: AppSelect(
@@ -290,11 +289,11 @@ class _NewMemberFormLiteState extends State<NewMemberFormLite> {
                 valueToText: (value) => value?['title'],
                 labelText: 'timeframe',
                 onChanged: onEquityTimeframeChanged,
-                initialValue: member.equity?.period != null
+                initialValue: member.equityPeriod != null
                     ? {
-                        'title': member.equity?.period?.timeframe?.name
-                            .toLowerCase(),
-                        'value': member.equity?.period?.timeframe,
+                        'title':
+                            member.equityPeriod?.timeframe?.name.toLowerCase(),
+                        'value': member.equityPeriod?.timeframe,
                       }
                     : null,
               ),

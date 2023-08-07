@@ -340,7 +340,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
               ),
             ],
           ),
-          if (member.equity != null)
+          if (member.equityAmount != null)
             Column(
               children: [
                 const SizedBox(height: 10),
@@ -352,18 +352,18 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      '${member.equity?.amount}%',
+                      '${member.equityAmount}%',
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ],
                 ),
-                if (member.equity?.type == EquityType.DuringPeriod)
+                if (member.equityType == EquityType.DuringPeriod)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Period to get equity'),
                       Text(
-                        '${member.equity?.period?.value} ${member.equity?.period?.timeframe?.name.toLowerCase()}',
+                        '${member.equityPeriod?.value} ${member.equityPeriod?.timeframe?.name.toLowerCase()}',
                       ),
                     ],
                   ),
