@@ -1,24 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:iw_app/api/account_api.dart';
 import 'package:iw_app/api/auth_api.dart';
-import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/models/txn_history_item_model.dart';
-import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
-import 'package:iw_app/screens/withdraw/withdraw_sreen.dart';
-import 'package:iw_app/theme/app_theme.dart';
-import 'package:iw_app/utils/datetime.dart';
-import 'package:iw_app/utils/numbers.dart';
-import 'package:iw_app/utils/url.dart';
-import 'package:iw_app/widgets/list/generic_list_tile.dart';
-import 'package:iw_app/widgets/media/network_image_auth.dart';
-import 'package:iw_app/widgets/utils/app_padding.dart';
-
-const LAMPORTS_PER_USDC = 1000000;
+import 'package:iw_app/screens/account/builders/header.dart';
+import 'package:iw_app/screens/account/builders/history_item.dart';
+import 'package:iw_app/screens/account/builders/title.dart';
+import 'package:iw_app/screens/account/builders/title_shimmer.dart';
+import 'package:iw_app/screens/account/widgets/infine_scroll.dart';
+import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
 class AccountDetailsScreen extends StatefulWidget {
   const AccountDetailsScreen({Key? key}) : super(key: key);
@@ -56,397 +48,12 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   }
 
   Future<List<TxnHistoryItem>> fetchHistory() async {
-    final response = await accountApi.getUsdcHistory();
+    final response = await accountApi.getUsdcHistory('');
     final List<TxnHistoryItem> history = [];
     for (final item in response.data) {
       history.add(TxnHistoryItem.fromJson(item));
     }
     return history;
-  }
-
-  buildTitleShimmer() {
-    return [
-      Container(
-        width: 30,
-        height: 30,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: COLOR_LIGHT_GRAY,
-        ),
-      ),
-      const SizedBox(width: 5),
-      Container(
-        width: 60,
-        height: 10,
-        decoration: const BoxDecoration(
-          color: COLOR_LIGHT_GRAY,
-        ),
-      ),
-    ];
-  }
-
-  buildTitle(Account account) {
-    return [
-      Container(
-        width: 30,
-        height: 30,
-        decoration: BoxDecoration(
-          color: COLOR_GRAY,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: FittedBox(
-          fit: BoxFit.cover,
-          child: account.image != null
-              ? FutureBuilder(
-                  future: usersApi.getAvatar(account.image!),
-                  builder: (_, snapshot) {
-                    if (!snapshot.hasData) return Container();
-                    return Image.memory(snapshot.data!);
-                  },
-                )
-              : const Icon(
-                  Icons.person,
-                  color: Color(0xFFBDBDBD),
-                ),
-        ),
-      ),
-      const SizedBox(width: 10),
-      Text(
-        account.username!,
-        style: const TextStyle(fontWeight: FontWeight.normal),
-      ),
-    ];
-  }
-
-  callSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height - 70,
-          left: 20,
-          right: 20,
-        ),
-        content: const Text(
-          'Copied to clipboard',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white),
-        ),
-        duration: const Duration(milliseconds: 300),
-        backgroundColor: Colors.black.withOpacity(0.7),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-      ),
-    );
-  }
-
-  handleCopyPressed(String text) async {
-    Clipboard.setData(ClipboardData(text: text));
-    callSnackBar(context);
-  }
-
-  buildWalletSection(BuildContext context, Account account) {
-    return Column(
-      children: [
-        Center(
-          child: TextButton.icon(
-            onPressed: () => handleCopyPressed(account.wallet!),
-            style: const ButtonStyle(
-              visualDensity: VisualDensity(vertical: 1),
-            ),
-            icon: SvgPicture.asset(
-              'assets/icons/wallet.svg',
-              width: 30,
-            ),
-            label: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Solana Address',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelMedium!
-                      .copyWith(color: COLOR_GRAY, fontWeight: FontWeight.w500),
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      account.wallet!.replaceRange(8, 36, '...'),
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    const Icon(
-                      Icons.copy,
-                      size: 12,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-        TextButton(
-          onPressed: () {
-            launchURL(
-              Uri.parse(
-                'https://explorer.solana.com/address/${account.wallet}/tokens',
-              ),
-            );
-          },
-          style: ButtonStyle(
-            overlayColor: MaterialStateProperty.all(Colors.transparent),
-          ),
-          child: const Text(
-            'View your wallet on blockchain »',
-            style: TextStyle(
-              color: COLOR_LIGHT_GRAY2,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              decoration: TextDecoration.underline,
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 6,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => SendMoneyRecipientScreen(
-                          senderWallet: account.wallet!,
-                          onSendMoney: (SendMoneyData data) =>
-                              usersApi.sendMoney(data),
-                          originScreenFactory: () =>
-                              const AccountDetailsScreen(),
-                        ),
-                      ),
-                    );
-                  },
-                  icon: SvgPicture.asset('assets/icons/arrow_up_box.svg'),
-                  label: const Text('Send'),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    visualDensity: const VisualDensity(vertical: -1),
-                    textStyle:
-                        Theme.of(context).textTheme.bodySmall?.copyWith(),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 3),
-              Expanded(
-                flex: 7,
-                child: ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: SvgPicture.asset('assets/icons/arrow_down_box.svg'),
-                  label: const Text('Receive'),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    visualDensity: const VisualDensity(vertical: -1),
-                    backgroundColor: BTN_BLUE_BG,
-                    textStyle:
-                        Theme.of(context).textTheme.bodySmall?.copyWith(),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 3),
-              Expanded(
-                flex: 8,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const WithdrawScreen(),
-                      ),
-                    );
-                  },
-                  icon: SvgPicture.asset('assets/icons/arrow_right_box.svg'),
-                  label: const Text('Withdraw'),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    visualDensity: const VisualDensity(vertical: -1),
-                    backgroundColor: BTN_GREEN_BG,
-                    textStyle:
-                        Theme.of(context).textTheme.bodySmall?.copyWith(),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  buildIWCard() {
-    return AppPadding(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 330),
-        child: Container(
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 125,
-                      height: 85,
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: Image.asset(
-                          'assets/images/iw_card.png',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 10),
-                        FutureBuilder(
-                          future: futureBalance,
-                          builder: (_, snapshot) {
-                            double amount = 0;
-                            if (snapshot.hasData) {
-                              amount = snapshot.data!;
-                            }
-                            return Text(
-                              '\$${trimZeros(amount)}',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.w500),
-                            );
-                          },
-                        ),
-                        Text(
-                          'Equity Wallet Card',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelSmall!
-                              .copyWith(color: COLOR_GRAY),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: COLOR_LIGHT_GRAY.withAlpha(150),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 25,
-                left: 155,
-                child: Text(
-                  'Coming Soon...',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelMedium!
-                      .copyWith(color: COLOR_BLUE, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  buildHistoryItem(
-    BuildContext context,
-    TxnHistoryItem item,
-    TxnHistoryItem? prevItem,
-  ) {
-    final sign = item.amount != null && item.amount! < 0 ? '-' : '+';
-    final color = item.amount != null && item.amount! < 0
-        ? COLOR_ALMOST_BLACK
-        : COLOR_GREEN;
-    final amount = item.amount != null
-        ? '$sign \$${trimZeros(item.amount!.abs() / LAMPORTS_PER_USDC)} USDC'
-        : '-';
-    final title = item.addressOrUsername!.length == 44
-        ? item.addressOrUsername!.replaceRange(4, 40, '...')
-        : item.addressOrUsername!;
-    final icon = Icon(
-      item.amount != null && item.amount! < 0
-          ? Icons.arrow_outward_rounded
-          : Icons.arrow_downward_rounded,
-      size: 12,
-      color: COLOR_WHITE,
-    );
-    final primaryColor = item.amount != null && item.amount! < 0
-        ? COLOR_ALMOST_BLACK
-        : COLOR_BLUE;
-    final processedAt = item.processedAt != null
-        ? DateTime.fromMillisecondsSinceEpoch(item.processedAt!)
-        : DateTime.now();
-    final processedAtStr = getFormattedDate(processedAt);
-    bool shouldDisplayDate = true;
-    if (prevItem != null) {
-      final prevProcessedAt = prevItem.processedAt != null
-          ? DateTime.fromMillisecondsSinceEpoch(prevItem.processedAt!)
-          : DateTime.now();
-      final prevProcessedAtStr = getFormattedDate(prevProcessedAt);
-      shouldDisplayDate = prevProcessedAtStr != processedAtStr;
-    }
-    return AppPadding(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (shouldDisplayDate)
-            Column(
-              children: [
-                Text(
-                  processedAtStr,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: COLOR_GRAY,
-                      ),
-                ),
-                const SizedBox(height: 10),
-              ],
-            ),
-          GenericListTile(
-            title: title,
-            subtitle: item.description,
-            image: item.img != null
-                ? NetworkImageAuth(imageUrl: '${usersApi.baseUrl}${item.img}')
-                : Image.asset('assets/images/avatar_placeholder.png'),
-            trailing: Text(
-              amount,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: color,
-                  ),
-            ),
-            icon: icon,
-            primaryColor: primaryColor,
-          ),
-        ],
-      ),
-    );
   }
 
   Future onRefresh() {
@@ -458,36 +65,13 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     return Future.wait([futureAccount, futureBalance, futureHistory]);
   }
 
-  buildHeader(Account account, double? balance) {
-    return SliverPersistentHeader(
-      key: Key(balance != null ? balance.toString() : 'na'),
-      pinned: true,
-      delegate: _HeaderDelegate(
-        child: Container(
-          color: COLOR_WHITE,
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              Center(
-                child: balance == null
-                    ? const CircularProgressIndicator.adaptive()
-                    : Text(
-                        '\$${trimZeros(balance)}',
-                        style: Theme.of(context).textTheme.headlineLarge,
-                      ),
-              ),
-              const SizedBox(height: 10),
-              AppPadding(
-                child: buildWalletSection(
-                  context,
-                  account,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  fetchMoreTxnHistoryItems(String before, {int? limit}) async {
+    final response = await accountApi.getUsdcHistory(before, limit: limit);
+    final List<TxnHistoryItem> history = [];
+    for (final item in response.data) {
+      history.add(TxnHistoryItem.fromJson(item));
+    }
+    return history;
   }
 
   @override
@@ -495,37 +79,26 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     return FutureBuilder(
       future: futureAccount,
       builder: (_, snapshot) {
-        return Scaffold(
-          backgroundColor: APP_BODY_BG,
-          appBar: AppBar(
-            systemOverlayStyle: SystemUiOverlayStyle.dark,
-            centerTitle: true,
-            title: FutureBuilder(
-              future: futureAccount,
-              builder: (context, snapshot) {
-                final account = snapshot.data;
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        if (!snapshot.hasData) ...buildTitleShimmer(),
-                        if (snapshot.hasData) ...buildTitle(account!)
-                      ],
-                    ),
-                  ],
-                );
-              },
-            ),
-            titleTextStyle: const TextStyle(
-              fontFamily: 'SF Pro Display',
-              fontWeight: FontWeight.w500,
-              fontSize: 16,
-              color: COLOR_ALMOST_BLACK,
-            ),
+        return ScreenScaffold(
+          title: FutureBuilder(
+            future: futureAccount,
+            builder: (context, snapshot) {
+              final account = snapshot.data;
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      if (!snapshot.hasData) ...buildTitleShimmer(),
+                      if (snapshot.hasData) ...buildTitle(account!)
+                    ],
+                  ),
+                ],
+              );
+            },
           ),
-          body: FutureBuilder(
+          child: FutureBuilder(
             future: futureAccount,
             builder: (_, snapshot) {
               if (!snapshot.hasData) {
@@ -534,50 +107,31 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                 );
               }
               final account = snapshot.data;
-              return CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  CupertinoSliverRefreshControl(
-                    onRefresh: onRefresh,
-                  ),
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                   FutureBuilder(
                     future: futureBalance,
                     builder: (_, snapshot) {
-                      return buildHeader(account!, snapshot.data);
+                      return buildHeader(account!, snapshot.data, context);
                     },
                   ),
-                  // SliverToBoxAdapter(
-                  //   child: Column(
-                  //     children: [
-                  //       buildIWCard(),
-                  //       const SizedBox(height: 30),
-                  //     ],
-                  //   ),
-                  // ),
+                  const SizedBox(height: 5),
                   FutureBuilder(
                     future: futureHistory,
                     builder: (_, snapshot) {
                       if (!snapshot.hasData) {
-                        return const SliverToBoxAdapter(
+                        return const Flexible(
                           child: Center(
                             child: CircularProgressIndicator.adaptive(),
                           ),
                         );
                       }
-                      return SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) => Column(
-                            children: [
-                              buildHistoryItem(
-                                context,
-                                snapshot.data![index],
-                                index > 0 ? snapshot.data![index - 1] : null,
-                              ),
-                              const SizedBox(height: 20),
-                            ],
-                          ),
-                          childCount: snapshot.data!.length,
-                        ),
+
+                      return InfiniteScrollListWidget(
+                        initialData: snapshot.data!,
+                        onRefresh: onRefresh,
+                        onFetchMore: fetchMoreTxnHistoryItems,
                       );
                     },
                   ),
@@ -588,31 +142,5 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
         );
       },
     );
-  }
-}
-
-class _HeaderDelegate extends SliverPersistentHeaderDelegate {
-  final Widget child;
-
-  _HeaderDelegate({required this.child});
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return child;
-  }
-
-  @override
-  double get maxExtent => 200;
-
-  @override
-  double get minExtent => 200;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
   }
 }
