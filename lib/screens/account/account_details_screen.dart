@@ -107,6 +107,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
               }
               final account = snapshot.data;
               return Column(
+                mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   FutureBuilder(
@@ -127,11 +128,22 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                         );
                       }
 
-                      return InfiniteScrollListWidget(
-                        initialData: snapshot.data!,
-                        onRefresh: onRefresh,
-                        onFetchMore: fetchMoreTxnHistoryItems,
-                      );
+                      return snapshot.data?.isEmpty == true
+                          ? const Expanded(
+                              child: Center(
+                                child: Text(
+                                  'There are no transactions 👀',
+                                  style: TextStyle(
+                                    fontSize: 21,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : InfiniteScrollListWidget(
+                              initialData: snapshot.data!,
+                              onRefresh: onRefresh,
+                              onFetchMore: fetchMoreTxnHistoryItems,
+                            );
                     },
                   ),
                 ],
