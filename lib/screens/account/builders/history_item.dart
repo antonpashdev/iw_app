@@ -48,10 +48,11 @@ buildHistoryItem(
     shouldDisplayDate = prevProcessedAtStr != processedAtStr;
   }
   return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       if (shouldDisplayDate)
         Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               processedAtStr,
@@ -59,9 +60,9 @@ buildHistoryItem(
                     color: COLOR_GRAY,
                   ),
             ),
-              const SizedBox(height: 10),
-            ],
-          ),
+            const SizedBox(height: 10),
+          ],
+        ),
         GenericListTile(
           title: title,
           subtitle: item.description,
