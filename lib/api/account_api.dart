@@ -7,7 +7,7 @@ class _AccountApi extends BaseApi {
         ? {}
         : {
             'before': before,
-            // 'limit': limit, TODO: check why this parameter causes 400 error
+            'limit': limit,
           };
     return client.get(
       '/account/usdc/history',

@@ -27,20 +27,42 @@ class InfiniteScrollListWidgetState extends State<InfiniteScrollListWidget> {
   List<TxnHistoryItem> items = [];
   bool isLoading = false;
   bool hasMore = true;
+  bool isRefreshing = false;
 
   final ScrollController _scrollController = ScrollController();
 
+  void _showErrorMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('An error occurred: $message'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
   Future<void> _onRefresh() async {
+    if (isRefreshing) {
+      return;
+    }
     setState(() {
+      isRefreshing = true;
       items = [];
       lastTransactionSignature = '';
       hasMore = true;
     });
-    await widget.onRefresh();
+    try {
+      await widget.onRefresh();
+    } catch (e) {
+      _showErrorMessage((e as DioError).message ?? 'Unknown error');
+    } finally {
+      setState(() {
+        isRefreshing = false;
+      });
+    }
   }
 
   void _loadMoreData() async {
-    int limit = 10;
+    int limit = 20;
     if (isLoading) {
       return;
     }
@@ -54,9 +76,7 @@ class InfiniteScrollListWidgetState extends State<InfiniteScrollListWidget> {
         return;
       }
 
-      if (historyItems.length < limit) {
-        hasMore = false;
-      }
+      hasMore = historyItems.length >= limit;
 
       setState(() {
         items.addAll(historyItems);
@@ -64,13 +84,7 @@ class InfiniteScrollListWidgetState extends State<InfiniteScrollListWidget> {
             (historyItems.last as TxnHistoryItem).transactionSignature;
       });
     } catch (e) {
-      print(e);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('An error occurred: ${(e as DioError).message}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _showErrorMessage((e as DioError).message ?? 'Unknown error');
     } finally {
       setState(() {
         isLoading = false;
@@ -102,7 +116,7 @@ class InfiniteScrollListWidgetState extends State<InfiniteScrollListWidget> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: RefreshIndicator(
+      child: RefreshIndicator.adaptive(
         onRefresh: _onRefresh,
         child: ListView.builder(
           controller: _scrollController,
@@ -111,18 +125,20 @@ class InfiniteScrollListWidgetState extends State<InfiniteScrollListWidget> {
             if (index == items.length) {
               return Center(
                 child: hasMore
-                    ? const CircularProgressIndicator.adaptive()
+                    ? isRefreshing
+                        ? null
+                        : const CircularProgressIndicator.adaptive()
                     : const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    'That\'s all!',
-                    style: TextStyle(
-                      color: COLOR_ALMOST_BLACK,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'That\'s all!',
+                          style: TextStyle(
+                            color: COLOR_ALMOST_BLACK,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
               );
             } else {
               return buildHistoryItem(
