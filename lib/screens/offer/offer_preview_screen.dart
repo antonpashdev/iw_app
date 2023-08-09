@@ -53,6 +53,10 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
     return offer.investorSettings?.equity ?? 0;
   }
 
+  double get minimalInvestment {
+    return offer.investorSettings?.minimalInvestment ?? 0;
+  }
+
   bool get isNewOffer {
     return offer.id == null;
   }
@@ -174,6 +178,20 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                         ),
                         Text(
                           '$equityAllocation%',
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Minimal Investment',
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        Text(
+                          '\$${NumberFormat("#,###").format(minimalInvestment)}',
                           style: const TextStyle(fontWeight: FontWeight.w700),
                         ),
                       ],

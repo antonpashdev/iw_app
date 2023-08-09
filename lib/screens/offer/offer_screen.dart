@@ -205,6 +205,20 @@ class _OfferScreenState extends State<OfferScreen> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Minimal Investment',
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        Text(
+                          '\$${NumberFormat("#,###").format(offer.investorSettings!.minimalInvestment)}',
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
