@@ -6,6 +6,7 @@ import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
 import 'package:iw_app/screens/organization/receive_money_payment_type_screen.dart';
+import 'package:iw_app/screens/organization/receive_money_screen.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
@@ -108,7 +109,7 @@ buildHeader(
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ReceiveMoneyPaymentTypeScreen(
+                            builder: (context) => ReceiveMoneyScreen(
                               organization: org,
                             ),
                           ),

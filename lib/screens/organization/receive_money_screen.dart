@@ -11,12 +11,12 @@ import 'package:iw_app/utils/validation.dart';
 
 class ReceiveMoneyScreen extends StatefulWidget {
   final Organization organization;
-  final PaymentType paymentType;
+  final PaymentType? paymentType;
 
   const ReceiveMoneyScreen({
     super.key,
     required this.organization,
-    required this.paymentType,
+    this.paymentType,
   });
 
   @override
@@ -30,7 +30,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
   bool isLoading = false;
 
   get organization => widget.organization;
-  get paymentType => widget.paymentType;
+  PaymentType? get paymentType => widget.paymentType;
 
   handleGeneratePressed() async {
     if (!_formKey.currentState!.validate()) {
@@ -64,7 +64,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
     }
   }
 
-  getButtonTextByPaymentType(PaymentType type) {
+  getButtonTextByPaymentType(PaymentType? type) {
     switch (type) {
       case PaymentType.Online:
         return Text(
