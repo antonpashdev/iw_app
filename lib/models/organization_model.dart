@@ -89,11 +89,15 @@ $settings
 
 class OrganizationSettings {
   int treasury = 0;
+  String? successUrl;
+  String? cancelUrl;
 
   OrganizationSettings({this.treasury = 0});
 
   OrganizationSettings.fromJson(Map<String, dynamic> json) {
     treasury = json['treasury'];
+    successUrl = json['successUrl'];
+    cancelUrl = json['cancelUrl'];
   }
 
   @override

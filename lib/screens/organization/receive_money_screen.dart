@@ -13,8 +13,11 @@ class ReceiveMoneyScreen extends StatefulWidget {
   final Organization organization;
   final PaymentType paymentType;
 
-  const ReceiveMoneyScreen(
-      {super.key, required this.organization, required this.paymentType,});
+  const ReceiveMoneyScreen({
+    super.key,
+    required this.organization,
+    required this.paymentType,
+  });
 
   @override
   State<ReceiveMoneyScreen> createState() => _ReceiveMoneyScreenState();
@@ -40,12 +43,6 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
       final response =
           await orgsApi.receivePayment(organization.id, _item, _price!);
       final paymentData = Payment.fromJson(response.data);
-      final bool isInStorePaymentType = paymentType == PaymentType.InStore;
-
-      if (isInStorePaymentType) {
-        paymentData.cpPaymentUrl =
-            paymentData.cpPaymentUrl!.replaceFirst('checkout', 'pos');
-      }
 
       if (context.mounted) {
         Navigator.push(
@@ -70,8 +67,9 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
   getButtonTextByPaymentType(PaymentType type) {
     switch (type) {
       case PaymentType.Online:
-        return Text(AppLocalizations.of(context)!
-            .receiveMoneyScreen_label_generate_link,);
+        return Text(
+          AppLocalizations.of(context)!.receiveMoneyScreen_label_generate_link,
+        );
       case PaymentType.InStore:
         return const Text('Generate Payment QR-Code');
       default:
@@ -102,16 +100,17 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
             Text(AppLocalizations.of(context)!.receiveMoneyScreen_label_price),
             const SizedBox(height: 5),
             AppTextFormFieldBordered(
-                inputType: TextInputType.number,
-                prefix: const Text('\$'),
-                validator: multiValidate([
-                  numberField('Price'),
-                ]),
-                onChanged: (value) {
-                  setState(() {
-                    _price = double.tryParse(value);
-                  });
-                },),
+              inputType: TextInputType.number,
+              prefix: const Text('\$'),
+              validator: multiValidate([
+                numberField('Price'),
+              ]),
+              onChanged: (value) {
+                setState(() {
+                  _price = double.tryParse(value);
+                });
+              },
+            ),
             Expanded(
               flex: 1,
               child: Row(

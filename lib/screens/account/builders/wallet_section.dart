@@ -9,7 +9,7 @@ import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/screens/withdraw/withdraw_sreen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/url.dart';
-import 'package:iw_app/widgets/buttons/Icon_button_with_text.dart';
+import 'package:iw_app/widgets/buttons/icon_button_with_text.dart';
 
 buildWalletSection(BuildContext context, Account account) {
   callSnackBar(BuildContext context) {
