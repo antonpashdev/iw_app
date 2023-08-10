@@ -5,6 +5,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
+import 'package:iw_app/app_home.dart';
+import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/models/config_model.dart';
@@ -56,6 +58,20 @@ class _OfferScreenState extends State<OfferScreen> {
     try {
       final response = await authApi.getMe();
       return Account.fromJson(response.data);
+    } on DioError catch (err) {
+      if (err.response?.statusCode == 401) {
+        await appStorage.write(
+          'redirect_to',
+          '/offer?i=${widget.offerId}&oi=${widget.orgId}',
+        );
+        if (mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            AppHome.routeName,
+            (route) => false,
+          );
+        }
+      }
+      rethrow;
     } catch (err) {
       print(err);
     }

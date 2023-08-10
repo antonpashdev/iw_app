@@ -18,6 +18,9 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
     required this.payment,
   });
 
+  String get paymentUrl =>
+      'https://app.equitywallet.org/checkout/${payment.id}';
+
   callSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -42,7 +45,7 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
   }
 
   handleCopyPressed(BuildContext context) {
-    Clipboard.setData(ClipboardData(text: payment.cpPaymentUrl!));
+    Clipboard.setData(ClipboardData(text: paymentUrl));
     callSnackBar(
       context,
       AppLocalizations.of(context)!.common_link_copied,
@@ -126,7 +129,7 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
                         ],
                       ),
                       child: QRCodeWidget(
-                        url: payment.cpPaymentUrl!,
+                        url: paymentUrl,
                       ),
                     ),
                   ),
@@ -147,14 +150,14 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
               children: [
                 TextButton.icon(
                   onPressed: () async {
-                    final url = Uri.parse(payment.cpPaymentUrl!);
+                    final url = Uri.parse(paymentUrl);
                     if (!(await launchUrl(url))) {
                       throw Exception('Could not launch $url');
                     }
                   },
                   icon: const Icon(Icons.link),
                   label: Text(
-                    payment.cpPaymentUrl!,
+                    paymentUrl,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),

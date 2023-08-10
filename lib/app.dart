@@ -3,10 +3,13 @@ import 'package:iw_app/api/config_api.dart';
 import 'package:iw_app/app_home.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/config_model.dart';
+import 'package:iw_app/screens/offer/offer_screen.dart';
 import 'package:iw_app/screens/offer/sale_offer_screen.dart';
+import 'package:iw_app/screens/payment/checkout_screen.dart';
 import 'package:iw_app/screens/restore_account_immidiate_screen.dart';
 import 'package:iw_app/storybook/app_storybook.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/common.dart';
 import 'package:iw_app/widgets/state/config.dart';
 
 class App extends StatefulWidget {
@@ -85,8 +88,27 @@ class _AppState extends State<App> {
               code: code,
             ),
           );
+        } else if (settings.name!.startsWith(CheckoutScreen.routeName)) {
+          final paymentId = Uri.parse(settings.name!).pathSegments.last;
+          if (CommonUtils.isObjectId(paymentId)) {
+            return MaterialPageRoute(
+              builder: (_) => CheckoutScreen(paymentId: paymentId),
+            );
+          }
+        } else if (settings.name!.startsWith(OfferScreen.routeName)) {
+          final uri = Uri.parse(settings.name!);
+          final i = uri.queryParameters['i'];
+          final oi = uri.queryParameters['oi'];
+          if (CommonUtils.isObjectId(i) && CommonUtils.isObjectId(oi)) {
+            return MaterialPageRoute(
+              builder: (_) => OfferScreen(
+                offerId: i!,
+                orgId: oi!,
+              ),
+            );
+          }
         }
-        return MaterialPageRoute(builder: (_) => const AppHome());
+        return null;
       },
     );
   }
