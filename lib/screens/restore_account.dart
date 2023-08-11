@@ -81,12 +81,13 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: 'Restore Account',
+      title: 'Login to My Equity Wallet ',
       child: Column(
         children: <Widget>[
           Expanded(
             child: KeyboardDismissableListView(
               children: [
+                const SizedBox(height: 35),
                 const Text(
                   'Paste your secret link to access to your Equity Wallet',
                   textAlign: TextAlign.center,
@@ -96,7 +97,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
                     color: COLOR_ALMOST_BLACK,
                   ),
                 ),
-                const SizedBox(height: 35),
+                const SizedBox(height: 15),
                 AppTextFormFieldBordered(
                   maxLines: 6,
                   minLines: 6,
@@ -140,7 +141,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
                       restoreAccount(code);
                     }
                   },
-                  child: const Text('Restore My Account'),
+                  child: const Text('Login'),
                 ),
               )
             ],
