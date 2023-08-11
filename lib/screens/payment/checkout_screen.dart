@@ -379,6 +379,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        const SizedBox(
+                          height: 5,
+                        ),
                         Text(
                           'Your Equity Wallet balance \$$balance',
                           style: const TextStyle(
