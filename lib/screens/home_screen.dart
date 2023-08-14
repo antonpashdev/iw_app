@@ -13,10 +13,11 @@ import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/account/account_details_screen.dart';
+import 'package:iw_app/screens/account_settings/settings_screen.dart';
 import 'package:iw_app/screens/assets/asset_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
-import 'package:iw_app/screens/account_settings/settings_screen.dart';
+import 'package:iw_app/services/socket.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/accounts_list.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_custom.dart';
@@ -26,11 +27,33 @@ import 'package:iw_app/widgets/list/assets_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 const LAMPORTS_IN_SOL = 1000000000;
 
+initSocket(String token) {
+  IO.Socket socket = IO.io(
+    'http://localhost:3000',
+    IO.OptionBuilder()
+        .setTransports(['websocket'])
+        .disableAutoConnect()
+        .setQuery({'token': token})
+        .build(),
+  );
+  socket.connect();
+  socket.onConnect((_) {
+    print('Connection established');
+  });
+  socket.onDisconnect((_) => print('Connection Disconnection'));
+  socket.onConnectError((err) => print(err));
+  socket.onError((err) => print(err));
+
+  return socket;
+}
+
 class HomeScreen extends StatefulWidget {
   final bool? isOnboarding;
+
   const HomeScreen({Key? key, this.isOnboarding}) : super(key: key);
 
   @override
@@ -43,10 +66,21 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<List<OrganizationMemberWithOtherMembers>> futureAccountMembers;
   late Future<List<OrganizationMemberWithOtherMembers>> futureUserMembers;
   late Future<String?> futureBalance;
+  SocketService socketService = SocketService();
 
   @override
   void initState() {
     super.initState();
+
+    Future.wait([appStorage.getValue('jwt_token'), fetchAccount()])
+        .then((value) {
+      final token = value[0] as String?;
+      final account = value[1] as Account?;
+      if (token != null && account != null) {
+        socketService.connectSocket(token: token, account: account);
+      }
+    });
+
     futureAccount = fetchAccount();
     futureAccountMembers = fetchAccountMembers();
     futureUserMembers = fetchUserMembers();
@@ -59,6 +93,12 @@ class _HomeScreenState extends State<HomeScreen> {
         appStorage.deleteValue('redirect_to');
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    socketService.disconnectSocket();
   }
 
   Config get config => ConfigState.of(context).config;
