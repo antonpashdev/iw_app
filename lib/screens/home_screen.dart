@@ -27,29 +27,8 @@ import 'package:iw_app/widgets/list/assets_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 const LAMPORTS_IN_SOL = 1000000000;
-
-initSocket(String token) {
-  IO.Socket socket = IO.io(
-    'http://localhost:3000',
-    IO.OptionBuilder()
-        .setTransports(['websocket'])
-        .disableAutoConnect()
-        .setQuery({'token': token})
-        .build(),
-  );
-  socket.connect();
-  socket.onConnect((_) {
-    print('Connection established');
-  });
-  socket.onDisconnect((_) => print('Connection Disconnection'));
-  socket.onConnectError((err) => print(err));
-  socket.onError((err) => print(err));
-
-  return socket;
-}
 
 class HomeScreen extends StatefulWidget {
   final bool? isOnboarding;
@@ -462,7 +441,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return SettingsSreen(
+                        return SettingsScreen(
                           account: account,
                         );
                       },
