@@ -10,6 +10,7 @@ import 'package:iw_app/screens/withdraw/withdraw_sreen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/url.dart';
 import 'package:iw_app/widgets/buttons/icon_button_with_text.dart';
+import 'package:iw_app/widgets/components/bottom_sheet_custom.dart';
 
 buildWalletSection(BuildContext context, Account account) {
   callSnackBar(BuildContext context) {
@@ -38,6 +39,49 @@ buildWalletSection(BuildContext context, Account account) {
   handleCopyPressed(String text) async {
     Clipboard.setData(ClipboardData(text: text));
     callSnackBar(context);
+  }
+
+  onReceivePressed() {
+    showBottomSheetCustom(
+      context,
+      title: 'Receive USDC',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Your Solana Wallet Address',
+            style: TextStyle(fontSize: 16, color: COLOR_GRAY),
+          ),
+          const SizedBox(height: 15),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  account.wallet!,
+                  softWrap: true,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  handleCopyPressed(account.wallet!);
+                },
+                icon: const Icon(Icons.copy),
+              )
+            ],
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Send Solana USDC only to this address!!!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 30,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   return Column(
@@ -130,7 +174,7 @@ buildWalletSection(BuildContext context, Account account) {
             image: SvgPicture.asset('assets/icons/arrow_down_box.svg'),
             text: 'Receive',
             backgroundColor: COLOR_BLUE,
-            onPressed: () {},
+            onPressed: onReceivePressed,
           ),
           IconButtonWithText(
             image: SvgPicture.asset('assets/icons/arrow_right_box.svg'),

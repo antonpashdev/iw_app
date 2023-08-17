@@ -49,7 +49,7 @@
   "dontShowTheLinkScreen_title": "Don’t Show the Link",
   "dontShowTheLinkScreen_description": "Don't show the Link to Your\nAccount to anyone else.",
   "dontShowTheLinkScreen_description2": "Don't send the Link to Your\nAccount to anyone else.",
-  "dontShowTheLinkScreen_description3": "Don't share the Link to Your\nAccount with anyone else.",
+  "dontShowTheLinkScreen_description3": "Don't put this link to any\nwebsites except\napp.equitywallet.org",
   "dontShowTheLinkScreen_gotIt__button_text": "Got it. Continue.",
   "receiveMoneyScreen_title": "Item and Price",
   "receiveMoneyScreen_label_item": "Item",
