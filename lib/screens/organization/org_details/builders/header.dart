@@ -5,7 +5,6 @@ import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
-import 'package:iw_app/screens/organization/receive_money_payment_type_screen.dart';
 import 'package:iw_app/screens/organization/receive_money_screen.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';

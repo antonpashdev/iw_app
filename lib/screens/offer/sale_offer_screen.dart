@@ -1,8 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iw_app/api/offers_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/app_home.dart';
+import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/payment_model.dart';
@@ -44,6 +47,20 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
     try {
       final response = await offersApi.getSaleOffer(widget.offerId);
       return SaleOffer.fromJson(response.data);
+    } on DioError catch (err) {
+      if (err.response?.statusCode == 401) {
+        await appStorage.write(
+          'redirect_to',
+          '/saleoffer?i=${widget.offerId}',
+        );
+        if (mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            AppHome.routeName,
+            (route) => false,
+          );
+        }
+      }
+      rethrow;
     } catch (e) {
       print(e);
     }

@@ -64,11 +64,12 @@ List<Story> appScreens() {
       },
     ),
     Story(
-        name: 'Screens/Dont show the link',
-        builder: (context) {
-          return const DontShowTheLinkScreen(
-            link: 'some-link',
-          );
-        })
+      name: 'Screens/Dont show the link',
+      builder: (context) {
+        return const DontShowTheLinkScreen(
+          link: 'some-link',
+        );
+      },
+    ),
   ];
 }

@@ -1,13 +1,12 @@
 import 'package:iw_app/models/offer_model.dart';
-import 'package:iw_app/models/organization_member_model.dart';
 
 class OrgOffersFilter {
   OfferStatus? status;
-  MemberRole? role;
+  OfferType? type;
 
   OrgOffersFilter({
     this.status,
-    this.role,
+    this.type,
   });
 
   Map<String, dynamic> toMap() {
@@ -15,8 +14,8 @@ class OrgOffersFilter {
     if (status != null) {
       map['status'] = status!.toString().split('.').last;
     }
-    if (role != null) {
-      map['role'] = role!.toString().split('.').last;
+    if (type != null) {
+      map['type'] = type!.toString().split('.').last;
     }
     return map;
   }
