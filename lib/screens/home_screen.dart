@@ -14,6 +14,7 @@ import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/account/account_details_screen.dart';
 import 'package:iw_app/screens/assets/asset_screen.dart';
+import 'package:iw_app/screens/offer/sale_offer_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
 import 'package:iw_app/screens/account_settings/settings_screen.dart';
@@ -43,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<List<OrganizationMemberWithOtherMembers>> futureAccountMembers;
   late Future<List<OrganizationMemberWithOtherMembers>> futureUserMembers;
   late Future<String?> futureBalance;
+  bool bonusFlowStarted = false;
 
   @override
   void initState() {
@@ -337,6 +339,132 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  showBonusFlow() {
+    if (bonusFlowStarted) {
+      return;
+    }
+
+    showBottomSheetCustom(
+      context,
+      right: TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+          bonusFlowStarted = false;
+        },
+        child: const Text(
+          'Skip',
+          style: TextStyle(
+            color: COLOR_BLUE,
+          ),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SvgPicture.asset(
+                'assets/images/fireworks_colored.svg',
+                width: 70,
+                height: 70,
+              ),
+              SvgPicture.asset(
+                'assets/images/gift_colored.svg',
+                width: 130,
+                height: 130,
+              ),
+              SvgPicture.asset(
+                'assets/images/fireworks_colored.svg',
+                width: 70,
+                height: 70,
+              )
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'You got \$5 USDC on your bonus wallet!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 21,
+              color: COLOR_ALMOST_BLACK,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 25),
+          const Divider(),
+          const SizedBox(height: 25),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 25),
+            child: Text(
+              'You are 2 steps away from understanding how Equity Wallet works',
+              style: TextStyle(
+                fontSize: 22,
+                color: COLOR_ALMOST_BLACK,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          const SizedBox(height: 25),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text(
+                  '1. Get Equity in a project',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                    color: COLOR_ALMOST_BLACK,
+                  ),
+                ),
+                const Text(
+                  '2. Make a purchase and get share or revenue',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                    color: COLOR_ALMOST_BLACK,
+                  ),
+                ),
+                const SizedBox(height: 40),
+                const Center(
+                  child: Text(
+                    'It will take 30 seconds',
+                    style: TextStyle(
+                      color: COLOR_LIGHT_GREEN,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  child: const Text(
+                    'Check it out',
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        fullscreenDialog: true,
+                        allowSnapshotting: true,
+                        builder: (context) =>
+                            const SaleOfferScreen(offerId: ''),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Config config = ConfigState.of(context).config;
@@ -464,30 +592,56 @@ class _HomeScreenState extends State<HomeScreen> {
                                     .adaptive();
                               }
                               final balance = '\$${snapshot.data}';
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const AccountDetailsScreen(),
+                              return Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              const AccountDetailsScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          balance,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineMedium,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        const Icon(
+                                          Icons.keyboard_arrow_down_outlined,
+                                        ),
+                                      ],
                                     ),
-                                  );
-                                },
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      balance,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium,
+                                  ),
+                                  const SizedBox(width: 15),
+                                  InkWell(
+                                    onTap: showBonusFlow,
+                                    child: Row(
+                                      children: [
+                                        const Text(
+                                          '\$5.00',
+                                          style: TextStyle(
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.w700,
+                                            color: COLOR_LIGHT_GREEN,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5),
+                                        SvgPicture.asset(
+                                          width: 29,
+                                          height: 29,
+                                          'assets/images/gift_colored.svg',
+                                        )
+                                      ],
                                     ),
-                                    const SizedBox(width: 10),
-                                    const Icon(
-                                      Icons.keyboard_arrow_down_outlined,
-                                    ),
-                                  ],
-                                ),
+                                  )
+                                ],
                               );
                             },
                           ),
