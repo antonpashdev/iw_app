@@ -513,23 +513,23 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                       const SizedBox(
                         height: 5,
                       ),
+                      Text(
+                        'Your Equity Wallet balance \$$balance',
+                        style: const TextStyle(
+                          color: COLOR_GRAY,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                       Visibility(
                         visible: (bonusBalance ?? 0) > 0,
                         child: Text(
-                          'Your Equity Wallet balance \$$balance',
+                          'Your Equity Wallet bonus balance \$$bonusBalance',
                           style: const TextStyle(
-                            color: COLOR_GRAY,
+                            color: COLOR_LIGHT_GREEN,
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
-                        ),
-                      ),
-                      Text(
-                        'Your Equity Wallet bonus balance \$$bonusBalance',
-                        style: const TextStyle(
-                          color: COLOR_LIGHT_GREEN,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(
