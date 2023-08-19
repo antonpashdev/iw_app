@@ -40,7 +40,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool isPaymentSuccess = false;
   late Future<Payment?> futurePayment;
   late Future<Account?> futureAccount;
-  late Future<String?> futureBalance;
+  late Future<Map<String, double?>> futureBalance;
 
   @override
   void initState() {
@@ -85,10 +85,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return null;
   }
 
-  Future<String?> fetchBalance() async {
+  Future<Map<String, double?>> fetchBalance() async {
     final response = await usersApi.getBalance();
-    return TokenAmount.fromJson(response.data['balance']['balance'])
-        .uiAmountString;
+    final balance =
+        TokenAmount.fromJson(response.data['balance']['balance']).uiAmount;
+    final bonusBalance = TokenAmount.fromJson(
+          response.data['balance']['bonusBalance'],
+        ).uiAmount ??
+        0;
+
+    return {
+      'balance': balance,
+      'bonusBalance': bonusBalance,
+    };
   }
 
   buildItem(PaymentItem item) {
@@ -350,7 +359,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           if (snapshot.hasData) {
             final account = snapshot.data![0] as Account?;
             final payment = snapshot.data![1] as Payment?;
-            final balance = snapshot.data![2] as String?;
+            final balanceData = snapshot.data![2] as Map<String, double?>;
+            final balance = balanceData['balance'];
+            final bonusBalance = balanceData['bonusBalance'];
+
             return Stack(
               children: [
                 Positioned.fill(
@@ -391,6 +403,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        Visibility(
+                          visible: (bonusBalance ?? 0) > 0,
+                          child: Text(
+                            'Your Equity Wallet balance \$$balance',
+                            style: const TextStyle(
+                              color: COLOR_GRAY,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
                         const SizedBox(
                           height: 15,
                         ),
@@ -398,11 +421,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           child: SizedBox(
                             width: 290,
                             child: ElevatedButton(
-                              onPressed: isLoading ||
-                                      ((payment?.amount ?? 0) >
-                                          double.parse(balance ?? '0'))
-                                  ? null
-                                  : () => handlePayPressed(account, payment),
+                              onPressed: !isLoading &&
+                                          (payment?.amount ?? 0) <=
+                                              (bonusBalance ?? 0) ||
+                                      (payment?.amount ?? 0) <= (balance ?? 0)
+                                  ? () => handlePayPressed(account, payment)
+                                  : null,
                               child: isLoading
                                   ? const CircularProgressIndicator.adaptive()
                                   : Text('Pay \$${payment?.amount}'),

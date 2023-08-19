@@ -15,12 +15,13 @@ import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/account/account_details_screen.dart';
 import 'package:iw_app/screens/account_settings/settings_screen.dart';
 import 'package:iw_app/screens/assets/asset_screen.dart';
-import 'package:iw_app/screens/offer/sale_offer_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/url.dart';
 import 'package:iw_app/widgets/components/accounts_list.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_custom.dart';
+import 'package:iw_app/widgets/components/bullet_span.dart';
 import 'package:iw_app/widgets/components/org_member_card.dart';
 import 'package:iw_app/widgets/components/org_member_card_lite.dart';
 import 'package:iw_app/widgets/list/assets_list_tile.dart';
@@ -43,8 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<Account> futureAccount;
   late Future<List<OrganizationMemberWithOtherMembers>> futureAccountMembers;
   late Future<List<OrganizationMemberWithOtherMembers>> futureUserMembers;
-  late Future<Map<String, String?>> futureBalance;
-  bool bonusFlowStarted = false;
+  late Future<Map<String, double?>> futureBalance;
 
   @override
   void initState() {
@@ -55,10 +55,22 @@ class _HomeScreenState extends State<HomeScreen> {
     futureBalance = fetchBalance();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final balanceData = await fetchBalance();
+      final bonusBalance = balanceData['bonusBalance'];
+
+      final bonusFlowShowed = await appStorage.getValue(
+        'bonus_flow_greeting_showed',
+      );
+
       final redirectTo = await appStorage.getValue('redirect_to');
       if (redirectTo != null && mounted) {
         Navigator.of(context).pushNamed(redirectTo);
         appStorage.deleteValue('redirect_to');
+      }
+
+      if (redirectTo == null && bonusFlowShowed == null) {
+        showBonusFlow(bonusBalance: bonusBalance);
+        appStorage.write('bonus_flow_greeting_showed', true);
       }
     });
   }
@@ -126,13 +138,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return equity!;
   }
 
-  Future<Map<String, String?>> fetchBalance() async {
+  Future<Map<String, double?>> fetchBalance() async {
     final response = await usersApi.getBalance();
-    final balance = TokenAmount.fromJson(response.data['balance']['balance'])
-        .uiAmountString;
+    final balance =
+        TokenAmount.fromJson(response.data['balance']['balance']).uiAmount;
     final bonusBalance = TokenAmount.fromJson(
-      response.data['balance']['bonusBalance'],
-    ).uiAmountString;
+          response.data['balance']['bonusBalance'],
+        ).uiAmount ??
+        0;
 
     return {
       'balance': balance,
@@ -348,17 +361,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  showBonusFlow() {
-    if (bonusFlowStarted) {
-      return;
-    }
+  showBonusFlow({double? bonusBalance}) {
+    print('bonusBalance: $bonusBalance');
+
+    const bulletTextStyle = TextStyle(
+      fontSize: 22,
+      fontWeight: FontWeight.w400,
+      color: COLOR_ALMOST_BLACK,
+    );
 
     showBottomSheetCustom(
       context,
       right: TextButton(
         onPressed: () {
           Navigator.of(context).pop();
-          bonusFlowStarted = false;
         },
         child: const Text(
           'Skip',
@@ -391,10 +407,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
-            'You got \$5 USDC on your bonus wallet!',
+          Text(
+            bonusBalance == 5
+                ? 'You got \$${bonusBalance?.toStringAsFixed(2)} USDC on your bonus wallet!'
+                : bonusBalance == 2
+                    ? '\$$bonusBalance USDC left on your\nbonus wallet! '
+                    : '',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 21,
               color: COLOR_ALMOST_BLACK,
               fontWeight: FontWeight.w600,
@@ -403,14 +423,17 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 25),
           const Divider(),
           const SizedBox(height: 25),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25),
-            child: Text(
-              'You are 2 steps away from understanding how Equity Wallet works',
-              style: TextStyle(
-                fontSize: 22,
-                color: COLOR_ALMOST_BLACK,
-                fontWeight: FontWeight.w400,
+          Visibility(
+            visible: bonusBalance == 5,
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25),
+              child: Text(
+                'You are 2 steps away from understanding how Equity Wallet works',
+                style: TextStyle(
+                  fontSize: 22,
+                  color: COLOR_ALMOST_BLACK,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
           ),
@@ -421,29 +444,64 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const Text(
-                  '1. Get Equity in a project',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
-                    color: COLOR_ALMOST_BLACK,
+                Visibility(
+                  visible: bonusBalance == 5,
+                  child: const Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '1. Get Equity in a project',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: COLOR_ALMOST_BLACK,
+                        ),
+                      ),
+                      Text(
+                        '2. Make a purchase and get share or revenue',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: COLOR_ALMOST_BLACK,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const Text(
-                  '2. Make a purchase and get share or revenue',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w400,
-                    color: COLOR_ALMOST_BLACK,
+                Visibility(
+                  visible: bonusBalance == 2,
+                  child: const Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BulletText(
+                        text: 'Go to the website',
+                        style: bulletTextStyle,
+                      ),
+                      BulletText(
+                        text:
+                            'Buy a sample of the book to get a share of revenue',
+                        style: bulletTextStyle,
+                      ),
+                      BulletText(
+                        text: 'Check your wallet',
+                        style: bulletTextStyle,
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 40),
-                const Center(
+                Center(
                   child: Text(
-                    'It will take 30 seconds',
-                    style: TextStyle(
+                    bonusBalance == 5
+                        ? 'It will take 30 seconds'
+                        : bonusBalance == 2
+                            ? 'Finish it'
+                            : '',
+                    style: const TextStyle(
                       color: COLOR_LIGHT_GREEN,
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -452,17 +510,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
-                  child: const Text(
-                    'Check it out',
+                  child: Text(
+                    bonusBalance == 5
+                        ? 'Check it out'
+                        : bonusBalance == 2
+                            ? 'Get back to the site'
+                            : '',
                   ),
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        fullscreenDialog: true,
-                        allowSnapshotting: true,
-                        builder: (context) => const SaleOfferScreen(
-                          offerId: '64dfcf81b6a6af9666889ae6',
-                        ),
+                    launchURL(
+                      Uri.parse(
+                        'https://readwriteown-hack.xyz',
                       ),
                     );
                   },
@@ -601,7 +659,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return const CircularProgressIndicator
                                     .adaptive();
                               }
-                              final balance = '\$${snapshot.data!['balance']}';
+                              final balance =
+                                  '\$${snapshot.data!['balance']?.toStringAsFixed(2)}';
+                              final bonusBalance = snapshot
+                                  .data!['bonusBalance']
+                                  ?.toStringAsFixed(2);
                               return Row(
                                 children: [
                                   InkWell(
@@ -631,12 +693,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   const SizedBox(width: 15),
                                   InkWell(
-                                    onTap: showBonusFlow,
+                                    onTap: bonusBalance == '0'
+                                        ? null
+                                        : () {
+                                            showBonusFlow(
+                                              bonusBalance: snapshot
+                                                  .data!['bonusBalance'],
+                                            );
+                                          },
                                     child: Row(
                                       children: [
-                                        const Text(
-                                          '\$5.00',
-                                          style: TextStyle(
+                                        Text(
+                                          '\$$bonusBalance',
+                                          style: const TextStyle(
                                             fontSize: 30,
                                             fontWeight: FontWeight.w700,
                                             color: COLOR_LIGHT_GREEN,

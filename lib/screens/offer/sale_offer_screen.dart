@@ -13,6 +13,7 @@ import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
+import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
@@ -28,8 +29,11 @@ class SaleOfferScreen extends StatefulWidget {
   static String routeName = '/saleoffer';
 
   final String offerId;
+  final bool? isBonusOnboarding;
 
-  const SaleOfferScreen({Key? key, required this.offerId}) : super(key: key);
+  const SaleOfferScreen(
+      {Key? key, required this.offerId, this.isBonusOnboarding})
+      : super(key: key);
 
   @override
   State<SaleOfferScreen> createState() => _SaleOfferScreenState();
@@ -38,7 +42,7 @@ class SaleOfferScreen extends StatefulWidget {
 class _SaleOfferScreenState extends State<SaleOfferScreen> {
   late Future<SaleOffer?> futureSaleOffer;
   late Future<Account?> futureAccount;
-  late Future<String?> futureBalance;
+  late Future<Map<String, double?>> futureBalance;
   bool isLoading = false;
   Payment? payment;
 
@@ -60,10 +64,19 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
     return null;
   }
 
-  Future<String?> fetchBalance() async {
+  Future<Map<String, double?>> fetchBalance() async {
     final response = await usersApi.getBalance();
-    return TokenAmount.fromJson(response.data['balance']['balance'])
-        .uiAmountString;
+    final balance =
+        TokenAmount.fromJson(response.data['balance']['balance']).uiAmount;
+    final bonusBalance = TokenAmount.fromJson(
+          response.data['balance']['bonusBalance'],
+        ).uiAmount ??
+        0;
+
+    return {
+      'balance': balance,
+      'bonusBalance': bonusBalance,
+    };
   }
 
   Future<SaleOffer?> fetchSaleOffer() async {
@@ -355,7 +368,21 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
         Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
       }
     } catch (err) {
-      print(err);
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Operation failed'),
+          content: Text(err.toString()),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     } finally {
       setState(() {
         isLoading = false;
@@ -403,9 +430,12 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
               child: CircularProgressIndicator(),
             );
           }
-          final balance = snapshot.data![2] as String;
-          final account = snapshot.data![1] as Account?;
           final saleOffer = snapshot.data![0] as SaleOffer?;
+          final account = snapshot.data![1] as Account?;
+          final balanceData = snapshot.data![2] as Map<String, double?>;
+          final balance = balanceData['balance'];
+          final bonusBalance = balanceData['bonusBalance'];
+
           return Stack(
             children: [
               Positioned.fill(
@@ -483,8 +513,19 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                       const SizedBox(
                         height: 5,
                       ),
+                      Visibility(
+                        visible: (bonusBalance ?? 0) > 0,
+                        child: Text(
+                          'Your Equity Wallet balance \$$balance',
+                          style: const TextStyle(
+                            color: COLOR_GRAY,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
                       Text(
-                        'Your Equity Wallet balance \$$balance',
+                        'Your Equity Wallet bonus balance \$$bonusBalance',
                         style: const TextStyle(
                           color: COLOR_GRAY,
                           fontSize: 16,
@@ -497,9 +538,12 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                       SizedBox(
                         width: 290,
                         child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () => handleBuyPressed(saleOffer),
+                          onPressed: !isLoading &&
+                                      (payment?.amount ?? 0) <=
+                                          (bonusBalance ?? 0) ||
+                                  (payment?.amount ?? 0) <= (balance ?? 0)
+                              ? () => handleBuyPressed(saleOffer)
+                              : null,
                           child: isLoading
                               ? const CircularProgressIndicator.adaptive()
                               : Text('Buy for \$${saleOffer?.price}'),
