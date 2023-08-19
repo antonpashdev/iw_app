@@ -364,6 +364,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   showBonusFlow({double? bonusBalance}) {
+    if (bonusBalance == 0 || bonusBalance == null) {
+      return;
+    }
+
     print('bonusBalance: $bonusBalance');
 
     const bulletTextStyle = TextStyle(
@@ -694,32 +698,37 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 15),
-                                  InkWell(
-                                    onTap: bonusBalance == '0'
-                                        ? null
-                                        : () {
-                                            showBonusFlow(
-                                              bonusBalance: snapshot
-                                                  .data!['bonusBalance'],
-                                            );
-                                          },
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          '\$$bonusBalance',
-                                          style: const TextStyle(
-                                            fontSize: 30,
-                                            fontWeight: FontWeight.w700,
-                                            color: COLOR_LIGHT_GREEN,
+                                  Visibility(
+                                    visible:
+                                        (snapshot.data!['bonusBalance'] ?? 0) >
+                                            0,
+                                    child: InkWell(
+                                      onTap: bonusBalance == '0'
+                                          ? null
+                                          : () {
+                                              showBonusFlow(
+                                                bonusBalance: snapshot
+                                                    .data!['bonusBalance'],
+                                              );
+                                            },
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            '\$$bonusBalance',
+                                            style: const TextStyle(
+                                              fontSize: 30,
+                                              fontWeight: FontWeight.w700,
+                                              color: COLOR_LIGHT_GREEN,
+                                            ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 5),
-                                        SvgPicture.asset(
-                                          width: 29,
-                                          height: 29,
-                                          'assets/images/gift_colored.svg',
-                                        )
-                                      ],
+                                          const SizedBox(width: 5),
+                                          SvgPicture.asset(
+                                            width: 29,
+                                            height: 29,
+                                            'assets/images/gift_colored.svg',
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   )
                                 ],

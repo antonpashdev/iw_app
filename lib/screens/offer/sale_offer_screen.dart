@@ -527,7 +527,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                       Text(
                         'Your Equity Wallet bonus balance \$$bonusBalance',
                         style: const TextStyle(
-                          color: COLOR_GRAY,
+                          color: COLOR_LIGHT_GREEN,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
