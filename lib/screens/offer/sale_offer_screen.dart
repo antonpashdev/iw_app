@@ -62,7 +62,8 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
 
   Future<String?> fetchBalance() async {
     final response = await usersApi.getBalance();
-    return TokenAmount.fromJson(response.data['balance']).uiAmountString;
+    return TokenAmount.fromJson(response.data['balance']['balance'])
+        .uiAmountString;
   }
 
   Future<SaleOffer?> fetchSaleOffer() async {

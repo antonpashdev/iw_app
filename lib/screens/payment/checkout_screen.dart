@@ -87,7 +87,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Future<String?> fetchBalance() async {
     final response = await usersApi.getBalance();
-    return TokenAmount.fromJson(response.data['balance']).uiAmountString;
+    return TokenAmount.fromJson(response.data['balance']['balance'])
+        .uiAmountString;
   }
 
   buildItem(PaymentItem item) {
