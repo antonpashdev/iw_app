@@ -13,11 +13,11 @@ import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/account/account_details_screen.dart';
+import 'package:iw_app/screens/account_settings/settings_screen.dart';
 import 'package:iw_app/screens/assets/asset_screen.dart';
 import 'package:iw_app/screens/offer/sale_offer_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
-import 'package:iw_app/screens/account_settings/settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/accounts_list.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_custom.dart';
@@ -460,8 +460,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       MaterialPageRoute(
                         fullscreenDialog: true,
                         allowSnapshotting: true,
-                        builder: (context) =>
-                            const SaleOfferScreen(offerId: ''),
+                        builder: (context) => const SaleOfferScreen(
+                          offerId: '64dfcf81b6a6af9666889ae6',
+                        ),
                       ),
                     );
                   },
