@@ -1,10 +1,16 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/offers_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/app_home.dart';
+import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/models/config_model.dart';
+import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
@@ -31,19 +37,53 @@ class SaleOfferScreen extends StatefulWidget {
 
 class _SaleOfferScreenState extends State<SaleOfferScreen> {
   late Future<SaleOffer?> futureSaleOffer;
+  late Future<Account?> futureAccount;
+  late Future<String?> futureBalance;
   bool isLoading = false;
   Payment? payment;
 
   @override
   void initState() {
     futureSaleOffer = fetchSaleOffer();
+    futureAccount = fetchAccount();
+    futureBalance = fetchBalance();
     super.initState();
+  }
+
+  Future<Account?> fetchAccount() async {
+    try {
+      final response = await authApi.getMe();
+      return Account.fromJson(response.data);
+    } catch (err) {
+      print(err);
+    }
+    return null;
+  }
+
+  Future<String?> fetchBalance() async {
+    final response = await usersApi.getBalance();
+    return TokenAmount.fromJson(response.data['balance']['balance'])
+        .uiAmountString;
   }
 
   Future<SaleOffer?> fetchSaleOffer() async {
     try {
       final response = await offersApi.getSaleOffer(widget.offerId);
       return SaleOffer.fromJson(response.data);
+    } on DioError catch (err) {
+      if (err.response?.statusCode == 401) {
+        await appStorage.write(
+          'redirect_to',
+          '/saleoffer?i=${widget.offerId}',
+        );
+        if (mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            AppHome.routeName,
+            (route) => false,
+          );
+        }
+      }
+      rethrow;
     } catch (e) {
       print(e);
     }
@@ -97,7 +137,10 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
     );
   }
 
-  buildDetails(BuildContext context, SaleOffer saleOffer) {
+  buildDetails(BuildContext context, SaleOffer? saleOffer) {
+    if (saleOffer == null) {
+      return Container();
+    }
     Config config = ConfigState.of(context).config;
     final equity = ((saleOffer.tokensAmount! * LAMPORTS_IN_SOL) /
             saleOffer.org.lamportsMinted *
@@ -171,7 +214,10 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
     );
   }
 
-  buildFromDetails(BuildContext context, SaleOffer saleOffer) {
+  buildFromDetails(BuildContext context, SaleOffer? saleOffer) {
+    if (saleOffer == null) {
+      return Container();
+    }
     final imageUrl = saleOffer.seller!['avatar'] ?? saleOffer.seller!['logo'];
     final sellerUsername =
         saleOffer.seller!['nickname'] ?? saleOffer.seller!['username'];
@@ -245,7 +291,10 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
     }
   }
 
-  handleBuyPressed(SaleOffer offer) {
+  handleBuyPressed(SaleOffer? offer) {
+    if (offer == null) {
+      return;
+    }
     Config config = ConfigState.of(context).config;
     showBottomInfoSheet(
       context,
@@ -347,13 +396,16 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
     return ScreenScaffold(
       title: 'Offer to Buy',
       child: FutureBuilder(
-        future: futureSaleOffer,
+        future: Future.wait([futureSaleOffer, futureAccount, futureBalance]),
         builder: (_, snapshot) {
           if (!snapshot.hasData) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
+          final balance = snapshot.data![2] as String;
+          final account = snapshot.data![1] as Account?;
+          final saleOffer = snapshot.data![0] as SaleOffer?;
           return Stack(
             children: [
               Positioned.fill(
@@ -363,9 +415,9 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                       child: KeyboardDismissableListView(
                         children: [
                           const SizedBox(height: 20),
-                          buildFromDetails(context, snapshot.data as SaleOffer),
+                          buildFromDetails(context, saleOffer),
                           const SizedBox(height: 5),
-                          buildDetails(context, snapshot.data as SaleOffer),
+                          buildDetails(context, saleOffer),
                           const SizedBox(height: 20),
                           const SizedBox(height: 100),
                           if (payment != null)
@@ -415,19 +467,45 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: Center(
-                    child: SizedBox(
-                      width: 290,
-                      child: ElevatedButton(
-                        onPressed: isLoading
-                            ? null
-                            : () =>
-                                handleBuyPressed(snapshot.data as SaleOffer),
-                        child: isLoading
-                            ? const CircularProgressIndicator.adaptive()
-                            : Text('Buy for \$${snapshot.data!.price}'),
+                  child: Column(
+                    children: [
+                      Text(
+                        account?.username != null
+                            ? '@${account?.username}'
+                            : '',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: COLOR_GRAY,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'Your Equity Wallet balance \$$balance',
+                        style: const TextStyle(
+                          color: COLOR_GRAY,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      SizedBox(
+                        width: 290,
+                        child: ElevatedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () => handleBuyPressed(saleOffer),
+                          child: isLoading
+                              ? const CircularProgressIndicator.adaptive()
+                              : Text('Buy for \$${saleOffer?.price}'),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
             ],

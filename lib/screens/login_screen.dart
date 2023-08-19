@@ -56,7 +56,8 @@ class LoginScreen extends StatelessWidget {
                       width: 250,
                     ),
                     GestureDetector(
-                      onTap: () => onLogoPressed(config, context),
+                      // onTap: () => onLogoPressed(config, context),
+                      onTap: null,
                       child: Container(
                         width: 40,
                         height: 40,

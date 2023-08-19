@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<Account> futureAccount;
   late Future<List<OrganizationMemberWithOtherMembers>> futureAccountMembers;
   late Future<List<OrganizationMemberWithOtherMembers>> futureUserMembers;
-  late Future<String?> futureBalance;
+  late Future<Map<String, String?>> futureBalance;
   bool bonusFlowStarted = false;
 
   @override
@@ -126,9 +126,18 @@ class _HomeScreenState extends State<HomeScreen> {
     return equity!;
   }
 
-  Future<String?> fetchBalance() async {
+  Future<Map<String, String?>> fetchBalance() async {
     final response = await usersApi.getBalance();
-    return TokenAmount.fromJson(response.data['balance']).uiAmountString;
+    final balance = TokenAmount.fromJson(response.data['balance']['balance'])
+        .uiAmountString;
+    final bonusBalance = TokenAmount.fromJson(
+      response.data['balance']['bonusBalance'],
+    ).uiAmountString;
+
+    return {
+      'balance': balance,
+      'bonusBalance': bonusBalance,
+    };
   }
 
   navigateToCreateOrg() async {
@@ -591,7 +600,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return const CircularProgressIndicator
                                     .adaptive();
                               }
-                              final balance = '\$${snapshot.data}';
+                              final balance = '\$${snapshot.data!['balance']}';
                               return Row(
                                 children: [
                                   InkWell(
