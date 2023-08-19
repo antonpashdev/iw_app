@@ -3,10 +3,12 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/payment_api.dart';
+import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/app_home.dart';
 import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/models/config_model.dart';
+import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
@@ -38,12 +40,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool isPaymentSuccess = false;
   late Future<Payment?> futurePayment;
   late Future<Account?> futureAccount;
+  late Future<String?> futureBalance;
 
   @override
   void initState() {
     super.initState();
     futurePayment = fetchPayment();
     futureAccount = fetchAccount();
+    futureBalance = fetchBalance();
   }
 
   Config get config {
@@ -79,6 +83,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       print(err);
     }
     return null;
+  }
+
+  Future<String?> fetchBalance() async {
+    final response = await usersApi.getBalance();
+    return TokenAmount.fromJson(response.data['balance']['balance'])
+        .uiAmountString;
   }
 
   buildItem(PaymentItem item) {
@@ -335,14 +345,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return ScreenScaffold(
       title: 'Checkout',
       child: FutureBuilder(
-        future: Future.wait([
-          futureAccount,
-          futurePayment,
-        ]),
+        future: Future.wait([futureAccount, futurePayment, futureBalance]),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final account = snapshot.data![0] as Account?;
             final payment = snapshot.data![1] as Payment?;
+            final balance = snapshot.data![2] as String?;
             return Stack(
               children: [
                 Positioned.fill(
@@ -359,18 +367,49 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: Center(
-                      child: SizedBox(
-                        width: 290,
-                        child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () => handlePayPressed(account, payment),
-                          child: isLoading
-                              ? const CircularProgressIndicator.adaptive()
-                              : Text('Pay \$${payment?.amount}'),
+                    child: Column(
+                      children: [
+                        Text(
+                          account?.username != null
+                              ? '@${account?.username}'
+                              : '',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: COLOR_GRAY,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          'Your Equity Wallet balance \$$balance',
+                          style: const TextStyle(
+                            color: COLOR_GRAY,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Center(
+                          child: SizedBox(
+                            width: 290,
+                            child: ElevatedButton(
+                              onPressed: isLoading ||
+                                      ((payment?.amount ?? 0) >
+                                          double.parse(balance ?? '0'))
+                                  ? null
+                                  : () => handlePayPressed(account, payment),
+                              child: isLoading
+                                  ? const CircularProgressIndicator.adaptive()
+                                  : Text('Pay \$${payment?.amount}'),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 if (isPaymentSuccess)

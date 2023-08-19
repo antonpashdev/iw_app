@@ -43,7 +43,8 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
 
   Future<String?> fetchBalance() async {
     final response = await usersApi.getBalance();
-    return TokenAmount.fromJson(response.data['balance']).uiAmountString;
+    return TokenAmount.fromJson(response.data['balance']['balance'])
+        .uiAmountString;
   }
 
   Future<List<TxnHistoryItem>> fetchHistory() async {

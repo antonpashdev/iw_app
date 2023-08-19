@@ -3,6 +3,8 @@ import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/screens/offer/offer_preview_screen.dart';
+import 'package:iw_app/screens/onboarding/dont_show_the_link_screen.dart';
+import 'package:iw_app/screens/onboarding/login_link_screen.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
 List<Story> appScreens() {
@@ -52,6 +54,22 @@ List<Story> appScreens() {
           offer: Offer(id: '1', org: org, memberProspects: []),
         );
       },
-    )
+    ),
+    Story(
+      name: 'Screens/Link onboarding',
+      builder: (context) {
+        return const LoginLinkScreen(
+          link: 'some-link',
+        );
+      },
+    ),
+    Story(
+      name: 'Screens/Dont show the link',
+      builder: (context) {
+        return const DontShowTheLinkScreen(
+          link: 'some-link',
+        );
+      },
+    ),
   ];
 }
