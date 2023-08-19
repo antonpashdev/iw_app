@@ -68,7 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
         appStorage.deleteValue('redirect_to');
       }
 
-      if (redirectTo == null && bonusFlowShowed == null) {
+      if (redirectTo == null &&
+          bonusFlowShowed == null &&
+          (bonusBalance ?? 0) > 0) {
         showBonusFlow(bonusBalance: bonusBalance);
         appStorage.write('bonus_flow_greeting_showed', true);
       }
