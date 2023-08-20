@@ -132,6 +132,7 @@ const Color COLOR_GRAY2 = Color(0xffB8BFCA);
 const Color COLOR_GREEN = Color(0xff0E9E17);
 const Color COLOR_BLUE = Color(0xff1D55E4);
 const Color COLOR_RED = Color(0xffD02626);
+const Color COLOR_RED2 = Color(0xffFF3A44);
 const Color COLOR_ORANGE = Color(0xffECA240);
 const Color COLOR_CORAL = Color(0xff3EA592);
 const Color COLOR_PURPLE = Color(0xff934BAE);

@@ -13,7 +13,6 @@ import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
-import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
@@ -435,6 +434,8 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
           final balanceData = snapshot.data![2] as Map<String, double?>;
           final balance = balanceData['balance'];
           final bonusBalance = balanceData['bonusBalance'];
+          final canPay = (saleOffer?.price ?? 0) <= (bonusBalance ?? 0) ||
+              (saleOffer?.price ?? 0) <= (balance ?? 0);
 
           return Stack(
             children: [
@@ -538,10 +539,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                       SizedBox(
                         width: 290,
                         child: ElevatedButton(
-                          onPressed: !isLoading &&
-                                      (payment?.amount ?? 0) <=
-                                          (bonusBalance ?? 0) ||
-                                  (payment?.amount ?? 0) <= (balance ?? 0)
+                          onPressed: !isLoading && canPay
                               ? () => handleBuyPressed(saleOffer)
                               : null,
                           child: isLoading

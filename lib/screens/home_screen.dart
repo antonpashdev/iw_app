@@ -58,10 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
       final balanceData = await fetchBalance();
       final bonusBalance = balanceData['bonusBalance'];
 
-      final bonusFlowShowed = await appStorage.getValue(
-        'bonus_flow_greeting_showed',
-      );
-
       final redirectTo = await appStorage.getValue('redirect_to');
       if (redirectTo != null && mounted) {
         Navigator.of(context).pushNamed(redirectTo);
@@ -69,10 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
       }
 
       if (redirectTo == null &&
-          bonusFlowShowed == null &&
-          (bonusBalance ?? 0) > 0) {
+          (widget.isOnboarding == true || (bonusBalance ?? 0) > 0)) {
         showBonusFlow(bonusBalance: bonusBalance);
-        appStorage.write('bonus_flow_greeting_showed', true);
       }
     });
   }
@@ -144,10 +138,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final response = await usersApi.getBalance();
     final balance =
         TokenAmount.fromJson(response.data['balance']['balance']).uiAmount;
-    final bonusBalance = TokenAmount.fromJson(
-          response.data['balance']['bonusBalance'],
-        ).uiAmount ??
-        0;
+    final bonusBalanceJson = response.data['balance']['bonusBalance'];
+    final double? bonusBalance = bonusBalanceJson != null
+        ? TokenAmount.fromJson(
+            bonusBalanceJson,
+          ).uiAmount
+        : 0;
 
     return {
       'balance': balance,
@@ -415,7 +411,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 8),
           Text(
             bonusBalance == 5
-                ? 'You got \$${bonusBalance?.toStringAsFixed(2)} USDC on your bonus wallet!'
+                ? 'You got \$${bonusBalance.toStringAsFixed(2)} USDC on your bonus wallet!'
                 : bonusBalance == 2
                     ? '\$$bonusBalance USDC left on your\nbonus wallet! '
                     : '',
@@ -665,8 +661,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return const CircularProgressIndicator
                                     .adaptive();
                               }
-                              final balance =
-                                  '\$${snapshot.data!['balance']?.toStringAsFixed(2)}';
+                              final double balance =
+                                  snapshot.data!['balance'] ?? 0;
                               final bonusBalance = snapshot
                                   .data!['bonusBalance']
                                   ?.toStringAsFixed(2);
@@ -685,7 +681,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
-                                          balance,
+                                          '\$$balance',
                                           style: Theme.of(context)
                                               .textTheme
                                               .headlineMedium,
@@ -702,35 +698,45 @@ class _HomeScreenState extends State<HomeScreen> {
                                     visible:
                                         (snapshot.data!['bonusBalance'] ?? 0) >
                                             0,
-                                    child: InkWell(
-                                      onTap: bonusBalance == '0'
-                                          ? null
-                                          : () {
-                                              showBonusFlow(
-                                                bonusBalance: snapshot
-                                                    .data!['bonusBalance'],
-                                              );
-                                            },
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            '\$$bonusBalance',
-                                            style: const TextStyle(
-                                              fontSize: 30,
-                                              fontWeight: FontWeight.w700,
-                                              color: COLOR_LIGHT_GREEN,
-                                            ),
+                                    child: Row(
+                                      children: [
+                                        InkWell(
+                                          onTap: bonusBalance == '0'
+                                              ? null
+                                              : () {
+                                                  showBonusFlow(
+                                                    bonusBalance: snapshot
+                                                        .data!['bonusBalance'],
+                                                  );
+                                                },
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                '\$$bonusBalance',
+                                                style: const TextStyle(
+                                                  fontSize: 30,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: COLOR_LIGHT_GREEN,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 5),
+                                              SvgPicture.asset(
+                                                width: 29,
+                                                height: 29,
+                                                'assets/images/gift_colored.svg',
+                                              )
+                                            ],
                                           ),
-                                          const SizedBox(width: 5),
-                                          SvgPicture.asset(
-                                            width: 29,
-                                            height: 29,
-                                            'assets/images/gift_colored.svg',
-                                          )
-                                        ],
-                                      ),
+                                        ),
+                                        if (snapshot.data!['bonusBalance'] == 2)
+                                          const Icon(
+                                            CupertinoIcons.info_circle_fill,
+                                            color: COLOR_RED2,
+                                            size: 20,
+                                          ),
+                                      ],
                                     ),
-                                  )
+                                  ),
                                 ],
                               );
                             },
