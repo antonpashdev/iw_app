@@ -7,6 +7,7 @@ class User {
   String? id;
   String? wallet;
   Uint8List? avatarToSet;
+  String? createdAt;
 
   User({
     this.nickname = '',
@@ -15,6 +16,7 @@ class User {
     this.avatarToSet,
     this.id,
     this.wallet,
+    this.createdAt,
   });
 
   User.fromJson(Map<String, dynamic> json) {
@@ -23,5 +25,6 @@ class User {
     avatar = json['avatar'];
     wallet = json['wallet'];
     id = json['_id'];
+    createdAt = json['createdAt'];
   }
 }

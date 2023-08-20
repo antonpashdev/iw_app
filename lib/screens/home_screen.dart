@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,7 @@ import 'package:iw_app/widgets/list/assets_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
+import 'package:rxdart/rxdart.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
 
@@ -41,6 +44,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<int> assets = [];
+  final bonusExpirationSubject = BehaviorSubject<Duration?>();
+  Timer? timer;
   late Future<Account> futureAccount;
   late Future<List<OrganizationMemberWithOtherMembers>> futureAccountMembers;
   late Future<List<OrganizationMemberWithOtherMembers>> futureUserMembers;
@@ -53,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
     futureAccountMembers = fetchAccountMembers();
     futureUserMembers = fetchUserMembers();
     futureBalance = fetchBalance();
+    startTimer();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final redirectTo = await appStorage.getValue('redirect_to');
@@ -63,7 +69,35 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    bonusExpirationSubject.close();
+    timer?.cancel();
+    super.dispose();
+  }
+
   Config get config => ConfigState.of(context).config;
+
+  startTimer() async {
+    final account = await futureAccount;
+    final balance = await futureBalance;
+    if (account.user == null || balance['bonusBalance'] == 0) return;
+    timer = Timer.periodic(const Duration(seconds: 1), updateTimeLeft);
+  }
+
+  updateTimeLeft(Timer timer) async {
+    final account = await futureAccount;
+    final user = account.user;
+    final createdAt = DateTime.parse(user!.createdAt!);
+    final bonusExpiration =
+        createdAt.add(Duration(minutes: config.bonusWalletExpiration!));
+    if (DateTime.now().isAfter(bonusExpiration)) {
+      timer.cancel();
+      return;
+    }
+    final timeLeft = bonusExpiration.difference(DateTime.now());
+    bonusExpirationSubject.add(timeLeft);
+  }
 
   Future<Account> fetchAccount() =>
       authApi.getMe().then((response) => Account.fromJson(response.data));
@@ -653,6 +687,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   .data!['bonusBalance']
                                   ?.toStringAsFixed(2);
                               return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   InkWell(
                                     onTap: () {
@@ -684,40 +719,74 @@ class _HomeScreenState extends State<HomeScreen> {
                                     visible:
                                         (snapshot.data!['bonusBalance'] ?? 0) >
                                             0,
-                                    child: Row(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        InkWell(
-                                          onTap: bonusBalance == '0'
-                                              ? null
-                                              : () {
-                                                  showBonusFlow(
-                                                    snapshot
-                                                        .data!['bonusBalance'],
-                                                  );
-                                                },
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                '\$$bonusBalance',
+                                        Row(
+                                          children: [
+                                            InkWell(
+                                              onTap: bonusBalance == '0'
+                                                  ? null
+                                                  : () {
+                                                      showBonusFlow(
+                                                        snapshot.data![
+                                                            'bonusBalance'],
+                                                      );
+                                                    },
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    '\$$bonusBalance',
+                                                    style: const TextStyle(
+                                                      fontSize: 30,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: COLOR_LIGHT_GREEN,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 5),
+                                                  SvgPicture.asset(
+                                                    width: 29,
+                                                    height: 29,
+                                                    'assets/images/gift_colored.svg',
+                                                  ),
+                                                  const SizedBox(width: 5),
+                                                  const Icon(
+                                                    CupertinoIcons
+                                                        .info_circle_fill,
+                                                    color: COLOR_RED2,
+                                                    size: 20,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 19),
+                                          child: StreamBuilder<Duration?>(
+                                            stream:
+                                                bonusExpirationSubject.stream,
+                                            builder: (_, snapshot) {
+                                              if (!snapshot.hasData) {
+                                                return Container();
+                                              }
+                                              final timeLeft = snapshot.data!;
+                                              int hours = timeLeft.inHours;
+                                              int minutes = timeLeft.inMinutes
+                                                  .remainder(60);
+                                              int seconds = timeLeft.inSeconds
+                                                  .remainder(60);
+                                              return Text(
+                                                '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
                                                 style: const TextStyle(
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: COLOR_LIGHT_GREEN,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: COLOR_RED2,
                                                 ),
-                                              ),
-                                              const SizedBox(width: 5),
-                                              SvgPicture.asset(
-                                                width: 29,
-                                                height: 29,
-                                                'assets/images/gift_colored.svg',
-                                              ),
-                                              const SizedBox(width: 5),
-                                              const Icon(
-                                                CupertinoIcons.info_circle_fill,
-                                                color: COLOR_RED2,
-                                                size: 20,
-                                              ),
-                                            ],
+                                              );
+                                            },
                                           ),
                                         ),
                                       ],
