@@ -13,13 +13,15 @@ import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/account/account_details_screen.dart';
+import 'package:iw_app/screens/account_settings/settings_screen.dart';
 import 'package:iw_app/screens/assets/asset_screen.dart';
 import 'package:iw_app/screens/organization/create_org_screen.dart';
 import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
-import 'package:iw_app/screens/account_settings/settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/url.dart';
 import 'package:iw_app/widgets/components/accounts_list.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_custom.dart';
+import 'package:iw_app/widgets/components/bullet_span.dart';
 import 'package:iw_app/widgets/components/org_member_card.dart';
 import 'package:iw_app/widgets/components/org_member_card_lite.dart';
 import 'package:iw_app/widgets/list/assets_list_tile.dart';
@@ -42,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<Account> futureAccount;
   late Future<List<OrganizationMemberWithOtherMembers>> futureAccountMembers;
   late Future<List<OrganizationMemberWithOtherMembers>> futureUserMembers;
-  late Future<Map<String, String?>> futureBalance;
+  late Future<Map<String, double?>> futureBalance;
 
   @override
   void initState() {
@@ -53,10 +55,24 @@ class _HomeScreenState extends State<HomeScreen> {
     futureBalance = fetchBalance();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final balanceData = await fetchBalance();
+      final bonusBalance = balanceData['bonusBalance'];
+
+      final bonusFlowShowed = await appStorage.getValue(
+        'bonus_flow_greeting_showed',
+      );
+
       final redirectTo = await appStorage.getValue('redirect_to');
       if (redirectTo != null && mounted) {
         Navigator.of(context).pushNamed(redirectTo);
         appStorage.deleteValue('redirect_to');
+      }
+
+      if (redirectTo == null &&
+          bonusFlowShowed == null &&
+          (bonusBalance ?? 0) > 0) {
+        showBonusFlow(bonusBalance: bonusBalance);
+        appStorage.write('bonus_flow_greeting_showed', true);
       }
     });
   }
@@ -124,13 +140,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return equity!;
   }
 
-  Future<Map<String, String?>> fetchBalance() async {
+  Future<Map<String, double?>> fetchBalance() async {
     final response = await usersApi.getBalance();
-    final balance = TokenAmount.fromJson(response.data['balance']['balance'])
-        .uiAmountString;
+    final balance =
+        TokenAmount.fromJson(response.data['balance']['balance']).uiAmount;
     final bonusBalance = TokenAmount.fromJson(
-      response.data['balance']['bonusBalance'],
-    ).uiAmountString;
+          response.data['balance']['bonusBalance'],
+        ).uiAmount ??
+        0;
 
     return {
       'balance': balance,
@@ -346,6 +363,182 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  showBonusFlow({double? bonusBalance}) {
+    if (bonusBalance == 0 || bonusBalance == null) {
+      return;
+    }
+
+    print('bonusBalance: $bonusBalance');
+
+    const bulletTextStyle = TextStyle(
+      fontSize: 22,
+      fontWeight: FontWeight.w400,
+      color: COLOR_ALMOST_BLACK,
+    );
+
+    showBottomSheetCustom(
+      context,
+      right: TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: const Text(
+          'Skip',
+          style: TextStyle(
+            color: COLOR_BLUE,
+          ),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SvgPicture.asset(
+                'assets/images/fireworks_colored.svg',
+                width: 70,
+                height: 70,
+              ),
+              SvgPicture.asset(
+                'assets/images/gift_colored.svg',
+                width: 130,
+                height: 130,
+              ),
+              SvgPicture.asset(
+                'assets/images/fireworks_colored.svg',
+                width: 70,
+                height: 70,
+              )
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            bonusBalance == 5
+                ? 'You got \$${bonusBalance?.toStringAsFixed(2)} USDC on your bonus wallet!'
+                : bonusBalance == 2
+                    ? '\$$bonusBalance USDC left on your\nbonus wallet! '
+                    : '',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 21,
+              color: COLOR_ALMOST_BLACK,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 25),
+          const Divider(),
+          const SizedBox(height: 25),
+          Visibility(
+            visible: bonusBalance == 5,
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25),
+              child: Text(
+                'You are 2 steps away from understanding how Equity Wallet works',
+                style: TextStyle(
+                  fontSize: 22,
+                  color: COLOR_ALMOST_BLACK,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 25),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Visibility(
+                  visible: bonusBalance == 5,
+                  child: const Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '1. Get Equity in a project',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: COLOR_ALMOST_BLACK,
+                        ),
+                      ),
+                      Text(
+                        '2. Make a purchase and get share or revenue',
+                        textAlign: TextAlign.start,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: COLOR_ALMOST_BLACK,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Visibility(
+                  visible: bonusBalance == 2,
+                  child: const Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BulletText(
+                        text: 'Go to the website',
+                        style: bulletTextStyle,
+                      ),
+                      BulletText(
+                        text:
+                            'Buy a sample of the book to get a share of revenue',
+                        style: bulletTextStyle,
+                      ),
+                      BulletText(
+                        text: 'Check your wallet',
+                        style: bulletTextStyle,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 40),
+                Center(
+                  child: Text(
+                    bonusBalance == 5
+                        ? 'It will take 30 seconds'
+                        : bonusBalance == 2
+                            ? 'Finish it'
+                            : '',
+                    style: const TextStyle(
+                      color: COLOR_LIGHT_GREEN,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  child: Text(
+                    bonusBalance == 5
+                        ? 'Check it out'
+                        : bonusBalance == 2
+                            ? 'Get back to the site'
+                            : '',
+                  ),
+                  onPressed: () {
+                    launchURL(
+                      Uri.parse(
+                        'https://readwriteown-hack.xyz',
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Config config = ConfigState.of(context).config;
@@ -472,31 +665,73 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return const CircularProgressIndicator
                                     .adaptive();
                               }
-                              final balance = '\$${snapshot.data!['balance']}';
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const AccountDetailsScreen(),
+                              final balance =
+                                  '\$${snapshot.data!['balance']?.toStringAsFixed(2)}';
+                              final bonusBalance = snapshot
+                                  .data!['bonusBalance']
+                                  ?.toStringAsFixed(2);
+                              return Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              const AccountDetailsScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          balance,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineMedium,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        const Icon(
+                                          Icons.keyboard_arrow_down_outlined,
+                                        ),
+                                      ],
                                     ),
-                                  );
-                                },
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      balance,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium,
+                                  ),
+                                  const SizedBox(width: 15),
+                                  Visibility(
+                                    visible:
+                                        (snapshot.data!['bonusBalance'] ?? 0) >
+                                            0,
+                                    child: InkWell(
+                                      onTap: bonusBalance == '0'
+                                          ? null
+                                          : () {
+                                              showBonusFlow(
+                                                bonusBalance: snapshot
+                                                    .data!['bonusBalance'],
+                                              );
+                                            },
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            '\$$bonusBalance',
+                                            style: const TextStyle(
+                                              fontSize: 30,
+                                              fontWeight: FontWeight.w700,
+                                              color: COLOR_LIGHT_GREEN,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          SvgPicture.asset(
+                                            width: 29,
+                                            height: 29,
+                                            'assets/images/gift_colored.svg',
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                    const SizedBox(width: 10),
-                                    const Icon(
-                                      Icons.keyboard_arrow_down_outlined,
-                                    ),
-                                  ],
-                                ),
+                                  )
+                                ],
                               );
                             },
                           ),
