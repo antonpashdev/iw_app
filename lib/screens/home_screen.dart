@@ -55,18 +55,10 @@ class _HomeScreenState extends State<HomeScreen> {
     futureBalance = fetchBalance();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final balanceData = await fetchBalance();
-      final bonusBalance = balanceData['bonusBalance'];
-
       final redirectTo = await appStorage.getValue('redirect_to');
       if (redirectTo != null && mounted) {
         Navigator.of(context).pushNamed(redirectTo);
         appStorage.deleteValue('redirect_to');
-      }
-
-      if (redirectTo == null &&
-          (widget.isOnboarding == true || (bonusBalance ?? 0) > 0)) {
-        showBonusFlow(bonusBalance: bonusBalance);
       }
     });
   }
@@ -359,13 +351,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  showBonusFlow({double? bonusBalance}) {
-    if (bonusBalance == 0 || bonusBalance == null) {
-      return;
-    }
-
-    print('bonusBalance: $bonusBalance');
-
+  showBonusFlow(double? bonusBalance) {
     const bulletTextStyle = TextStyle(
       fontSize: 22,
       fontWeight: FontWeight.w400,
@@ -411,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 8),
           Text(
             bonusBalance == 5
-                ? 'You got \$${bonusBalance.toStringAsFixed(2)} USDC on your bonus wallet!'
+                ? 'You got \$${bonusBalance?.toStringAsFixed(2)} USDC on your bonus wallet!'
                 : bonusBalance == 2
                     ? '\$$bonusBalance USDC left on your\nbonus wallet! '
                     : '',
@@ -453,7 +439,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '1. Get Equity in a project',
+                        '1. Buy Equity in a project',
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontSize: 18,
@@ -705,7 +691,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ? null
                                               : () {
                                                   showBonusFlow(
-                                                    bonusBalance: snapshot
+                                                    snapshot
                                                         .data!['bonusBalance'],
                                                   );
                                                 },
@@ -724,16 +710,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 width: 29,
                                                 height: 29,
                                                 'assets/images/gift_colored.svg',
-                                              )
+                                              ),
+                                              const SizedBox(width: 5),
+                                              const Icon(
+                                                CupertinoIcons.info_circle_fill,
+                                                color: COLOR_RED2,
+                                                size: 20,
+                                              ),
                                             ],
                                           ),
                                         ),
-                                        if (snapshot.data!['bonusBalance'] == 2)
-                                          const Icon(
-                                            CupertinoIcons.info_circle_fill,
-                                            color: COLOR_RED2,
-                                            size: 20,
-                                          ),
                                       ],
                                     ),
                                   ),
