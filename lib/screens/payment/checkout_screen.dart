@@ -18,8 +18,8 @@ import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 import 'package:iw_app/widgets/state/config.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:universal_html/html.dart';
 import 'package:url_launcher/url_launcher.dart' show launchUrl;
+import 'package:url_launcher/url_launcher_string.dart';
 
 class CheckoutScreen extends StatefulWidget {
   static const routeName = '/checkout';
@@ -248,7 +248,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       return;
     }
     if (kIsWeb) {
-      window.location.href = url;
+      await launchUrl(Uri.parse(url), mode: LaunchMode.inAppWebView);
     } else {
       if (!await launchUrl(Uri.parse(url))) {
         throw Exception('Could not launch $url');
