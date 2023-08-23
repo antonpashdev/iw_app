@@ -13,6 +13,7 @@ import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
+import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
@@ -104,48 +105,64 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
   }
 
   buildHeader(BuildContext context, SaleOffer saleOffer) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            color: COLOR_GRAY,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: FittedBox(
-            fit: BoxFit.cover,
-            child: NetworkImageAuth(
-              imageUrl: '${orgsApi.baseUrl}${saleOffer.org.logo!}',
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => OrgDetailsScreen(
+              orgId: saleOffer.org.id,
+              isPreviewMode: true,
             ),
           ),
-        ),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${saleOffer.org.name}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                ),
+        );
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: COLOR_GRAY,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: NetworkImageAuth(
+                imageUrl: '${orgsApi.baseUrl}${saleOffer.org.logo!}',
               ),
-              Text(
-                '@${saleOffer.org.username}',
-                style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      color: COLOR_GRAY,
-                      fontWeight: FontWeight.w500,
-                    ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ],
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${saleOffer.org.name}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  '@${saleOffer.org.username}',
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                        color: COLOR_GRAY,
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+              ],
+            ),
+          ),
+          const Icon(
+            Icons.chevron_right_rounded,
+            color: COLOR_ALMOST_BLACK,
+          ),
+        ],
+      ),
     );
   }
 
