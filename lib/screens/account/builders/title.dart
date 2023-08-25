@@ -9,7 +9,7 @@ buildTitle(Account account) {
       width: 30,
       height: 30,
       decoration: BoxDecoration(
-        color: COLOR_GRAY,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
       clipBehavior: Clip.antiAlias,

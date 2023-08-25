@@ -23,7 +23,7 @@ buildHeader(
         width: 100,
         height: 100,
         decoration: BoxDecoration(
-          color: COLOR_GRAY,
+          color: Colors.transparent,
           borderRadius: BorderRadius.circular(30),
         ),
         clipBehavior: Clip.antiAlias,

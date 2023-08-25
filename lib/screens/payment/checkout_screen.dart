@@ -109,7 +109,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: COLOR_GRAY,
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(15),
             ),
             clipBehavior: Clip.antiAlias,
@@ -167,7 +167,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: COLOR_GRAY,
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(20),
             ),
             clipBehavior: Clip.antiAlias,

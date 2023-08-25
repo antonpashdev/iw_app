@@ -76,7 +76,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
           width: 90,
           height: 90,
           decoration: BoxDecoration(
-            color: COLOR_GRAY,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(20),
           ),
           clipBehavior: Clip.antiAlias,

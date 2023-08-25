@@ -129,7 +129,7 @@ class _OfferInvestorPreviewState extends State<OfferInvestorPreview> {
                 width: 90,
                 height: 90,
                 decoration: BoxDecoration(
-                  color: COLOR_GRAY,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 clipBehavior: Clip.antiAlias,

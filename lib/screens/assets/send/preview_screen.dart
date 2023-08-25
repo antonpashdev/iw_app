@@ -68,7 +68,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
           width: imageSize,
           height: imageSize,
           decoration: BoxDecoration(
-            color: COLOR_GRAY,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(imageRaduis),
           ),
           clipBehavior: Clip.antiAlias,
