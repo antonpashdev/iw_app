@@ -49,7 +49,7 @@ class GenericListTile extends StatelessWidget {
                             width: 50,
                             height: 50,
                             decoration: BoxDecoration(
-                              color: COLOR_LIGHT_GRAY2,
+                              color: Colors.transparent,
                               borderRadius: BorderRadius.circular(18),
                             ),
                             clipBehavior: Clip.antiAlias,

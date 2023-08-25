@@ -63,7 +63,7 @@ class MemberDeitailsLite extends StatelessWidget {
             width: 30,
             height: 30,
             decoration: BoxDecoration(
-              color: COLOR_LIGHT_GRAY2,
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(10),
             ),
             clipBehavior: Clip.antiAlias,
