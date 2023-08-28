@@ -105,7 +105,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
   }
 
   buildHeader(BuildContext context, SaleOffer saleOffer) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -264,7 +264,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Colors.transparent,
+                  color: COLOR_GRAY2,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 clipBehavior: Clip.antiAlias,

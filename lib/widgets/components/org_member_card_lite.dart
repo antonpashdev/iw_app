@@ -103,7 +103,7 @@ class OrgMemberCardLite extends StatelessWidget {
         height: 30,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: Colors.transparent,
+          color: COLOR_GRAY2,
           border: Border.all(
             color: COLOR_WHITE.withAlpha(200),
             width: 1.5,

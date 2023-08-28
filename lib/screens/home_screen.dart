@@ -581,7 +581,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 30,
                         height: 30,
                         decoration: BoxDecoration(
-                          color: Colors.transparent,
+                          color: COLOR_GRAY2,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         clipBehavior: Clip.antiAlias,
