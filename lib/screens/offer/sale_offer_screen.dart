@@ -31,9 +31,11 @@ class SaleOfferScreen extends StatefulWidget {
   final String offerId;
   final bool? isBonusOnboarding;
 
-  const SaleOfferScreen(
-      {Key? key, required this.offerId, this.isBonusOnboarding})
-      : super(key: key);
+  const SaleOfferScreen({
+    Key? key,
+    required this.offerId,
+    this.isBonusOnboarding,
+  }) : super(key: key);
 
   @override
   State<SaleOfferScreen> createState() => _SaleOfferScreenState();
@@ -533,8 +535,8 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                       ),
                       Text(
                         'Your Equity Wallet balance \$$balance',
-                        style: const TextStyle(
-                          color: COLOR_GRAY,
+                        style: TextStyle(
+                          color: canPay ? COLOR_GRAY : COLOR_RED,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),

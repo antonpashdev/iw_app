@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/screens/offer/offer_investor_preview.dart';
@@ -13,12 +12,14 @@ class OfferInvestorInvestAmount extends StatefulWidget {
   final double maxEquity;
   final double maxInvestment;
   final Offer offer;
+  final Future<Map<String, double?>> futureBalance;
 
   const OfferInvestorInvestAmount({
     Key? key,
     required this.maxEquity,
     required this.maxInvestment,
     required this.offer,
+    required this.futureBalance,
   }) : super(key: key);
 
   @override
@@ -30,6 +31,9 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
   final amountController = TextEditingController();
   final equityController = TextEditingController();
   final formGlobalKey = GlobalKey<FormState>();
+
+  double? equity;
+  double? amount;
 
   double get allocatedEquity {
     return widget.offer.memberProspects!.isNotEmpty
@@ -50,6 +54,10 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
   }
 
   _onMaxTapped() {
+    setState(() {
+      equity = maxEquity;
+      amount = maxInvestment;
+    });
     equityController.text = maxEquity.toString();
     amountController.text = maxInvestment.toString();
   }
@@ -58,15 +66,13 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
     if (!formGlobalKey.currentState!.validate()) {
       return;
     }
-    final amount = double.parse(amountController.text.replaceAll(',', ''));
-    final equity = double.parse(equityController.text);
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => OfferInvestorPreview(
           offer: widget.offer,
-          amount: amount,
-          equity: equity,
+          amount: amount!,
+          equity: equity!,
         ),
       ),
     );
@@ -90,7 +96,6 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
             BoardedTextFieldWithTitle(
               title: 'You Invest',
               inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
                 commaSeparatedDoubleFormatter,
               ],
               textFieldController: amountController,
@@ -113,8 +118,10 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
               onChanged: (value) {
                 final amount = double.tryParse(value.replaceAll(',', ''));
                 if (amount != null) {
-                  final equity =
-                      widget.maxEquity * (amount / widget.maxInvestment);
+                  setState(() {
+                    this.amount = amount;
+                    equity = widget.maxEquity * (amount / widget.maxInvestment);
+                  });
                   equityController.text = equity.toString();
                 }
               },
@@ -136,33 +143,57 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
               onChanged: (value) {
                 final equity = double.tryParse(value);
                 if (equity != null) {
-                  final amount =
-                      widget.maxInvestment * (equity / widget.maxEquity);
+                  setState(() {
+                    this.equity = equity;
+                    amount = widget.maxInvestment * (equity / widget.maxEquity);
+                  });
                   amountController.text =
                       NumberFormat('#,###.########').format(amount);
                 }
               },
             ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Minimal Investment \$${NumberFormat('#,###').format(
-                      widget.offer.investorSettings!.minimalInvestment!,
-                    )}',
-                    style: const TextStyle(color: COLOR_GRAY),
+            FutureBuilder(
+              future: widget.futureBalance,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const SizedBox();
+                }
+                final balanceData = snapshot.data as Map<String, double?>;
+                final balance = balanceData['balance'];
+                final canPay = balance != null && balance >= (amount ?? 0);
+                return Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Minimal Investment \$${NumberFormat('#,###').format(
+                          widget.offer.investorSettings!.minimalInvestment!,
+                        )}',
+                        style: const TextStyle(color: COLOR_GRAY),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'Your Equity Wallet balance \$$balance',
+                        style: TextStyle(
+                          color: canPay ? COLOR_GRAY : COLOR_RED,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      SizedBox(
+                        width: 290,
+                        child: ElevatedButton(
+                          onPressed: canPay ? onPreviewTap : null,
+                          child: const Text('Preview'),
+                        ),
+                      )
+                    ],
                   ),
-                  const SizedBox(height: 15),
-                  SizedBox(
-                    width: 290,
-                    child: ElevatedButton(
-                      onPressed: onPreviewTap,
-                      child: const Text('Preview'),
-                    ),
-                  )
-                ],
-              ),
+                );
+              },
             ),
           ],
         ),

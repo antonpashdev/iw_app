@@ -362,6 +362,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             final balanceData = snapshot.data![2] as Map<String, double?>;
             final balance = balanceData['balance'];
             final bonusBalance = balanceData['bonusBalance'];
+            final canPay = (payment?.amount ?? 0) <= (bonusBalance ?? 0) ||
+                (payment?.amount ?? 0) <= (balance ?? 0);
 
             return Stack(
               children: [
@@ -397,8 +399,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                         Text(
                           'Your Equity Wallet balance \$$balance',
-                          style: const TextStyle(
-                            color: COLOR_GRAY,
+                          style: TextStyle(
+                            color: canPay ? COLOR_GRAY : COLOR_RED,
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
@@ -421,10 +423,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           child: SizedBox(
                             width: 290,
                             child: ElevatedButton(
-                              onPressed: !isLoading &&
-                                          (payment?.amount ?? 0) <=
-                                              (bonusBalance ?? 0) ||
-                                      (payment?.amount ?? 0) <= (balance ?? 0)
+                              onPressed: !isLoading && canPay
                                   ? () => handlePayPressed(account, payment)
                                   : null,
                               child: isLoading

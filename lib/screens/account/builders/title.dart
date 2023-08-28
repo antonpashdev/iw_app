@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/account_model.dart';
-import 'package:iw_app/theme/app_theme.dart';
 
 buildTitle(Account account) {
   return [
