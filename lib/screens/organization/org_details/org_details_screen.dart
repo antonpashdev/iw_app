@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/org_events_history_item_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
@@ -16,6 +17,7 @@ import 'package:iw_app/screens/organization/org_details/builders/wallet_section.
 import 'package:iw_app/screens/organization/org_details/fetchers.dart';
 import 'package:iw_app/screens/organization/org_settings/org_settings_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/widgets/components/app_bar_chart.dart';
 import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
@@ -38,8 +40,9 @@ class OrgDetailsScreen extends StatefulWidget {
 class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   late Future<Organization> futureOrg;
   late Future<List<OrganizationMemberWithEquity>> futureMembers;
-  Future<String?>? futureBalance;
   late Future<List<OrgEventsHistoryItem>> futureHistory;
+  Future<String?>? futureBalance;
+  Future<Map<String, dynamic>?>? futureRevenue;
 
   bool isLoading = false;
 
@@ -52,6 +55,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
 
     if (!widget.isPreviewMode) {
       futureBalance = fetchBalance(widget.orgId);
+      futureRevenue = fetchRevenue(widget.orgId);
     }
   }
 
@@ -102,12 +106,71 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     );
   }
 
+  buildRevenue(Map<String, dynamic>? data) {
+    if (data == null) {
+      return const SizedBox();
+    }
+    final totalRevenue = data['total']['revenue'];
+    if (totalRevenue == 0) {
+      return const SizedBox();
+    }
+    final titleStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
+          color: COLOR_GRAY,
+        );
+    final valueStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
+          fontWeight: FontWeight.bold,
+        );
+    final formatter = NumberFormat('#,###.########');
+    final List monthlyRevenue = data['monthly'];
+    final last30DaysRevenue = data['last30Days']['revenue'];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text('Total Revenue: ', style: titleStyle),
+            Text('\$${formatter.format(totalRevenue)}', style: valueStyle),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Row(
+          children: [
+            Text('Revenue Last 30 Days: ', style: titleStyle),
+            Text(
+              '\$${formatter.format(last30DaysRevenue)}',
+              style: valueStyle,
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 500,
+            maxHeight: 135,
+          ),
+          child: AppBarChart(
+            items: monthlyRevenue
+                .map(
+                  (e) => AppBarChartItem(
+                    title: DateFormat('MMM')
+                        .format(DateTime(e['year'], e['month'])),
+                    data: e['revenue'],
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<dynamic>>(
       future: Future.wait([
         futureOrg,
         futureMembers,
+        futureRevenue ?? Future.value(null),
       ]),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -116,6 +179,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
             body: Center(child: CircularProgressIndicator()),
           );
         }
+        final revenueData = snapshot.data?[2];
         return Scaffold(
           backgroundColor: APP_BODY_BG,
           appBar: AppBar(
@@ -193,10 +257,21 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                 ],
                               ),
                             ),
+                            if (revenueData != null)
+                              SliverToBoxAdapter(
+                                child: AppPadding(
+                                  child: Column(
+                                    children: [
+                                      const SizedBox(height: 30),
+                                      buildRevenue(revenueData),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             SliverToBoxAdapter(
                               child: Column(
                                 children: [
-                                  const SizedBox(height: 60),
+                                  const SizedBox(height: 45),
                                   buildMembers(
                                     context,
                                     snapshot.data?[0],
