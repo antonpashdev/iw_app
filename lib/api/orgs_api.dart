@@ -184,8 +184,13 @@ class _OrgsApi extends BaseApi {
     return client.get('/orgs/$orgId/history');
   }
 
-  Future<Response> getOrgRevenue(String orgId) {
-    return client.get('/orgs/$orgId/revenue');
+  Future<Response> getOrgRevenue(String orgId, String? period) {
+    return client.get(
+      '/orgs/$orgId/revenue',
+      queryParameters: {
+        'period': period,
+      },
+    );
   }
 
   Future<Response> getMemberships(String orgId) {

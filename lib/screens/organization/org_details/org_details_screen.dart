@@ -45,6 +45,8 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   Future<Map<String, dynamic>?>? futureRevenue;
 
   bool isLoading = false;
+  String revenuePeriod = 'weekly';
+  String chartPeriod = 'weekly';
 
   @override
   void initState() {
@@ -55,7 +57,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
 
     if (!widget.isPreviewMode) {
       futureBalance = fetchBalance(widget.orgId);
-      futureRevenue = fetchRevenue(widget.orgId);
+      futureRevenue = fetchRevenue(widget.orgId, revenuePeriod);
     }
   }
 
@@ -106,6 +108,57 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     );
   }
 
+  buildRevenuePeriodOption(String title, String period) {
+    final btnStyle = TextButton.styleFrom(
+      backgroundColor: COLOR_LIGHT_GRAY,
+    );
+    final textStyle = Theme.of(context).textTheme.bodyMedium!.copyWith(
+          color: COLOR_ALMOST_BLACK,
+          fontWeight: FontWeight.bold,
+        );
+    return SizedBox(
+      width: 38,
+      height: 38,
+      child: TextButton(
+        style: btnStyle.copyWith(
+          backgroundColor: MaterialStateProperty.all(
+            revenuePeriod == period ? COLOR_ALMOST_BLACK : COLOR_LIGHT_GRAY,
+          ),
+        ),
+        onPressed: () {
+          setState(() {
+            revenuePeriod = period;
+            futureRevenue =
+                fetchRevenue(widget.orgId, revenuePeriod).then((value) {
+              chartPeriod = revenuePeriod;
+              return value;
+            });
+          });
+        },
+        child: Text(
+          title,
+          style: textStyle.copyWith(
+            color: revenuePeriod == period ? COLOR_WHITE : COLOR_ALMOST_BLACK,
+          ),
+        ),
+      ),
+    );
+  }
+
+  buildRevenuePeriodOptions() {
+    return Row(
+      children: [
+        buildRevenuePeriodOption('D', 'daily'),
+        const SizedBox(width: 10),
+        buildRevenuePeriodOption('W', 'weekly'),
+        const SizedBox(width: 10),
+        buildRevenuePeriodOption('M', 'monthly'),
+        const SizedBox(width: 10),
+        buildRevenuePeriodOption('Y', 'yearly'),
+      ],
+    );
+  }
+
   buildRevenue(Map<String, dynamic>? data) {
     if (data == null) {
       return const SizedBox();
@@ -121,7 +174,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           fontWeight: FontWeight.bold,
         );
     final formatter = NumberFormat('#,###.########');
-    final List monthlyRevenue = data['monthly'];
+    final List revenueForPeriod = data['period'];
     final last30DaysRevenue = data['last30Days']['revenue'];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,21 +196,43 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
           ],
         ),
         const SizedBox(height: 20),
+        buildRevenuePeriodOptions(),
+        const SizedBox(height: 20),
         ConstrainedBox(
           constraints: const BoxConstraints(
             maxWidth: 500,
             maxHeight: 135,
           ),
           child: AppBarChart(
-            items: monthlyRevenue
-                .map(
-                  (e) => AppBarChartItem(
-                    title: DateFormat('MMM')
-                        .format(DateTime(e['year'], e['month'])),
-                    data: e['revenue'],
-                  ),
-                )
-                .toList(),
+            items: revenueForPeriod.map((e) {
+              String title;
+              switch (chartPeriod) {
+                case 'daily':
+                  title = DateFormat('dd').format(
+                    DateTime.parse(e['date']),
+                  );
+                  break;
+                case 'weekly':
+                  title = DateFormat('dd').format(
+                    DateTime.parse(e['date']),
+                  );
+                  break;
+                case 'yearly':
+                  title = DateFormat('yyyy').format(
+                    DateTime.parse(e['date']),
+                  );
+                  break;
+                case 'monthly':
+                default:
+                  title = DateFormat('MMM').format(
+                    DateTime.parse(e['date']),
+                  );
+              }
+              return AppBarChartItem(
+                title: title,
+                data: e['revenue'],
+              );
+            }).toList(),
           ),
         ),
       ],
