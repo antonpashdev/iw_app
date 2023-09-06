@@ -148,11 +148,15 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
   buildRevenuePeriodOptions() {
     return Row(
       children: [
+        buildRevenuePeriodOption('H', 'hourly'),
+        const SizedBox(width: 10),
         buildRevenuePeriodOption('D', 'daily'),
         const SizedBox(width: 10),
         buildRevenuePeriodOption('W', 'weekly'),
         const SizedBox(width: 10),
         buildRevenuePeriodOption('M', 'monthly'),
+        const SizedBox(width: 10),
+        buildRevenuePeriodOption('Q', 'quarterly'),
         const SizedBox(width: 10),
         buildRevenuePeriodOption('Y', 'yearly'),
       ],
@@ -207,25 +211,35 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
             items: revenueForPeriod.map((e) {
               String title;
               switch (chartPeriod) {
+                case 'hourly':
+                  title = DateFormat.H().format(
+                    DateTime.parse(e['date']).toLocal(),
+                  );
+                  break;
                 case 'daily':
                   title = DateFormat('dd').format(
-                    DateTime.parse(e['date']),
+                    DateTime.parse(e['date']).toLocal(),
                   );
                   break;
                 case 'weekly':
                   title = DateFormat('dd').format(
-                    DateTime.parse(e['date']),
+                    DateTime.parse(e['date']).toLocal(),
+                  );
+                  break;
+                case 'quarterly':
+                  title = DateFormat.QQQ().format(
+                    DateTime.parse(e['date']).toLocal(),
                   );
                   break;
                 case 'yearly':
                   title = DateFormat('yyyy').format(
-                    DateTime.parse(e['date']),
+                    DateTime.parse(e['date']).toLocal(),
                   );
                   break;
                 case 'monthly':
                 default:
                   title = DateFormat('MMM').format(
-                    DateTime.parse(e['date']),
+                    DateTime.parse(e['date']).toLocal(),
                   );
               }
               return AppBarChartItem(
