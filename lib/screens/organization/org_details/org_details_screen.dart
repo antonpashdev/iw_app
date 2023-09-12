@@ -212,9 +212,10 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
               String title;
               switch (chartPeriod) {
                 case 'hourly':
-                  title = DateFormat.H().format(
-                    DateTime.parse(e['date']).toLocal(),
-                  );
+                  final start = DateTime.parse(e['date']).toLocal();
+                  final end = start.add(const Duration(hours: 1));
+                  title =
+                      '${DateFormat.H().format(start)}-${DateFormat.H().format(end)}';
                   break;
                 case 'daily':
                   title = DateFormat('dd').format(
