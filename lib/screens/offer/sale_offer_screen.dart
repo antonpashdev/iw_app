@@ -70,10 +70,12 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
     final response = await usersApi.getBalance();
     final balance =
         TokenAmount.fromJson(response.data['balance']['balance']).uiAmount;
-    final bonusBalance = TokenAmount.fromJson(
-          response.data['balance']['bonusBalance'],
-        ).uiAmount ??
-        0;
+    final double? bonusBalance =
+        response.data['balance']['bonusBalance'] != null
+            ? TokenAmount.fromJson(
+                response.data['balance']['bonusBalance'],
+              ).uiAmount
+            : 0;
 
     return {
       'balance': balance,
