@@ -19,7 +19,7 @@ buildHistoryItem(
       ? COLOR_ALMOST_BLACK
       : COLOR_GREEN;
   final amount = item.amount != null
-      ? '$sign \$${trimZeros(item.amount!.abs() / LAMPORTS_PER_USDC)} USDC'
+      ? '$sign \$${trimZeros(item.amount!.abs() / LAMPORTS_PER_USDC)} Credit\$'
       : '-';
   final title = item.addressOrUsername == null
       ? ''
@@ -63,12 +63,12 @@ buildHistoryItem(
             const SizedBox(height: 10),
           ],
         ),
-        GenericListTile(
-          title: title,
-          subtitle: item.description,
-          image: item.img != null
-              ? NetworkImageAuth(imageUrl: '${usersApi.baseUrl}${item.img}')
-              : Image.asset('assets/images/avatar_placeholder.png'),
+      GenericListTile(
+        title: title,
+        subtitle: item.description,
+        image: item.img != null
+            ? NetworkImageAuth(imageUrl: '${usersApi.baseUrl}${item.img}')
+            : Image.asset('assets/images/avatar_placeholder.png'),
         trailing: Text(
           amount,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(

@@ -99,7 +99,7 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
                           height: 25,
                         ),
                         const SizedBox(width: 10),
-                        const Text('USDC'),
+                        const Text('Credit\$'),
                       ],
                     ),
                   ),

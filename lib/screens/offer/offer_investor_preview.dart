@@ -187,7 +187,7 @@ class _OfferInvestorPreviewState extends State<OfferInvestorPreview> {
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        '${NumberFormat('#,###.########').format(widget.amount)} USDC',
+                        '${NumberFormat('#,###.########').format(widget.amount)} Credit\$',
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ],

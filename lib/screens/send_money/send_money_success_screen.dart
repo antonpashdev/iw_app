@@ -30,7 +30,7 @@ class SendMoneySuccessScreen<T extends Widget> extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             Text(
-              '\$${sendMoneyData.amount!.toStringAsFixed(2)} USDC Sent!',
+              '\$${sendMoneyData.amount!.toStringAsFixed(2)} Credit\$ Sent!',
               style: Theme.of(context).textTheme.displayMedium!.copyWith(
                     fontFamily: 'Gilroy',
                     fontWeight: FontWeight.w500,

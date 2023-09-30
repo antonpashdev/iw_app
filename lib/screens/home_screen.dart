@@ -431,9 +431,9 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 8),
           Text(
             bonusBalance == 5
-                ? 'You got \$${bonusBalance?.toStringAsFixed(2)} USDC on your bonus wallet!'
+                ? 'You got \$${bonusBalance?.toStringAsFixed(2)} Credit\$ on your bonus wallet!'
                 : bonusBalance == 2
-                    ? '\$$bonusBalance USDC left on your\nbonus wallet! '
+                    ? '\$$bonusBalance Credit\$ left on your\nbonus wallet! '
                     : '',
             textAlign: TextAlign.center,
             style: const TextStyle(

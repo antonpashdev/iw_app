@@ -44,7 +44,7 @@ buildWalletSection(BuildContext context, Account account) {
   onReceivePressed() {
     showBottomSheetCustom(
       context,
-      title: 'Receive USDC',
+      title: 'Receive Credit\$',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -71,7 +71,7 @@ buildWalletSection(BuildContext context, Account account) {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Send Solana USDC only to this address!!!',
+            'Send Solana Credit\$ only to this address!!!',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.red,
