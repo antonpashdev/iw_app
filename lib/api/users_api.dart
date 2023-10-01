@@ -90,6 +90,14 @@ class _UsersApi extends BaseApi {
     return client.post('/users/usdc/send', data: body);
   }
 
+  Future<Response> withdrawCredits(SendMoneyData data) {
+    final body = {
+      'recipient': data.recipient,
+      'amount': data.amount,
+    };
+    return client.post('/users/credits/withdraw', data: body);
+  }
+
   Future<User?> getUserByNickname(String nickname) async {
     User user;
     try {

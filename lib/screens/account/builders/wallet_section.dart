@@ -154,6 +154,12 @@ buildWalletSection(BuildContext context, Account account) {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           IconButtonWithText(
+            image: SvgPicture.asset('assets/icons/money_box.svg'),
+            text: 'Buy',
+            backgroundColor: COLOR_BLUE,
+            onPressed: onReceivePressed,
+          ),
+          IconButtonWithText(
             image: SvgPicture.asset('assets/icons/arrow_up_box.svg'),
             text: 'Send',
             backgroundColor: COLOR_BLACK,
@@ -171,12 +177,6 @@ buildWalletSection(BuildContext context, Account account) {
             },
           ),
           IconButtonWithText(
-            image: SvgPicture.asset('assets/icons/arrow_down_box.svg'),
-            text: 'Receive',
-            backgroundColor: COLOR_BLUE,
-            onPressed: onReceivePressed,
-          ),
-          IconButtonWithText(
             image: SvgPicture.asset('assets/icons/arrow_right_box.svg'),
             text: 'Withdraw',
             backgroundColor: COLOR_GREEN,
@@ -187,6 +187,12 @@ buildWalletSection(BuildContext context, Account account) {
                 ),
               );
             },
+          ),
+          IconButtonWithText(
+            image: SvgPicture.asset('assets/icons/burn_box.svg'),
+            text: 'Burn',
+            backgroundColor: COLOR_RED2,
+            onPressed: onReceivePressed,
           ),
         ],
       ),

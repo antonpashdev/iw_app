@@ -66,7 +66,7 @@ buildHistoryItem(
       GenericListTile(
         title: title,
         subtitle: item.description,
-        image: item.img != null
+        image: item.img != null && item.img!.isNotEmpty
             ? NetworkImageAuth(imageUrl: '${usersApi.baseUrl}${item.img}')
             : Image.asset('assets/images/avatar_placeholder.png'),
         trailing: Text(
