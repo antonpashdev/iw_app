@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:iw_app/api/models/send_money_data_model.dart';
-import 'package:iw_app/screens/withdraw/withdraw_success_screen.dart';
+import 'package:iw_app/api/users_api.dart';
+import 'package:iw_app/screens/burn/burn_success_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
-class WithdrawPreviewScreen<T extends Widget> extends StatefulWidget {
-  final SendMoneyData sendMoneyData;
-  final Future Function(SendMoneyData) onWithdrawPressed;
+class BurnPreviewScreen<T extends Widget> extends StatefulWidget {
+  final double amount;
 
-  const WithdrawPreviewScreen({
+  const BurnPreviewScreen({
     Key? key,
-    required this.sendMoneyData,
-    required this.onWithdrawPressed,
+    required this.amount,
   }) : super(key: key);
 
   @override
-  State<WithdrawPreviewScreen> createState() => _WithdrawPreviewScreenState();
+  State<BurnPreviewScreen> createState() => _BurnPreviewScreenState();
 }
 
-class _WithdrawPreviewScreenState extends State<WithdrawPreviewScreen> {
+class _BurnPreviewScreenState extends State<BurnPreviewScreen> {
   bool isLoading = false;
 
   handleNextPressed(BuildContext context) async {
@@ -27,13 +25,13 @@ class _WithdrawPreviewScreenState extends State<WithdrawPreviewScreen> {
       isLoading = true;
     });
     try {
-      await widget.onWithdrawPressed(widget.sendMoneyData);
+      await usersApi.burnCredits(widget.amount);
 
       if (context.mounted) {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => WithdrawSuccessScreen(
-              sendMoneyData: widget.sendMoneyData,
+            builder: (_) => BurnSuccessScreen(
+              amount: widget.amount,
             ),
           ),
         );
@@ -51,39 +49,15 @@ class _WithdrawPreviewScreenState extends State<WithdrawPreviewScreen> {
     return Column(
       children: [
         const Text(
-          'You Withdraw',
+          'You Burn',
           style: TextStyle(color: COLOR_GRAY),
         ),
         const SizedBox(height: 10),
         Text(
-          '\$${widget.sendMoneyData.amount} Credit\$',
+          '\$${widget.amount} Credit\$',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
       ],
-    );
-  }
-
-  buildInfo(String title, String info, {bool shouldCut = true}) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: COLOR_LIGHT_GRAY3,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(color: COLOR_GRAY),
-          ),
-          const SizedBox(height: 5),
-          Text(
-            shouldCut ? info.replaceRange(4, 40, '...') : info,
-            style: const TextStyle(fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
     );
   }
 
@@ -100,10 +74,6 @@ class _WithdrawPreviewScreenState extends State<WithdrawPreviewScreen> {
                 Center(
                   child: buildAmount(context),
                 ),
-                const SizedBox(height: 50),
-                buildInfo('Withdraw method', 'USDC', shouldCut: false),
-                const SizedBox(height: 10),
-                buildInfo('To', widget.sendMoneyData.recipient!),
               ],
             ),
           ),
@@ -121,7 +91,7 @@ class _WithdrawPreviewScreenState extends State<WithdrawPreviewScreen> {
                       ? const Center(
                           child: CircularProgressIndicator.adaptive(),
                         )
-                      : const Text('Withdraw'),
+                      : const Text('Burn'),
                 ),
               ),
             ),

@@ -5,6 +5,7 @@ import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/screens/account/account_details_screen.dart';
+import 'package:iw_app/screens/burn/burn_amount_screen.dart';
 import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/screens/withdraw/withdraw_sreen.dart';
 import 'package:iw_app/theme/app_theme.dart';
@@ -192,7 +193,13 @@ buildWalletSection(BuildContext context, Account account) {
             image: SvgPicture.asset('assets/icons/burn_box.svg'),
             text: 'Burn',
             backgroundColor: COLOR_RED2,
-            onPressed: onReceivePressed,
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const BurnAmountScreen(),
+                ),
+              );
+            },
           ),
         ],
       ),
