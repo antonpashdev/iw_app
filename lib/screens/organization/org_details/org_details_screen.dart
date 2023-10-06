@@ -54,10 +54,10 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
     futureOrg = fetchOrg(widget.orgId);
     futureMembers = fetchMembers(widget.orgId);
     futureHistory = fetchHistory(widget.orgId);
+    futureRevenue = fetchRevenue(widget.orgId, revenuePeriod);
 
     if (!widget.isPreviewMode) {
       futureBalance = fetchBalance(widget.orgId);
-      futureRevenue = fetchRevenue(widget.orgId, revenuePeriod);
     }
   }
 
