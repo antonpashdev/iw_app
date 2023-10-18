@@ -150,7 +150,17 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
               ],
             ),
           ),
-          buildPendingOffers(context, futureInvestOffers, widget.organization),
+          buildPendingOffers(
+            context,
+            futureInvestOffers,
+            widget.organization,
+            canEdit: widget.member.permissions!.canEditOrg,
+            onRevoke: () {
+              setState(() {
+                futureInvestOffers = fetchInvestOffers(widget.organization);
+              });
+            },
+          ),
         ],
       ),
     );

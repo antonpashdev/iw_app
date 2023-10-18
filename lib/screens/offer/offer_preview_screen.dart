@@ -21,12 +21,16 @@ class OfferPreviewScreen extends StatefulWidget {
   final Organization organization;
   final OrganizationMember? member;
   final Offer offer;
+  final bool canEdit;
+  final Function? onRevoke;
 
   const OfferPreviewScreen({
     Key? key,
     required this.organization,
     required this.offer,
     this.member,
+    this.canEdit = false,
+    this.onRevoke,
   }) : super(key: key);
 
   @override
@@ -462,6 +466,27 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
     }
   }
 
+  handleRevokePressed() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await orgsApi.revokeOffer(widget.organization.id!, offer.id!);
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+      if (widget.onRevoke != null) {
+        widget.onRevoke!();
+      }
+    } catch (err) {
+      print(err);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   callSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -596,6 +621,24 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                         ),
                       ),
                     ],
+                  ),
+                if (!isNewOffer && widget.canEdit)
+                  Align(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 30),
+                      child: SizedBox(
+                        width: 290,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: COLOR_RED,
+                          ),
+                          onPressed: isLoading ? null : handleRevokePressed,
+                          child: isLoading
+                              ? const CircularProgressIndicator.adaptive()
+                              : const Text('Revoke'),
+                        ),
+                      ),
+                    ),
                   ),
                 const SizedBox(height: 25),
               ],

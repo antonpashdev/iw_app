@@ -10,8 +10,10 @@ import 'package:iw_app/widgets/media/network_image_auth.dart';
 buildPendingOffers(
   BuildContext context,
   Future<List<Offer>> futureInvestOffers,
-  Organization organization,
-) {
+  Organization organization, {
+  canEdit = false,
+  Function? onRevoke,
+}) {
   return FutureBuilder(
     future: futureInvestOffers,
     builder: (context, snapshot) {
@@ -32,7 +34,15 @@ buildPendingOffers(
           Column(
             children: [
               ...snapshot.data!
-                  .map((offer) => _buildOffer(context, offer, organization))
+                  .map(
+                    (offer) => _buildOffer(
+                      context,
+                      offer,
+                      organization,
+                      canEdit: canEdit,
+                      onRevoke: onRevoke,
+                    ),
+                  )
                   .toList(),
             ],
           ),
@@ -42,7 +52,13 @@ buildPendingOffers(
   );
 }
 
-_buildOffer(BuildContext context, Offer offer, Organization organization) {
+_buildOffer(
+  BuildContext context,
+  Offer offer,
+  Organization organization, {
+  canEdit = false,
+  Function? onRevoke,
+}) {
   return InkWell(
     onTap: () {
       Navigator.of(context).push(
@@ -51,6 +67,8 @@ _buildOffer(BuildContext context, Offer offer, Organization organization) {
             organization: organization,
             member: offer.memberProspects!.firstOrNull,
             offer: offer,
+            canEdit: canEdit,
+            onRevoke: onRevoke,
           ),
         ),
       );

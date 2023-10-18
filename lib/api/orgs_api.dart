@@ -112,6 +112,10 @@ class _OrgsApi extends BaseApi {
     return client.post('/orgs/$orgId/offers', data: body);
   }
 
+  Future<Response> revokeOffer(String orgId, String offerId) {
+    return client.delete('/orgs/$orgId/offers/$offerId');
+  }
+
   Future<Response> acceptDeclineOffer(
     String orgId,
     String offerId,
