@@ -215,14 +215,14 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
               TextButton(
                 onPressed: () async {
                   final url = Uri.parse(
-                    'https://explorer.solana.com/address/${organization.mint}',
+                    'https://solscan.io/address/${organization.mint}',
                   );
                   if (!(await launchUrl(url))) {
                     throw Exception('Could not launch $url');
                   }
                 },
                 child: Text(
-                  'https://explorer.solana.com/address/${organization.mint}',
+                  'https://solscan.io/address/${organization.mint}',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
                         color: COLOR_BLUE,
@@ -244,14 +244,14 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
               TextButton(
                 onPressed: () async {
                   final url = Uri.parse(
-                    'https://explorer.solana.com/address/${account.wallet}/tokens',
+                    'https://solscan.io/address/${account.wallet}/tokens',
                   );
                   if (!(await launchUrl(url))) {
                     throw Exception('Could not launch $url');
                   }
                 },
                 child: Text(
-                  'https://explorer.solana.com/address/${account.wallet}/tokens',
+                  'https://solscan.io/address/${account.wallet}/tokens',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
                         color: COLOR_BLUE,
