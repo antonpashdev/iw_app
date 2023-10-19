@@ -5,19 +5,20 @@ import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
-import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 
 class OrgMemberCardLite extends StatelessWidget {
   final Function()? onTap;
   final OrganizationMember? member;
   final Future<Map<String, dynamic>>? futureOtherMembers;
+  final Future<String>? futureEquity;
 
   const OrgMemberCardLite({
     Key? key,
     this.onTap,
     this.member,
     this.futureOtherMembers,
+    this.futureEquity,
   }) : super(key: key);
 
   buildLogo() {
@@ -137,8 +138,6 @@ class OrgMemberCardLite extends StatelessWidget {
         ),
       );
     }
-    final createdAt = DateTime.parse(member!.createdAt!).toLocal();
-    final createdAtStr = getFormattedDate(createdAt);
     final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
           fontWeight: FontWeight.w500,
         );
@@ -147,9 +146,20 @@ class OrgMemberCardLite extends StatelessWidget {
         const Spacer(),
         ListTile(
           dense: true,
-          title: Text('Joined', style: textStyle),
+          title: Text('Revenue share', style: textStyle),
           contentPadding: const EdgeInsets.all(0),
-          trailing: Text(createdAtStr, style: textStyle),
+          trailing: FutureBuilder(
+            future: futureEquity,
+            builder: (_, snapshot) {
+              if (!snapshot.hasData) {
+                return const SizedBox();
+              }
+              return Text(
+                '${snapshot.data}%',
+                style: textStyle?.copyWith(color: COLOR_GREEN),
+              );
+            },
+          ),
           visualDensity:
               const VisualDensity(vertical: VisualDensity.minimumDensity),
         ),

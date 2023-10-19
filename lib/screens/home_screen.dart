@@ -202,6 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
     BuildContext context,
     OrganizationMember member,
     Future<Map<String, dynamic>> futureOtherMembers,
+    Future<String>? futureEquity,
     bool isFirst,
     bool isLast,
   ) {
@@ -223,6 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         : OrgMemberCardLite(
             member: member,
+            futureEquity: futureEquity,
             futureOtherMembers: futureOtherMembers,
             onTap: () {
               Navigator.of(context).push(
@@ -230,6 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (_) => OrgDetailsScreen(
                     orgId: member.org.id,
                     member: member,
+                    futureEquity: futureEquity,
                   ),
                 ),
               );
@@ -318,6 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         context,
                         member.member!,
                         member.futureOtherMembers!,
+                        member.futureEquity,
                         i == 0,
                         i == members.length - 1,
                       ),
@@ -826,19 +830,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 290,
                         child: buildOrgsMembers(snapshot.data!),
                       ),
-                      const SizedBox(height: 45),
-                      AppPadding(
-                        child: Text(
-                          AppLocalizations.of(context)!.homeScreen_assetsTitle,
-                          style: Theme.of(context).textTheme.headlineLarge,
+                      if (config.mode == Mode.Pro)
+                        Column(
+                          children: [
+                            const SizedBox(height: 45),
+                            AppPadding(
+                              child: Text(
+                                AppLocalizations.of(context)!
+                                    .homeScreen_assetsTitle,
+                                style:
+                                    Theme.of(context).textTheme.headlineLarge,
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            AppPadding(
+                              child: snapshot.data!.isEmpty
+                                  ? buildAssetExample()
+                                  : buildAssets(snapshot.data!),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 15),
-                      AppPadding(
-                        child: snapshot.data!.isEmpty
-                            ? buildAssetExample()
-                            : buildAssets(snapshot.data!),
-                      ),
                       if (snapshot.data!.isEmpty)
                         AppPadding(
                           child: Column(

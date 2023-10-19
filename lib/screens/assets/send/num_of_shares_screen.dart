@@ -43,7 +43,6 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
   final formGlobalKey = GlobalKey<FormState>();
   final equityController = TextEditingController();
   final amountController = TextEditingController();
-  int? lamportsMinted;
   double? tokensAmount;
 
   OrganizationMember get member => widget.member;
@@ -53,22 +52,18 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
   fetchEquity() async {
     _debouncer.debounce(() async {
       try {
-        final response = await orgsApi.getOrgById(widget.organization.id!);
-        lamportsMinted = response.data!['lamportsMinted'];
+        final response = await orgsApi.getMemberEquity(
+          widget.organization.id!,
+          widget.member.id!,
+        );
+        final tokenAmount = TokenAmount.fromJson(response.data);
+        final equity = tokenAmount.uiAmountString;
         equityController.text = equity!;
+        tokensAmount = double.tryParse(equity);
       } catch (err) {
         print(err);
       }
     });
-  }
-
-  String? get equity {
-    if (lamportsMinted == null) {
-      return null;
-    }
-    final equity = ((tokensAmount! * LAMPORTS_IN_SOL) / lamportsMinted! * 100)
-        .toStringAsFixed(1);
-    return equity;
   }
 
   handleNext() {
@@ -131,11 +126,6 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
                           ]),
                           suffix: InkWell(
                             onTap: () {
-                              setState(() {
-                                tokensAmount = widget.member.lamportsEarned! /
-                                    LAMPORTS_IN_SOL;
-                              });
-                              amountController.text = tokensAmount.toString();
                               fetchEquity();
                             },
                             child: Padding(
@@ -162,11 +152,6 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
                     prefix: const Text('%'),
                     suffix: InkWell(
                       onTap: () {
-                        setState(() {
-                          tokensAmount =
-                              widget.member.lamportsEarned! / LAMPORTS_IN_SOL;
-                        });
-                        amountController.text = tokensAmount.toString();
                         fetchEquity();
                       },
                       child: Padding(
@@ -178,11 +163,7 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
                       ),
                     ),
                     onChanged: (value) {
-                      if (config.mode == Mode.Pro) {
-                        equityController.text = equity ?? '';
-                      } else {
-                        tokensAmount = double.tryParse(value);
-                      }
+                      tokensAmount = double.tryParse(value);
                     },
                   ),
                 ],

@@ -4,7 +4,6 @@ import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
-import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/url_qr_code.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
@@ -172,15 +171,6 @@ class SaleOfferPreviewScreen extends StatelessWidget {
       ),
     );
     callSnackBar(context);
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (context.mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-        (route) => false,
-      );
-    }
   }
 
   @override

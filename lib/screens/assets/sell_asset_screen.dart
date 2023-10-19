@@ -37,28 +37,22 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
   final amountController = TextEditingController();
   SaleOffer saleOffer = SaleOffer(tokensAmount: 0);
   bool isLoading = false;
-  int? lamportsMinted;
 
   fetchEquity() async {
     _debouncer.debounce(() async {
       try {
-        final response = await orgsApi.getOrgById(widget.organization.id!);
-        lamportsMinted = response.data!['lamportsMinted'];
+        final response = await orgsApi.getMemberEquity(
+          widget.organization.id!,
+          widget.member.id!,
+        );
+        final tokenAmount = TokenAmount.fromJson(response.data);
+        final equity = tokenAmount.uiAmountString;
         equityController.text = equity!;
+        saleOffer.tokensAmount = double.tryParse(equity);
       } catch (err) {
         print(err);
       }
     });
-  }
-
-  String? get equity {
-    if (lamportsMinted == null) {
-      return null;
-    }
-    final equity =
-        ((saleOffer.tokensAmount! * LAMPORTS_IN_SOL) / lamportsMinted! * 100)
-            .toStringAsFixed(1);
-    return equity;
   }
 
   buildForm(BuildContext context) {
@@ -87,11 +81,6 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
                   ]),
                   suffix: InkWell(
                     onTap: () {
-                      setState(() {
-                        saleOffer.tokensAmount =
-                            widget.member.lamportsEarned! / LAMPORTS_IN_SOL;
-                      });
-                      amountController.text = saleOffer.tokensAmount.toString();
                       fetchEquity();
                     },
                     child: Padding(
@@ -122,11 +111,6 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
             prefix: const Text('%'),
             suffix: InkWell(
               onTap: () {
-                setState(() {
-                  saleOffer.tokensAmount =
-                      widget.member.lamportsEarned! / LAMPORTS_IN_SOL;
-                });
-                amountController.text = saleOffer.tokensAmount.toString();
                 fetchEquity();
               },
               child: Padding(
@@ -138,11 +122,7 @@ class _SellAssetScreenState extends State<SellAssetScreen> {
               ),
             ),
             onChanged: (value) {
-              if (config.mode == Mode.Pro) {
-                equityController.text = equity ?? '';
-              } else {
-                saleOffer.tokensAmount = double.tryParse(value);
-              }
+              saleOffer.tokensAmount = double.tryParse(value);
             },
           ),
           const SizedBox(height: 30),

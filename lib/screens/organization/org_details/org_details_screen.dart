@@ -25,12 +25,14 @@ class OrgDetailsScreen extends StatefulWidget {
   final String orgId;
   final OrganizationMember? member;
   final bool isPreviewMode;
+  final Future<String>? futureEquity;
 
   const OrgDetailsScreen({
     Key? key,
     required this.orgId,
     this.member,
     this.isPreviewMode = false,
+    this.futureEquity,
   }) : super(key: key);
 
   @override
@@ -326,6 +328,7 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                           widget.member,
                                           widget.isPreviewMode,
                                           futureBalance,
+                                          widget.futureEquity,
                                         ),
                                       ),
                                     ],
