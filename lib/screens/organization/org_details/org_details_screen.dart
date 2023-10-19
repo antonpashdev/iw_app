@@ -309,6 +309,17 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                             CupertinoSliverRefreshControl(
                               onRefresh: onRefresh,
                             ),
+                            SliverToBoxAdapter(
+                              child: Column(
+                                children: [
+                                  buildWalletSection(
+                                    context,
+                                    snapshot.data?[0],
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              ),
+                            ),
                             SliverPersistentHeader(
                               pinned: true,
                               delegate: _HeaderDelegate(
@@ -316,11 +327,6 @@ class _OrgDetailsScreenState extends State<OrgDetailsScreen> {
                                   color: APP_BODY_BG,
                                   child: Column(
                                     children: [
-                                      buildWalletSection(
-                                        context,
-                                        snapshot.data?[0],
-                                      ),
-                                      const SizedBox(height: 10),
                                       AppPadding(
                                         child: buildHeader(
                                           context,
@@ -464,10 +470,10 @@ class _HeaderDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => 210;
+  double get maxExtent => 110;
 
   @override
-  double get minExtent => 210;
+  double get minExtent => 110;
 
   @override
   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
