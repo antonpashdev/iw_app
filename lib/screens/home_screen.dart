@@ -809,7 +809,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Text(
                               config.mode == Mode.Lite
-                                  ? 'Orgs & Projects'
+                                  ? AppLocalizations.of(context)!
+                                      .homeScreen_assetsTitle
                                   : AppLocalizations.of(context)!
                                       .homeScreen_organizationsTitle,
                               style: Theme.of(context).textTheme.headlineLarge,

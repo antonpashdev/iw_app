@@ -146,7 +146,7 @@ class OrgMemberCardLite extends StatelessWidget {
         const Spacer(),
         ListTile(
           dense: true,
-          title: Text('Revenue share', style: textStyle),
+          title: Text('Your revenue share', style: textStyle),
           contentPadding: const EdgeInsets.all(0),
           trailing: FutureBuilder(
             future: futureEquity,

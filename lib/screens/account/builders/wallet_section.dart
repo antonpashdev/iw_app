@@ -89,7 +89,7 @@ buildWalletSection(BuildContext context, Account account) {
         onPressed: () {
           launchURL(
             Uri.parse(
-              'https://solscan.io/address/${account.wallet}/tokens',
+              'https://solscan.io/address/${account.wallet}',
             ),
           );
         },

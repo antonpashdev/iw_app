@@ -72,10 +72,10 @@ buildHeader(
                 }
                 return Text(
                   '${snapshot.data}%',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: COLOR_GREEN,
+                      ),
                 );
               },
             ),
