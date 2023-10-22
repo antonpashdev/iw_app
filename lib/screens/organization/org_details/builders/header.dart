@@ -177,19 +177,18 @@ buildEquityControls(
   return Row(
     children: [
       ElevatedButton(
-        onPressed:
-            isPreviewMode || member != null && !member.permissions!.canSendMoney
-                ? null
-                : () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => SendTypeLiteScreen(
-                          organization: org,
-                          member: member!,
-                        ),
-                      ),
-                    );
-                  },
+        onPressed: isPreviewMode
+            ? null
+            : () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => SendTypeLiteScreen(
+                      organization: org,
+                      member: member!,
+                    ),
+                  ),
+                );
+              },
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
