@@ -2,8 +2,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
+import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/organization/create_org_settings_screen.dart';
+import 'package:iw_app/screens/organization/org_creation_progress_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
@@ -26,8 +28,12 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
     if (formKey.currentState!.validate()) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => CreateOrgSettingsScreen(
+          builder: (_) => OrgCreationProgressScreen(
             organization: widget.organization,
+            member: OrganizationMember(
+              occupation: 'Founder',
+              role: MemberRole.Admin,
+            ),
           ),
         ),
       );

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
@@ -15,6 +16,7 @@ import 'package:iw_app/widgets/buttons/gray_button.dart';
 import 'package:iw_app/widgets/components/round_border_container.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/state/config.dart';
 
 class OrgSettingsScreen extends StatefulWidget {
   final Organization organization;
@@ -32,6 +34,10 @@ class OrgSettingsScreen extends StatefulWidget {
 
 class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
   late Future<List<Offer>> futureInvestOffers;
+
+  Config get config {
+    return ConfigState.of(context).config;
+  }
 
   @override
   initState() {
@@ -123,20 +129,25 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          GrayButton(
-            onPressed: widget.member.permissions!.canChangeTreasury
-                ? onChangeTrasuryPressed
-                : null,
-            child: const Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          if (config.mode == Mode.Pro)
+            Column(
               children: [
-                Text('Change Treasury'),
-                Icon(Icons.percent_rounded),
+                GrayButton(
+                  onPressed: widget.member.permissions!.canChangeTreasury
+                      ? onChangeTrasuryPressed
+                      : null,
+                  child: const Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Change Treasury'),
+                      Icon(Icons.percent_rounded),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
               ],
             ),
-          ),
-          const SizedBox(height: 10),
           GrayButton(
             onPressed: widget.member.permissions!.canInviteMembers
                 ? onInviteMemberPressed
