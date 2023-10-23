@@ -187,24 +187,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Widget buildCallToCreateCard(BuildContext context) {
-    return Row(
-      children: [
-        const SizedBox(width: 20),
-        OrgMemberCard(
-          onTap: navigateToCreateOrg,
-        ),
-      ],
-    );
-  }
-
   buildOrganizationCard(
     BuildContext context,
     OrganizationMember member,
     Future<Map<String, dynamic>> futureOtherMembers,
     Future<String>? futureEquity,
-    bool isFirst,
-    bool isLast,
   ) {
     Config config = ConfigState.of(context).config;
     final card = config.mode == Mode.Pro
@@ -238,13 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           );
-    return Row(
-      children: [
-        const SizedBox(width: 20),
-        card,
-        if (isLast) const SizedBox(width: 20),
-      ],
-    );
+    return card;
   }
 
   buildAssetExample() {
@@ -304,33 +285,6 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
     );
-  }
-
-  buildOrgsMembers(List<OrganizationMemberWithOtherMembers> members) {
-    return members.isEmpty
-        ? buildCallToCreateCard(context)
-        : ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              ...members
-                  .asMap()
-                  .map(
-                    (i, member) => MapEntry(
-                      i,
-                      buildOrganizationCard(
-                        context,
-                        member.member!,
-                        member.futureOtherMembers!,
-                        member.futureEquity,
-                        i == 0,
-                        i == members.length - 1,
-                      ),
-                    ),
-                  )
-                  .values
-                  .toList()
-            ],
-          );
   }
 
   buildAssets(List<OrganizationMemberWithOtherMembers> members) {
@@ -666,15 +620,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: CircularProgressIndicator(),
               );
             }
+            final members = snapshot.data ?? [];
+            final screenWidth = MediaQuery.of(context).size.width;
             return CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 CupertinoSliverRefreshControl(
                   onRefresh: onRefresh,
                 ),
-                SliverList(
-                  delegate: SliverChildListDelegate.fixed(
-                    [
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
                       Align(
                         alignment: Alignment.centerLeft,
                         child: AppPadding(
@@ -826,57 +782,94 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        height: 290,
-                        child: buildOrgsMembers(snapshot.data!),
-                      ),
-                      if (config.mode == Mode.Pro)
-                        Column(
-                          children: [
-                            const SizedBox(height: 45),
-                            AppPadding(
-                              child: Text(
-                                AppLocalizations.of(context)!
-                                    .homeScreen_assetsTitle,
-                                style:
-                                    Theme.of(context).textTheme.headlineLarge,
-                              ),
-                            ),
-                            const SizedBox(height: 15),
-                            AppPadding(
-                              child: snapshot.data!.isEmpty
-                                  ? buildAssetExample()
-                                  : buildAssets(snapshot.data!),
-                            ),
-                          ],
-                        ),
-                      if (snapshot.data!.isEmpty)
-                        AppPadding(
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 15),
-                              SvgPicture.asset(
-                                'assets/icons/arrow_up_big.svg',
-                              ),
-                              const SizedBox(height: 15),
-                              Text(
-                                config.mode == Mode.Pro
-                                    ? AppLocalizations.of(context)!
-                                        .homeScreen_assetsExampleDesc
-                                    : 'Your Assets will appear here when you create or join Organization or Project',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: members.isNotEmpty
+                      ? SliverGrid.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent:
+                                screenWidth < 600 ? screenWidth : 450,
+                            mainAxisExtent: 290,
+                            mainAxisSpacing: 20,
+                            crossAxisSpacing: 20,
+                          ),
+                          itemBuilder: (_, i) {
+                            final member = members[i];
+                            return buildOrganizationCard(
+                              context,
+                              member.member!,
+                              member.futureOtherMembers!,
+                              member.futureEquity,
+                            );
+                          },
+                          itemCount: members.length,
+                        )
+                      : SliverToBoxAdapter(
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            width: 200,
+                            height: 290,
+                            child: OrgMemberCard(
+                              onTap: navigateToCreateOrg,
+                            ),
+                          ),
+                        ),
+                ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 40,
+                  ),
+                ),
+                if (config.mode == Mode.Pro)
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 45),
+                        AppPadding(
+                          child: Text(
+                            AppLocalizations.of(context)!
+                                .homeScreen_assetsTitle,
+                            style: Theme.of(context).textTheme.headlineLarge,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        AppPadding(
+                          child: snapshot.data!.isEmpty
+                              ? buildAssetExample()
+                              : buildAssets(snapshot.data!),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (snapshot.data!.isEmpty)
+                  SliverToBoxAdapter(
+                    child: AppPadding(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 15),
+                          SvgPicture.asset(
+                            'assets/icons/arrow_up_big.svg',
+                          ),
+                          const SizedBox(height: 15),
+                          Text(
+                            config.mode == Mode.Pro
+                                ? AppLocalizations.of(context)!
+                                    .homeScreen_assetsExampleDesc
+                                : 'Your Assets will appear here when you create or join Organization or Project',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             );
           },

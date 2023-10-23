@@ -226,42 +226,38 @@ class OrgMemberCardLite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      width: MediaQuery.of(context).size.width * 0.6,
-      child: Card(
-        margin: const EdgeInsets.all(0),
-        color: COLOR_LIGHT_GRAY,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 65,
-                  height: 65,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: buildLogo(),
+    return Card(
+      margin: const EdgeInsets.all(0),
+      color: COLOR_LIGHT_GRAY,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 65,
+                height: 65,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                const SizedBox(height: 10),
-                buildOrgName(context),
-                buildOrgUsername(context),
-                Expanded(
-                  child: buildMainSection(context),
-                ),
-              ],
-            ),
+                clipBehavior: Clip.antiAlias,
+                child: buildLogo(),
+              ),
+              const SizedBox(height: 10),
+              buildOrgName(context),
+              buildOrgUsername(context),
+              Expanded(
+                child: buildMainSection(context),
+              ),
+            ],
           ),
         ),
       ),
