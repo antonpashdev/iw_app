@@ -138,7 +138,7 @@ class OrgMemberCardLite extends StatelessWidget {
         ),
       );
     }
-    final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+    final textStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.w500,
         );
     return Column(
@@ -156,7 +156,10 @@ class OrgMemberCardLite extends StatelessWidget {
               }
               return Text(
                 '${snapshot.data}%',
-                style: textStyle?.copyWith(color: COLOR_GREEN),
+                style: textStyle?.copyWith(
+                  color: COLOR_GREEN,
+                  fontWeight: FontWeight.w700,
+                ),
               );
             },
           ),
@@ -173,7 +176,7 @@ class OrgMemberCardLite extends StatelessWidget {
           contentPadding: const EdgeInsets.all(0),
           trailing: Text(
             '${(NumberFormat('#,###.##').format(member?.profit ?? 0))}\$',
-            style: textStyle,
+            style: textStyle?.copyWith(fontWeight: FontWeight.w700),
           ),
           visualDensity:
               const VisualDensity(vertical: VisualDensity.minimumDensity),
@@ -208,10 +211,7 @@ class OrgMemberCardLite extends StatelessWidget {
                     child: Center(
                       child: Text(
                         '${snapshot.data?['total']} members',
-                        style:
-                            Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
                   ),

@@ -794,7 +794,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               SliverGridDelegateWithMaxCrossAxisExtent(
                             maxCrossAxisExtent:
                                 screenWidth < 600 ? screenWidth : 450,
-                            mainAxisExtent: 290,
+                            mainAxisExtent: 300,
                             mainAxisSpacing: 20,
                             crossAxisSpacing: 20,
                           ),

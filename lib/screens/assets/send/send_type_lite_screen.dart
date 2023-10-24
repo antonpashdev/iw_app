@@ -94,7 +94,7 @@ class SendTypeLiteScreen extends StatelessWidget {
                   ),
                   const Expanded(
                     flex: 2,
-                    child: Text('to Organization or Project'),
+                    child: Text('to Organization account'),
                   ),
                 ],
               ),
