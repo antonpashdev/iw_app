@@ -30,18 +30,30 @@ buildPulseItem(
       '+ ${duration}h',
       style: trailingTextStyle,
     );
+  } else if (item.action == OrgHistoryItemAction.Received) {
+    trailingText = Text(
+      '+ \$${item.amount}',
+      style: trailingTextStyle,
+    );
   }
   final primaryColor = item.action == OrgHistoryItemAction.Contributed
       ? COLOR_ALMOST_BLACK
-      : COLOR_BLUE;
+      : item.action == OrgHistoryItemAction.Received
+          ? COLOR_GREEN
+          : COLOR_BLUE;
   final icon = Icon(
     item.action == OrgHistoryItemAction.Contributed
         ? CupertinoIcons.clock
-        : Icons.add,
+        : item.action == OrgHistoryItemAction.Received
+            ? Icons.attach_money_rounded
+            : Icons.add,
     color: COLOR_WHITE,
     size: 12,
   );
-  final title = item.user?.nickname ?? item.orgUser?.username;
+  String? title = item.user?.nickname ?? item.orgUser?.username;
+  if (item.action == OrgHistoryItemAction.Received) {
+    title = item.memo;
+  }
   final date =
       item.date != null ? DateTime.parse(item.date!).toLocal() : DateTime.now();
   final processedAtStr = getFormattedDate(date);
