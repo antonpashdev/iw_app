@@ -5,6 +5,7 @@ import 'package:iw_app/models/org_events_history_item_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/utils/numbers.dart';
+import 'package:iw_app/utils/url.dart';
 import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 
@@ -52,7 +53,7 @@ buildPulseItem(
   );
   String? title = item.user?.nickname ?? item.orgUser?.username;
   if (item.action == OrgHistoryItemAction.Received) {
-    title = item.memo;
+    title = item.memo?.split(',').map((e) => e.trim()).join(',\n');
   }
   final date =
       item.date != null ? DateTime.parse(item.date!).toLocal() : DateTime.now();
@@ -80,18 +81,25 @@ buildPulseItem(
             const SizedBox(height: 10),
           ],
         ),
-      GenericListTile(
-        title: title,
-        subtitle: item.action!.name,
-        image: item.user?.avatar != null || item.orgUser?.logo != null
-            ? NetworkImageAuth(
-                imageUrl:
-                    '${usersApi.baseUrl}${item.user?.avatar ?? item.orgUser?.logo}',
-              )
-            : Image.asset('assets/images/avatar_placeholder.png'),
-        trailingText: trailingText,
-        primaryColor: primaryColor,
-        icon: icon,
+      InkWell(
+        onTap: item.txnHash == null
+            ? null
+            : () => launchURL(
+                  Uri.parse('https://solscan.io/tx/${item.txnHash}'),
+                ),
+        child: GenericListTile(
+          title: title,
+          subtitle: item.action!.name,
+          image: item.user?.avatar != null || item.orgUser?.logo != null
+              ? NetworkImageAuth(
+                  imageUrl:
+                      '${usersApi.baseUrl}${item.user?.avatar ?? item.orgUser?.logo}',
+                )
+              : Image.asset('assets/images/avatar_placeholder.png'),
+          trailingText: trailingText,
+          primaryColor: primaryColor,
+          icon: icon,
+        ),
       ),
     ],
   );

@@ -12,6 +12,7 @@ class OrgEventsHistoryItem {
   OrgHistoryItemAction? action;
   String? date;
   String? memo;
+  String? txnHash;
   double? amount;
 
   OrgEventsHistoryItem({
@@ -32,5 +33,6 @@ class OrgEventsHistoryItem {
     date = json['date'];
     memo = json['memo'];
     amount = json['amount'];
+    txnHash = json['txnHash'];
   }
 }
