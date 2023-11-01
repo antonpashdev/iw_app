@@ -4,6 +4,7 @@ import 'package:iw_app/models/txn_history_item_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/utils/numbers.dart';
+import 'package:iw_app/utils/url.dart';
 import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 
@@ -76,20 +77,29 @@ buildHistoryItem(
             const SizedBox(height: 10),
           ],
         ),
-      GenericListTile(
-        title: title,
-        subtitle: item.description,
-        image: item.img != null && item.img!.isNotEmpty
-            ? NetworkImageAuth(imageUrl: '${usersApi.baseUrl}${item.img}')
-            : Image.asset('assets/images/avatar_placeholder.png'),
-        trailing: Text(
-          amount,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: color,
-              ),
+      InkWell(
+        onTap: item.transactionSignature == null
+            ? null
+            : () => launchURL(
+                  Uri.parse(
+                    'https://solscan.io/tx/${item.transactionSignature}',
+                  ),
+                ),
+        child: GenericListTile(
+          title: title,
+          subtitle: item.description,
+          image: item.img != null && item.img!.isNotEmpty
+              ? NetworkImageAuth(imageUrl: '${usersApi.baseUrl}${item.img}')
+              : Image.asset('assets/images/avatar_placeholder.png'),
+          trailing: Text(
+            amount,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: color,
+                ),
+          ),
+          icon: icon,
+          primaryColor: primaryColor,
         ),
-        icon: icon,
-        primaryColor: primaryColor,
       ),
     ],
   );
