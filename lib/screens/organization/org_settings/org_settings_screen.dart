@@ -11,6 +11,7 @@ import 'package:iw_app/screens/organization/org_edit/org_edit_screen.dart';
 import 'package:iw_app/screens/organization/org_settings/api.dart';
 import 'package:iw_app/screens/organization/org_settings/builders/header.dart';
 import 'package:iw_app/screens/organization/org_settings/builders/pending_offers_list.dart';
+import 'package:iw_app/screens/organization/receive_money_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/gray_button.dart';
 import 'package:iw_app/widgets/components/round_border_container.dart';
@@ -76,6 +77,17 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
     );
   }
 
+  onReceivePressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReceiveMoneyScreen(
+          organization: widget.organization,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
@@ -115,6 +127,18 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
               ),
             ),
           const SizedBox(height: 30),
+          GrayButton(
+            onPressed: onReceivePressed,
+            child: const Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Receive'),
+                Icon(Icons.arrow_downward),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
           GrayButton(
             onPressed: widget.member.permissions!.canRaiseMoney
                 ? onRiseMoneyPressed
