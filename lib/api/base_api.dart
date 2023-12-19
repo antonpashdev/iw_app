@@ -6,7 +6,7 @@ const TIMEOUT = Duration(days: 1);
 
 class BaseApi {
   late final baseUrl = 'https://equitywallet-b362155a0894.herokuapp.com';
-  // final baseUrl = 'http://localhost:9898';
+  // final baseUrl = 'http://localhost:9899';
   late final Dio _dioClient;
   BaseApi() {
     _dioClient = Dio(

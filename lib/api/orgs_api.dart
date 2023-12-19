@@ -227,6 +227,10 @@ class _OrgsApi extends BaseApi {
   Future<Response> removeLogos(List<String> imageNames) {
     return client.post('/orgs/delete-avatars', data: {'fileName': imageNames});
   }
+
+  Future<Response> splitNow(String orgId) {
+    return client.post('/orgs/$orgId/split');
+  }
 }
 
 final orgsApi = _OrgsApi();

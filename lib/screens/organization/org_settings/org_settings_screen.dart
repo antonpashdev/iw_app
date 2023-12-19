@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
@@ -86,6 +88,34 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
         ),
       ),
     );
+  }
+
+  onSplitNowPressed() async {
+    try {
+      await orgsApi.splitNow(widget.organization.id!);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Split successful'),
+            duration: Duration(milliseconds: 3000),
+            backgroundColor: COLOR_GREEN,
+          ),
+        );
+      }
+    } on DioError catch (e) {
+      final message = e.response!.data['message'];
+      if (message != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            duration: const Duration(milliseconds: 3000),
+            backgroundColor: COLOR_RED,
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -182,6 +212,20 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
               children: [
                 Text('Invite member'),
                 Icon(CupertinoIcons.person_badge_plus),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          GrayButton(
+            onPressed: widget.member.permissions!.canInviteMembers
+                ? onSplitNowPressed
+                : null,
+            child: const Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Split now'),
+                Icon(CupertinoIcons.arrow_branch),
               ],
             ),
           ),
