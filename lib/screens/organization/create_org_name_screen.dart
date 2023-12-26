@@ -1,4 +1,5 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
@@ -137,6 +138,25 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
               });
               handleNextPressed();
             },
+          ),
+          const SizedBox(height: 30),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Content',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              CupertinoSwitch(
+                value: widget.organization.settings?.isContent ?? false,
+                activeColor: COLOR_GREEN,
+                onChanged: (bool? value) {
+                  setState(() {
+                    widget.organization.settings?.isContent = value;
+                  });
+                },
+              ),
+            ],
           ),
         ],
       ),

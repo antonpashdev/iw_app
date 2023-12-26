@@ -66,6 +66,7 @@ $settings
       'link': link,
       'description': description,
       'settings[treasury]': settings?.treasury,
+      'settings[isContent]': settings?.isContent,
       'lamportsMinted': lamportsMinted,
     };
     if (member != null) {
@@ -91,6 +92,7 @@ class OrganizationSettings {
   int treasury = 0;
   String? successUrl;
   String? cancelUrl;
+  bool? isContent;
 
   OrganizationSettings({this.treasury = 0});
 
@@ -98,6 +100,7 @@ class OrganizationSettings {
     treasury = json['treasury'];
     successUrl = json['successUrl'];
     cancelUrl = json['cancelUrl'];
+    isContent = json['isContent'];
   }
 
   @override
