@@ -94,7 +94,7 @@ class OrganizationSettings {
   String? cancelUrl;
   bool? isContent;
 
-  OrganizationSettings({this.treasury = 0});
+  OrganizationSettings({this.treasury = 0, this.isContent = false});
 
   OrganizationSettings.fromJson(Map<String, dynamic> json) {
     treasury = json['treasury'];
