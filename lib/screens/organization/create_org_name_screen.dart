@@ -25,19 +25,20 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
   final formKey = GlobalKey<FormState>();
 
   handleNextPressed() {
-    if (formKey.currentState!.validate()) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => OrgCreationProgressScreen(
-            organization: widget.organization,
-            member: OrganizationMember(
-              occupation: 'Founder',
-              role: MemberRole.Admin,
-            ),
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => OrgCreationProgressScreen(
+          organization: widget.organization,
+          member: OrganizationMember(
+            occupation: 'Founder',
+            role: MemberRole.Admin,
           ),
         ),
-      );
-    }
+      ),
+    );
   }
 
   selectLogo() async {
@@ -144,17 +145,67 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
+                'App',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              CupertinoSwitch(
+                value: widget.organization.settings?.isApp ?? false,
+                activeColor: COLOR_GREEN,
+                onChanged: (widget.organization.settings?.isContent ?? false)
+                    ? null
+                    : (bool? value) {
+                        setState(() {
+                          widget.organization.settings?.isApp = value;
+                          widget.organization.settings?.isContent = false;
+                        });
+                      },
+              ),
+            ],
+          ),
+          if (widget.organization.settings?.isApp ?? false)
+            Column(
+              children: [
+                const SizedBox(height: 20),
+                AppTextFormField(
+                  labelText: 'Price per month',
+                  textInputAction: TextInputAction.done,
+                  inputType: TextInputType.number,
+                  prefix: '\$',
+                  suffix: const Text('/ mo'),
+                  validator: (widget.organization.settings?.isApp ?? false)
+                      ? multiValidate([
+                          requiredField('Price per month'),
+                          numberField('Price per month'),
+                        ])
+                      : (_) => null,
+                  onChanged: (value) {
+                    setState(() {
+                      widget.organization.settings?.pricePerMonth =
+                          double.tryParse(value);
+                    });
+                  },
+                ),
+              ],
+            ),
+          const SizedBox(height: 30),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
                 'Content',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               CupertinoSwitch(
                 value: widget.organization.settings?.isContent ?? false,
                 activeColor: COLOR_GREEN,
-                onChanged: (bool? value) {
-                  setState(() {
-                    widget.organization.settings?.isContent = value;
-                  });
-                },
+                onChanged: (widget.organization.settings?.isApp ?? false)
+                    ? null
+                    : (bool? value) {
+                        setState(() {
+                          widget.organization.settings?.isContent = value;
+                          widget.organization.settings?.isApp = false;
+                        });
+                      },
               ),
             ],
           ),
@@ -165,9 +216,6 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isBtnDisabled =
-        formKey.currentState == null || !formKey.currentState!.validate();
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: APP_BODY_BG,
@@ -189,7 +237,7 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 50),
               child: ElevatedButton(
-                onPressed: isBtnDisabled ? null : handleNextPressed,
+                onPressed: handleNextPressed,
                 child: Text(AppLocalizations.of(context)!.next),
               ),
             ),
