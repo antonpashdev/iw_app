@@ -176,7 +176,7 @@ class _NumberOfSharesScreenState extends State<NumberOfSharesScreen> {
                 onPressed: handleNext,
                 child: const Text('Preview'),
               ),
-            )
+            ),
           ],
         ),
       ),

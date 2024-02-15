@@ -189,7 +189,7 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
                           onPressed: canPay ? onPreviewTap : null,
                           child: const Text('Preview'),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 );

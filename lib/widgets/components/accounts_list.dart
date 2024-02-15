@@ -55,7 +55,7 @@ class AccountsListWidget extends StatelessWidget {
             ),
             const Divider(
               color: COLOR_GRAY,
-            )
+            ),
           ],
         ),
         Container(

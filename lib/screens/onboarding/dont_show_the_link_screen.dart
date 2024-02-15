@@ -59,7 +59,7 @@ class DontShowTheLinkScreen extends StatelessWidget {
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                   ),
-                )
+                ),
               ],
             ),
           ),

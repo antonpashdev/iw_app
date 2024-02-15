@@ -531,7 +531,7 @@ class _OfferScreenState extends State<OfferScreen> {
       }
     } on DioError catch (err) {
       final message = err.response!.data['message'];
-      if (message != null) {
+      if (message != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
@@ -685,7 +685,7 @@ class _OfferScreenState extends State<OfferScreen> {
                       label: const Text('Copy'),
                       icon: const Icon(Icons.copy, size: 12),
                       onPressed: () => handleCopyPressed(context),
-                    )
+                    ),
                   ],
                 ),
               Column(

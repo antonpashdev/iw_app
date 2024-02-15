@@ -85,7 +85,7 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
     } on DioError catch (err) {
       print(err);
       final message = err.response!.data['message'];
-      if (message != null) {
+      if (message != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
@@ -118,7 +118,7 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
         navigateToHome();
       } else {
         final message = err.response!.data['message'];
-        if (message != null) {
+        if (message != null && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(message),
@@ -127,11 +127,15 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
             ),
           );
         }
-        Navigator.of(context).pop();
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
       }
     } catch (err) {
       print(err);
-      Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
   }
 

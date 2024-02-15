@@ -91,7 +91,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                   Row(
                     children: [
                       if (!snapshot.hasData) ...buildTitleShimmer(),
-                      if (snapshot.hasData) ...buildTitle(account!)
+                      if (snapshot.hasData) ...buildTitle(account!),
                     ],
                   ),
                 ],

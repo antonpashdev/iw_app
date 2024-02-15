@@ -109,7 +109,7 @@ class _CreateOrgNameScreenState extends State<CreateOrgNameScreen> {
                     });
                   },
                 ),
-              )
+              ),
             ],
           ),
           const SizedBox(height: 30),

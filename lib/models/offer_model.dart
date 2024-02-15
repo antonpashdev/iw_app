@@ -36,7 +36,7 @@ class OfferInvestorSettings {
     return {
       'amount': amount,
       'equity': equity,
-      'minimalInvestment': minimalInvestment
+      'minimalInvestment': minimalInvestment,
     };
   }
 }

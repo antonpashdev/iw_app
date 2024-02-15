@@ -143,7 +143,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
                   },
                   child: const Text('Login'),
                 ),
-              )
+              ),
             ],
           ),
         ],

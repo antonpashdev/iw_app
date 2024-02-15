@@ -383,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 'assets/images/fireworks_colored.svg',
                 width: 70,
                 height: 70,
-              )
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -507,7 +507,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -765,8 +765,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Text(
                               config.mode == Mode.Lite
-                                  ? AppLocalizations.of(context)!
-                                      .homeScreen_assetsTitle
+                                  ? 'Your Products'
                                   : AppLocalizations.of(context)!
                                       .homeScreen_organizationsTitle,
                               style: Theme.of(context).textTheme.headlineLarge,

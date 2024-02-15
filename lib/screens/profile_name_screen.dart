@@ -122,7 +122,7 @@ class _CreateProfile extends State<CreateProfile> {
                     });
                   },
                 ),
-              )
+              ),
             ],
           ),
           Expanded(

@@ -64,7 +64,7 @@ buildHeader(
                 iconColor: COLOR_BLUE,
                 foregroundColor: COLOR_BLUE,
               ),
-            )
+            ),
           ],
         ),
       ),

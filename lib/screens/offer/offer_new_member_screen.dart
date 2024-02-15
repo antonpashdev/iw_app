@@ -76,7 +76,7 @@ class _OfferNewMemberScreen extends State<OfferNewMemberScreen> {
               onPressed: handleNext,
               child: Text(AppLocalizations.of(context)!.common_next),
             ),
-          )
+          ),
         ],
       ),
     );

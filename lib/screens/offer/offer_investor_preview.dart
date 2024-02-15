@@ -49,7 +49,7 @@ class _OfferInvestorPreviewState extends State<OfferInvestorPreview> {
       }
     } on DioError catch (err) {
       final message = err.response!.data['message'];
-      if (message != null) {
+      if (message != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
@@ -226,7 +226,7 @@ class _OfferInvestorPreviewState extends State<OfferInvestorPreview> {
                         ? const CircularProgressIndicator.adaptive()
                         : const Text('Invest'),
                   ),
-                )
+                ),
               ],
             ),
           ),

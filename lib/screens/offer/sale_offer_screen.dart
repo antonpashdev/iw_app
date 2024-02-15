@@ -388,21 +388,23 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
         Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
       }
     } catch (err) {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Operation failed'),
-          content: Text(err.toString()),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('Operation failed'),
+            content: Text(err.toString()),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
     } finally {
       setState(() {
         isLoading = false;
@@ -505,7 +507,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                                   label: const Text('Copy'),
                                   icon: const Icon(Icons.copy, size: 12),
                                   onPressed: () => handleCopyPressed(context),
-                                )
+                                ),
                               ],
                             ),
                         ],

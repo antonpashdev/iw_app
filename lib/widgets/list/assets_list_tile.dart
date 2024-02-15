@@ -52,7 +52,7 @@ class AssetsListTile extends StatelessWidget {
                               .textTheme
                               .bodySmall
                               ?.copyWith(color: COLOR_GRAY),
-                        )
+                        ),
                       ],
                     ),
                   ),

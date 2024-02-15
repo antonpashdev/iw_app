@@ -45,7 +45,7 @@ buildHeader(BuildContext context, Organization organization) {
                   iconColor: COLOR_BLUE,
                   foregroundColor: COLOR_BLUE,
                 ),
-              )
+              ),
           ],
         ),
       ),

@@ -30,7 +30,7 @@ buildDetails(BuildContext context, Organization org) {
                     iconColor: COLOR_BLUE,
                     foregroundColor: COLOR_BLUE,
                   ),
-                )
+                ),
               ],
             ),
           ],

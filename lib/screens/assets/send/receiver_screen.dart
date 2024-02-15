@@ -172,7 +172,7 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
                     ? _isLoading == true
                         ? const CircularProgressIndicator.adaptive()
                         : SvgPicture.asset(getValidationStatusIcon())
-                    : Container()
+                    : Container(),
               ],
             ),
           ),
@@ -190,7 +190,7 @@ class _ReceiverScreenState extends State<ReceiverScreen> {
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );

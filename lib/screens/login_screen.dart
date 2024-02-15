@@ -72,15 +72,15 @@ class LoginScreen extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 350),
+                    SizedBox(
+                      width: 290,
                       child: Image.asset(
                         'assets/images/onboarding_chart.png',
                         width: MediaQuery.of(context).size.width * 0.5,
                       ),
                     ),
                     SizedBox(
-                      width: 180,
+                      width: 200,
                       child: Text(
                         slogan,
                         textAlign: TextAlign.center,

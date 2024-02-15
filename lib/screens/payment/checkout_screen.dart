@@ -236,9 +236,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     color: COLOR_GREEN,
                     fontWeight: FontWeight.w700,
                   ),
-                )
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),

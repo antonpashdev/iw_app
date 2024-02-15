@@ -125,9 +125,9 @@ class _LoginLinkScreen extends State<LoginLinkScreen> {
                 ElevatedButton(
                   onPressed: _copied ? handleNext : null,
                   child: const Text('Next'),
-                )
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),

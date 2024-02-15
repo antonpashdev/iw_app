@@ -149,7 +149,7 @@ class WithdrawScreen extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

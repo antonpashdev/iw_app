@@ -41,7 +41,7 @@ buildMembers(
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

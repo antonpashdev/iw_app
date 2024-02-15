@@ -8,6 +8,7 @@ ThemeData getAppTheme() {
     colorScheme: const ColorScheme.light(
       primary: COLOR_ALMOST_BLACK,
       secondary: COLOR_WHITE,
+      surfaceTint: Colors.transparent,
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
@@ -20,6 +21,8 @@ ThemeData getAppTheme() {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
+        backgroundColor: COLOR_ALMOST_BLACK,
+        foregroundColor: COLOR_WHITE,
         visualDensity: const VisualDensity(vertical: 0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -27,7 +30,7 @@ ThemeData getAppTheme() {
         padding: const EdgeInsets.all(15),
         textStyle: const TextStyle(
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w400,
           fontFamily: 'SF Pro Display',
         ),
         shadowColor: Colors.transparent,
@@ -116,6 +119,9 @@ ThemeData getAppTheme() {
       ),
       contentPadding: EdgeInsets.only(bottom: 10),
       isDense: true,
+    ),
+    dividerTheme: const DividerThemeData(
+      color: COLOR_LIGHT_GRAY2,
     ),
   );
 }

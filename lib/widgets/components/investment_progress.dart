@@ -70,11 +70,11 @@ class InvestmentProgressWidget extends StatelessWidget {
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),
-        )
+        ),
       ],
     );
   }
