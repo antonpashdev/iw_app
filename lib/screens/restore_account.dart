@@ -81,7 +81,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: 'Login to DePlan',
+      title: 'Login to DePlan Connect',
       child: Column(
         children: <Widget>[
           Expanded(
@@ -89,7 +89,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
               children: [
                 const SizedBox(height: 35),
                 const Text(
-                  'Paste your secret link to access DePlan ',
+                  'Paste your secret link to access your DePlan Connect Account',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
