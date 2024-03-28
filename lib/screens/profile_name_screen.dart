@@ -126,29 +126,33 @@ class _CreateProfile extends State<CreateProfile> {
             ],
           ),
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _isLoading
-                    ? ElevatedButton.icon(
-                        onPressed: name == '' || _isLoading ? null : createUser,
-                        icon: Container(
-                          width: 24,
-                          height: 24,
-                          padding: const EdgeInsets.all(2.0),
-                          child: const CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 3,
+            child: SizedBox(
+              width: 290,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _isLoading
+                      ? ElevatedButton.icon(
+                          onPressed:
+                              name == '' || _isLoading ? null : createUser,
+                          icon: Container(
+                            width: 24,
+                            height: 24,
+                            padding: const EdgeInsets.all(2.0),
+                            child: const CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
                           ),
+                          label: Text(nextButtonText),
+                        )
+                      : ElevatedButton(
+                          onPressed: name == '' ? null : createUser,
+                          child: Text(nextButtonText),
                         ),
-                        label: Text(nextButtonText),
-                      )
-                    : ElevatedButton(
-                        onPressed: name == '' ? null : createUser,
-                        child: Text(nextButtonText),
-                      ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
