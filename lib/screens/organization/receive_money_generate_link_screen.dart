@@ -18,8 +18,7 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
     required this.payment,
   });
 
-  String get paymentUrl =>
-      'https://app.equitywallet.org/checkout/${payment.id}';
+  String get paymentUrl => 'https://product.deplan.xyz/checkout/${payment.id}';
 
   callSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -99,7 +98,7 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
                           height: 25,
                         ),
                         const SizedBox(width: 10),
-                        const Text('USDC'),
+                        const Text('Credit\$'),
                       ],
                     ),
                   ),
@@ -125,7 +124,7 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 5),
-                          )
+                          ),
                         ],
                       ),
                       child: QRCodeWidget(

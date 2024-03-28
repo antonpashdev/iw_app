@@ -44,7 +44,6 @@ buildHeader(
               cursorColor: COLOR_BLUE,
               backgroundCursorColor: COLOR_ALMOST_BLACK,
               onChanged: onNameChanged,
-              autofocus: true,
             ),
             const SizedBox(height: 5),
             TextButton.icon(
@@ -65,7 +64,7 @@ buildHeader(
                 iconColor: COLOR_BLUE,
                 foregroundColor: COLOR_BLUE,
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,7 @@ import 'package:iw_app/widgets/list/assets_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
+import 'package:rxdart/rxdart.dart';
 
 const LAMPORTS_IN_SOL = 1000000000;
 
@@ -41,6 +44,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<int> assets = [];
+  final bonusExpirationSubject = BehaviorSubject<Duration?>();
+  Timer? timer;
   late Future<Account> futureAccount;
   late Future<List<OrganizationMemberWithOtherMembers>> futureAccountMembers;
   late Future<List<OrganizationMemberWithOtherMembers>> futureUserMembers;
@@ -53,31 +58,46 @@ class _HomeScreenState extends State<HomeScreen> {
     futureAccountMembers = fetchAccountMembers();
     futureUserMembers = fetchUserMembers();
     futureBalance = fetchBalance();
+    startTimer();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final balanceData = await fetchBalance();
-      final bonusBalance = balanceData['bonusBalance'];
-
-      final bonusFlowShowed = await appStorage.getValue(
-        'bonus_flow_greeting_showed',
-      );
-
       final redirectTo = await appStorage.getValue('redirect_to');
       if (redirectTo != null && mounted) {
         Navigator.of(context).pushNamed(redirectTo);
         appStorage.deleteValue('redirect_to');
       }
-
-      if (redirectTo == null &&
-          bonusFlowShowed == null &&
-          (bonusBalance ?? 0) > 0) {
-        showBonusFlow(bonusBalance: bonusBalance);
-        appStorage.write('bonus_flow_greeting_showed', true);
-      }
     });
   }
 
+  @override
+  void dispose() {
+    bonusExpirationSubject.close();
+    timer?.cancel();
+    super.dispose();
+  }
+
   Config get config => ConfigState.of(context).config;
+
+  startTimer() async {
+    final account = await futureAccount;
+    final balance = await futureBalance;
+    if (account.user == null || balance['bonusBalance'] == 0) return;
+    timer = Timer.periodic(const Duration(seconds: 1), updateTimeLeft);
+  }
+
+  updateTimeLeft(Timer timer) async {
+    final account = await futureAccount;
+    final user = account.user;
+    final createdAt = DateTime.parse(user!.createdAt!);
+    final bonusExpiration =
+        createdAt.add(Duration(minutes: config.bonusWalletExpiration!));
+    if (DateTime.now().isAfter(bonusExpiration)) {
+      timer.cancel();
+      return;
+    }
+    final timeLeft = bonusExpiration.difference(DateTime.now());
+    bonusExpirationSubject.add(timeLeft);
+  }
 
   Future<Account> fetchAccount() =>
       authApi.getMe().then((response) => Account.fromJson(response.data));
@@ -144,10 +164,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final response = await usersApi.getBalance();
     final balance =
         TokenAmount.fromJson(response.data['balance']['balance']).uiAmount;
-    final bonusBalance = TokenAmount.fromJson(
-          response.data['balance']['bonusBalance'],
-        ).uiAmount ??
-        0;
+    final bonusBalanceJson = response.data['balance']['bonusBalance'];
+    final double? bonusBalance = bonusBalanceJson != null
+        ? TokenAmount.fromJson(
+            bonusBalanceJson,
+          ).uiAmount
+        : 0;
 
     return {
       'balance': balance,
@@ -165,23 +187,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Widget buildCallToCreateCard(BuildContext context) {
-    return Row(
-      children: [
-        const SizedBox(width: 20),
-        OrgMemberCard(
-          onTap: navigateToCreateOrg,
-        ),
-      ],
-    );
-  }
-
   buildOrganizationCard(
     BuildContext context,
     OrganizationMember member,
     Future<Map<String, dynamic>> futureOtherMembers,
-    bool isFirst,
-    bool isLast,
+    Future<String>? futureEquity,
   ) {
     Config config = ConfigState.of(context).config;
     final card = config.mode == Mode.Pro
@@ -201,6 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         : OrgMemberCardLite(
             member: member,
+            futureEquity: futureEquity,
             futureOtherMembers: futureOtherMembers,
             onTap: () {
               Navigator.of(context).push(
@@ -208,18 +219,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (_) => OrgDetailsScreen(
                     orgId: member.org.id,
                     member: member,
+                    futureEquity: futureEquity,
                   ),
                 ),
               );
             },
           );
-    return Row(
-      children: [
-        const SizedBox(width: 20),
-        card,
-        if (isLast) const SizedBox(width: 20),
-      ],
-    );
+    return card;
   }
 
   buildAssetExample() {
@@ -261,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: COLOR_LIGHT_GRAY2,
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(20),
               ),
               clipBehavior: Clip.antiAlias,
@@ -279,32 +285,6 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
     );
-  }
-
-  buildOrgsMembers(List<OrganizationMemberWithOtherMembers> members) {
-    return members.isEmpty
-        ? buildCallToCreateCard(context)
-        : ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              ...members
-                  .asMap()
-                  .map(
-                    (i, member) => MapEntry(
-                      i,
-                      buildOrganizationCard(
-                        context,
-                        member.member!,
-                        member.futureOtherMembers!,
-                        i == 0,
-                        i == members.length - 1,
-                      ),
-                    ),
-                  )
-                  .values
-                  .toList()
-            ],
-          );
   }
 
   buildAssets(List<OrganizationMemberWithOtherMembers> members) {
@@ -363,13 +343,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  showBonusFlow({double? bonusBalance}) {
-    if (bonusBalance == 0 || bonusBalance == null) {
-      return;
-    }
-
-    print('bonusBalance: $bonusBalance');
-
+  showBonusFlow(double? bonusBalance) {
     const bulletTextStyle = TextStyle(
       fontSize: 22,
       fontWeight: FontWeight.w400,
@@ -409,15 +383,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 'assets/images/fireworks_colored.svg',
                 width: 70,
                 height: 70,
-              )
+              ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             bonusBalance == 5
-                ? 'You got \$${bonusBalance?.toStringAsFixed(2)} USDC on your bonus wallet!'
+                ? 'You got \$${bonusBalance?.toStringAsFixed(2)} Credit\$ on your bonus wallet!'
                 : bonusBalance == 2
-                    ? '\$$bonusBalance USDC left on your\nbonus wallet! '
+                    ? '\$$bonusBalance Credit\$ left on your\nbonus wallet! '
                     : '',
             textAlign: TextAlign.center,
             style: const TextStyle(
@@ -434,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 25),
               child: Text(
-                'You are 2 steps away from understanding how Equity Wallet works',
+                'You are 2 steps away from understanding how DePlan works',
                 style: TextStyle(
                   fontSize: 22,
                   color: COLOR_ALMOST_BLACK,
@@ -457,7 +431,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '1. Get Equity in a project',
+                        '1. Buy Equity in a project',
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           fontSize: 18,
@@ -533,7 +507,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -565,7 +539,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 30,
                         height: 30,
                         decoration: BoxDecoration(
-                          color: COLOR_LIGHT_GRAY2,
+                          color: COLOR_GRAY2,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         clipBehavior: Clip.antiAlias,
@@ -646,15 +620,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: CircularProgressIndicator(),
               );
             }
+            final members = snapshot.data ?? [];
+            final screenWidth = MediaQuery.of(context).size.width;
             return CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 CupertinoSliverRefreshControl(
                   onRefresh: onRefresh,
                 ),
-                SliverList(
-                  delegate: SliverChildListDelegate.fixed(
-                    [
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
                       Align(
                         alignment: Alignment.centerLeft,
                         child: AppPadding(
@@ -665,12 +641,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return const CircularProgressIndicator
                                     .adaptive();
                               }
-                              final balance =
-                                  '\$${snapshot.data!['balance']?.toStringAsFixed(2)}';
+                              final double balance =
+                                  snapshot.data!['balance'] ?? 0;
                               final bonusBalance = snapshot
                                   .data!['bonusBalance']
                                   ?.toStringAsFixed(2);
                               return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   InkWell(
                                     onTap: () {
@@ -685,7 +662,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
-                                          balance,
+                                          '\$$balance',
                                           style: Theme.of(context)
                                               .textTheme
                                               .headlineMedium,
@@ -702,35 +679,79 @@ class _HomeScreenState extends State<HomeScreen> {
                                     visible:
                                         (snapshot.data!['bonusBalance'] ?? 0) >
                                             0,
-                                    child: InkWell(
-                                      onTap: bonusBalance == '0'
-                                          ? null
-                                          : () {
-                                              showBonusFlow(
-                                                bonusBalance: snapshot
-                                                    .data!['bonusBalance'],
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            InkWell(
+                                              onTap: bonusBalance == '0'
+                                                  ? null
+                                                  : () {
+                                                      showBonusFlow(
+                                                        snapshot.data![
+                                                            'bonusBalance'],
+                                                      );
+                                                    },
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    '\$$bonusBalance',
+                                                    style: const TextStyle(
+                                                      fontSize: 30,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color: COLOR_LIGHT_GREEN,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 5),
+                                                  SvgPicture.asset(
+                                                    width: 29,
+                                                    height: 29,
+                                                    'assets/images/gift_colored.svg',
+                                                  ),
+                                                  const SizedBox(width: 5),
+                                                  const Icon(
+                                                    CupertinoIcons
+                                                        .info_circle_fill,
+                                                    color: COLOR_RED2,
+                                                    size: 20,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 19),
+                                          child: StreamBuilder<Duration?>(
+                                            stream:
+                                                bonusExpirationSubject.stream,
+                                            builder: (_, snapshot) {
+                                              if (!snapshot.hasData) {
+                                                return Container();
+                                              }
+                                              final timeLeft = snapshot.data!;
+                                              int hours = timeLeft.inHours;
+                                              int minutes = timeLeft.inMinutes
+                                                  .remainder(60);
+                                              int seconds = timeLeft.inSeconds
+                                                  .remainder(60);
+                                              return Text(
+                                                '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  color: COLOR_RED2,
+                                                ),
                                               );
                                             },
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            '\$$bonusBalance',
-                                            style: const TextStyle(
-                                              fontSize: 30,
-                                              fontWeight: FontWeight.w700,
-                                              color: COLOR_LIGHT_GREEN,
-                                            ),
                                           ),
-                                          const SizedBox(width: 5),
-                                          SvgPicture.asset(
-                                            width: 29,
-                                            height: 29,
-                                            'assets/images/gift_colored.svg',
-                                          )
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  )
+                                  ),
                                 ],
                               );
                             },
@@ -744,7 +765,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Text(
                               config.mode == Mode.Lite
-                                  ? 'Orgs & Projects'
+                                  ? 'Your Products'
                                   : AppLocalizations.of(context)!
                                       .homeScreen_organizationsTitle,
                               style: Theme.of(context).textTheme.headlineLarge,
@@ -760,50 +781,94 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      SizedBox(
-                        height: 290,
-                        child: buildOrgsMembers(snapshot.data!),
-                      ),
-                      const SizedBox(height: 45),
-                      AppPadding(
-                        child: Text(
-                          AppLocalizations.of(context)!.homeScreen_assetsTitle,
-                          style: Theme.of(context).textTheme.headlineLarge,
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      AppPadding(
-                        child: snapshot.data!.isEmpty
-                            ? buildAssetExample()
-                            : buildAssets(snapshot.data!),
-                      ),
-                      if (snapshot.data!.isEmpty)
-                        AppPadding(
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 15),
-                              SvgPicture.asset(
-                                'assets/icons/arrow_up_big.svg',
-                              ),
-                              const SizedBox(height: 15),
-                              Text(
-                                config.mode == Mode.Pro
-                                    ? AppLocalizations.of(context)!
-                                        .homeScreen_assetsExampleDesc
-                                    : 'Your Assets will appear here when you create or join Organization or Project',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: members.isNotEmpty
+                      ? SliverGrid.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent:
+                                screenWidth < 600 ? screenWidth : 450,
+                            mainAxisExtent: 300,
+                            mainAxisSpacing: 20,
+                            crossAxisSpacing: 20,
+                          ),
+                          itemBuilder: (_, i) {
+                            final member = members[i];
+                            return buildOrganizationCard(
+                              context,
+                              member.member!,
+                              member.futureOtherMembers!,
+                              member.futureEquity,
+                            );
+                          },
+                          itemCount: members.length,
+                        )
+                      : SliverToBoxAdapter(
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            width: 200,
+                            height: 290,
+                            child: OrgMemberCard(
+                              onTap: navigateToCreateOrg,
+                            ),
+                          ),
+                        ),
+                ),
+                const SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 40,
+                  ),
+                ),
+                if (config.mode == Mode.Pro)
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 45),
+                        AppPadding(
+                          child: Text(
+                            AppLocalizations.of(context)!
+                                .homeScreen_assetsTitle,
+                            style: Theme.of(context).textTheme.headlineLarge,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        AppPadding(
+                          child: snapshot.data!.isEmpty
+                              ? buildAssetExample()
+                              : buildAssets(snapshot.data!),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (snapshot.data!.isEmpty)
+                  SliverToBoxAdapter(
+                    child: AppPadding(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 15),
+                          SvgPicture.asset(
+                            'assets/icons/arrow_up_big.svg',
+                          ),
+                          const SizedBox(height: 15),
+                          Text(
+                            config.mode == Mode.Pro
+                                ? AppLocalizations.of(context)!
+                                    .homeScreen_assetsExampleDesc
+                                : 'Your Assets will appear here when you create or join Organization or Project',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             );
           },

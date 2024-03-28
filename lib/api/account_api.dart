@@ -14,6 +14,10 @@ class _AccountApi extends BaseApi {
       queryParameters: queryParameters,
     );
   }
+
+  Future<Response> depositCredits(double amount) {
+    return client.post('/account/credits/deposit', data: {'amount': amount});
+  }
 }
 
 final accountApi = _AccountApi();

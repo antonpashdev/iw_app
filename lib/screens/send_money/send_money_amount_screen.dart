@@ -25,61 +25,65 @@ class SendMoneyAmountScreen<T extends Widget> extends StatelessWidget {
     if (!formKey.currentState!.validate()) {
       return;
     }
-    Navigator.of(context).push(MaterialPageRoute(
+    Navigator.of(context).push(
+      MaterialPageRoute(
         builder: (_) => SendMoneyPreviewScreen(
-              sendMoneyData: sendMoneyData,
-              senderWallet: senderWallet,
-              onSendMoney: onSendMoney,
-              originScreenFactory: originScreenFactory,
-            ),),);
+          sendMoneyData: sendMoneyData,
+          senderWallet: senderWallet,
+          onSendMoney: onSendMoney,
+          originScreenFactory: originScreenFactory,
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-        title: 'Enter Amount',
-        child: Column(
-          children: [
-            Expanded(
-              child: KeyboardDismissableListView(
-                children: [
-                  const SizedBox(height: 40),
-                  InputForm(
-                    formKey: formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'You Send',
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                        const SizedBox(height: 10),
-                        AppTextFormFieldBordered(
-                          prefix: const Text('\$'),
-                          suffix: const Text('USDC'),
-                          onChanged: (value) {
-                            sendMoneyData.amount = double.tryParse(value);
-                          },
-                          validator: multiValidate([
-                            requiredField('Amount'),
-                            numberField('Amount'),
-                          ]),
-                        ),
-                      ],
-                    ),
+      title: 'Enter Amount',
+      child: Column(
+        children: [
+          Expanded(
+            child: KeyboardDismissableListView(
+              children: [
+                const SizedBox(height: 40),
+                InputForm(
+                  formKey: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'You Send',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      const SizedBox(height: 10),
+                      AppTextFormFieldBordered(
+                        prefix: const Text('\$'),
+                        suffix: const Text('Credit\$'),
+                        onChanged: (value) {
+                          sendMoneyData.amount = double.tryParse(value);
+                        },
+                        validator: multiValidate([
+                          requiredField('Amount'),
+                          numberField('Amount'),
+                        ]),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: 290,
-              child: ElevatedButton(
-                onPressed: () => handleNextPressed(context),
-                child: const Text('Next'),
-              ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: 290,
+            child: ElevatedButton(
+              onPressed: () => handleNextPressed(context),
+              child: const Text('Next'),
             ),
-          ],
-        ),);
+          ),
+        ],
+      ),
+    );
   }
 }

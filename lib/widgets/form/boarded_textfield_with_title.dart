@@ -6,9 +6,10 @@ import 'input_form.dart';
 
 class BoardedTextFieldWithTitle extends StatelessWidget {
   final String title;
+  final String? initialValue;
   final String prefix;
   final String suffix;
-  final TextEditingController textFieldController;
+  final TextEditingController? textFieldController;
   final void Function()? onSuffixTap;
   final dynamic Function(String)? onChanged;
   final String? Function(String?)? validator;
@@ -18,7 +19,7 @@ class BoardedTextFieldWithTitle extends StatelessWidget {
   const BoardedTextFieldWithTitle({
     Key? key,
     required this.title,
-    required this.textFieldController,
+    this.textFieldController,
     required this.onSuffixTap,
     required this.prefix,
     required this.suffix,
@@ -26,6 +27,7 @@ class BoardedTextFieldWithTitle extends StatelessWidget {
     this.focus = false,
     this.validator,
     this.inputFormatters,
+    this.initialValue,
   }) : super(key: key);
 
   @override
@@ -43,6 +45,7 @@ class BoardedTextFieldWithTitle extends StatelessWidget {
         ),
         const SizedBox(height: 7),
         AppTextFormFieldBordered(
+          initialValue: initialValue,
           inputFormatters: inputFormatters,
           autofocus: focus,
           validator: validator,

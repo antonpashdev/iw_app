@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/models/org_to_update.model.dart';
 import 'package:iw_app/api/orgs_api.dart';
@@ -7,6 +8,7 @@ import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/screens/organization/org_edit/builders/header.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/components/round_border_container.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -21,15 +23,11 @@ class OrgEditScreen extends StatefulWidget {
 }
 
 class _OrgEditScreenState extends State<OrgEditScreen> {
+  late Organization organization;
   bool saving = false;
   bool isDirty = false;
   List<String> images = [];
   final formKey = GlobalKey<FormState>();
-
-  late String? name;
-  late String? description;
-  late String? link;
-  late String? logoLink;
 
   final nameController = TextEditingController(text: '');
   final descriptionController = TextEditingController(text: '');
@@ -38,51 +36,41 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
   @override
   initState() {
     super.initState();
-    nameController.value =
-        TextEditingValue(text: widget.organization.name ?? '');
+    organization = Organization.fromOrg(widget.organization);
+    nameController.value = TextEditingValue(text: organization.name ?? '');
     descriptionController.value =
-        TextEditingValue(text: widget.organization.description ?? '');
+        TextEditingValue(text: organization.description ?? '');
     websiteLinkController.value =
-        TextEditingValue(text: widget.organization.link ?? '');
-
-    name = widget.organization.name;
-    description = widget.organization.description;
-    link = widget.organization.link;
-    logoLink = widget.organization.logo;
+        TextEditingValue(text: organization.link ?? '');
   }
 
   updateOrg() async {
     await orgsApi.updateOrg(
-      widget.organization.id!,
-      OrgToUpdate(
-        name: name,
-        description: description,
-        link: link,
-        logo: logoLink,
-      ),
+      organization.id!,
+      OrgToUpdate.fromOrg(organization),
     );
   }
 
   onNameChanged(String? value) {
     setState(() {
-      name = value!.trim();
+      organization.name = value!.trim();
     });
   }
 
   onDescriptionChanged(String? value) {
     setState(() {
-      description = value!.trim();
+      organization.description = value!.trim();
     });
   }
 
   onWebsiteLinkChanged(String? value) {
     setState(() {
-      link = value!.trim();
+      organization.link = value!.trim();
     });
   }
 
   getCurrentImageName() {
-    String logoUrl = widget.organization.logo!;
+    String logoUrl = organization.logo!;
     String uuid =
         logoUrl.substring('/orgs/logo/'.length, logoUrl.indexOf('.jpg'));
 
@@ -103,10 +91,9 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
     final logo = response.data;
 
     setState(() {
-      logoLink = logo;
-      images.add(widget.organization.logo!);
+      images.add(organization.logo!);
     });
-    widget.organization.logo = logo;
+    organization.logo = logo;
     setState(() {
       isDirty = true;
     });
@@ -120,9 +107,6 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
     if (formKey.currentState!.validate()) {
       try {
         await updateOrg();
-        widget.organization.name = name;
-        widget.organization.description = description;
-        widget.organization.link = link;
 
         if (context.mounted) {
           Navigator.of(context).pushAndRemoveUntil(
@@ -145,13 +129,6 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
     Navigator.of(context).pop();
   }
 
-  bool isFormDirty() {
-    return name != widget.organization.name ||
-        description != widget.organization.description ||
-        link != widget.organization.link ||
-        isDirty;
-  }
-
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
@@ -161,11 +138,11 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
           style: ButtonStyle(
             overlayColor: MaterialStateProperty.all(Colors.transparent),
           ),
-          onPressed: saving || !isFormDirty() ? null : onSave,
+          onPressed: saving ? null : onSave,
           child: Text(
             'Save',
             style: TextStyle(
-              color: saving || !isFormDirty() ? COLOR_GRAY2 : COLOR_BLUE,
+              color: saving ? COLOR_GRAY2 : COLOR_BLUE,
             ),
           ),
         ),
@@ -189,7 +166,7 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
           children: [
             buildHeader(
               context,
-              widget.organization,
+              organization,
               nameController,
               websiteLinkController,
               onNameChanged,
@@ -211,6 +188,55 @@ class _OrgEditScreenState extends State<OrgEditScreen> {
                 onChanged: onDescriptionChanged,
               ),
             ),
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'App',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                CupertinoSwitch(
+                  value: organization.settings?.isApp ?? false,
+                  activeColor: COLOR_GREEN,
+                  onChanged: (organization.settings?.isContent ?? false)
+                      ? null
+                      : (bool? value) {
+                          setState(() {
+                            organization.settings?.isApp = value;
+                            organization.settings?.isContent = false;
+                          });
+                        },
+                ),
+              ],
+            ),
+            if (organization.settings?.isApp ?? false)
+              Column(
+                children: [
+                  const SizedBox(height: 20),
+                  AppTextFormField(
+                    initialValue:
+                        organization.settings?.pricePerMonth?.toString() ?? '',
+                    labelText: 'Price per month',
+                    textInputAction: TextInputAction.done,
+                    inputType: TextInputType.number,
+                    prefix: '\$',
+                    suffix: const Text('/ mo'),
+                    validator: (organization.settings?.isApp ?? false)
+                        ? multiValidate([
+                            requiredField('Price per month'),
+                            numberField('Price per month'),
+                          ])
+                        : (_) => null,
+                    onChanged: (value) {
+                      setState(() {
+                        organization.settings?.pricePerMonth =
+                            double.tryParse(value);
+                      });
+                    },
+                  ),
+                ],
+              ),
           ],
         ),
       ),

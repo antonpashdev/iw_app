@@ -49,7 +49,7 @@ class _OfferInvestorPreviewState extends State<OfferInvestorPreview> {
       }
     } on DioError catch (err) {
       final message = err.response!.data['message'];
-      if (message != null) {
+      if (message != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
@@ -129,7 +129,7 @@ class _OfferInvestorPreviewState extends State<OfferInvestorPreview> {
                 width: 90,
                 height: 90,
                 decoration: BoxDecoration(
-                  color: COLOR_GRAY,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 clipBehavior: Clip.antiAlias,
@@ -187,7 +187,7 @@ class _OfferInvestorPreviewState extends State<OfferInvestorPreview> {
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        '${NumberFormat('#,###.########').format(widget.amount)} USDC',
+                        '${NumberFormat('#,###.########').format(widget.amount)} Credit\$',
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ],
@@ -226,7 +226,7 @@ class _OfferInvestorPreviewState extends State<OfferInvestorPreview> {
                         ? const CircularProgressIndicator.adaptive()
                         : const Text('Invest'),
                   ),
-                )
+                ),
               ],
             ),
           ),

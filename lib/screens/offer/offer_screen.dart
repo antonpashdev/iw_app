@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:iw_app/api/auth_api.dart';
 import 'package:iw_app/api/orgs_api.dart';
+import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/app_home.dart';
 import 'package:iw_app/app_storage.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
@@ -46,11 +47,13 @@ class _OfferScreenState extends State<OfferScreen> {
   String? offerError;
   late Future<Offer?> futureOffer;
   late Future<Account?> futureAccount;
+  late Future<Map<String, double?>> futureBalance;
 
   @override
   initState() {
     futureOffer = fetchOffer();
     futureAccount = fetchAccount();
+    futureBalance = fetchBalance();
     super.initState();
   }
 
@@ -88,8 +91,25 @@ class _OfferScreenState extends State<OfferScreen> {
     return null;
   }
 
+  Future<Map<String, double?>> fetchBalance() async {
+    final response = await usersApi.getBalance();
+    final balance =
+        TokenAmount.fromJson(response.data['balance']['balance']).uiAmount;
+    final double? bonusBalance =
+        response.data['balance']['bonusBalance'] != null
+            ? TokenAmount.fromJson(
+                response.data['balance']['bonusBalance'],
+              ).uiAmount
+            : 0;
+
+    return {
+      'balance': balance,
+      'bonusBalance': bonusBalance,
+    };
+  }
+
   buildOrganizationSection(BuildContext context, Offer offer) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -107,7 +127,7 @@ class _OfferScreenState extends State<OfferScreen> {
             width: 90,
             height: 90,
             decoration: BoxDecoration(
-              color: COLOR_GRAY,
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(20),
             ),
             clipBehavior: Clip.antiAlias,
@@ -489,6 +509,7 @@ class _OfferScreenState extends State<OfferScreen> {
             offer: offer,
             maxEquity: offer.investorSettings!.equity!,
             maxInvestment: offer.investorSettings!.amount!,
+            futureBalance: futureBalance,
           ),
         ),
       );
@@ -510,7 +531,7 @@ class _OfferScreenState extends State<OfferScreen> {
       }
     } on DioError catch (err) {
       final message = err.response!.data['message'];
-      if (message != null) {
+      if (message != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
@@ -664,7 +685,7 @@ class _OfferScreenState extends State<OfferScreen> {
                       label: const Text('Copy'),
                       icon: const Icon(Icons.copy, size: 12),
                       onPressed: () => handleCopyPressed(context),
-                    )
+                    ),
                   ],
                 ),
               Column(

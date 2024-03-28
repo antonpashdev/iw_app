@@ -85,7 +85,7 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
     } on DioError catch (err) {
       print(err);
       final message = err.response!.data['message'];
-      if (message != null) {
+      if (message != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(message),
@@ -118,7 +118,7 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
         navigateToHome();
       } else {
         final message = err.response!.data['message'];
-        if (message != null) {
+        if (message != null && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(message),
@@ -127,11 +127,15 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
             ),
           );
         }
-        Navigator.of(context).pop();
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
       }
     } catch (err) {
       print(err);
-      Navigator.of(context).pop();
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
   }
 
@@ -215,14 +219,14 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
               TextButton(
                 onPressed: () async {
                   final url = Uri.parse(
-                    'https://explorer.solana.com/address/${organization.mint}',
+                    'https://solscan.io/address/${organization.mint}',
                   );
                   if (!(await launchUrl(url))) {
                     throw Exception('Could not launch $url');
                   }
                 },
                 child: Text(
-                  'https://explorer.solana.com/address/${organization.mint}',
+                  'https://solscan.io/address/${organization.mint}',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
                         color: COLOR_BLUE,
@@ -244,14 +248,14 @@ class _OrgCreationProgressScreenState extends State<OrgCreationProgressScreen> {
               TextButton(
                 onPressed: () async {
                   final url = Uri.parse(
-                    'https://explorer.solana.com/address/${account.wallet}/tokens',
+                    'https://solscan.io/address/${account.wallet}/tokens',
                   );
                   if (!(await launchUrl(url))) {
                     throw Exception('Could not launch $url');
                   }
                 },
                 child: Text(
-                  'https://explorer.solana.com/address/${account.wallet}/tokens',
+                  'https://solscan.io/address/${account.wallet}/tokens',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
                         color: COLOR_BLUE,

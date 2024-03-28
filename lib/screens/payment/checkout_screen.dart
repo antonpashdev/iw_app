@@ -89,10 +89,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final response = await usersApi.getBalance();
     final balance =
         TokenAmount.fromJson(response.data['balance']['balance']).uiAmount;
-    final bonusBalance = TokenAmount.fromJson(
-          response.data['balance']['bonusBalance'],
-        ).uiAmount ??
-        0;
+    final double? bonusBalance =
+        response.data['balance']['bonusBalance'] != null
+            ? TokenAmount.fromJson(
+                response.data['balance']['bonusBalance'],
+              ).uiAmount
+            : 0;
 
     return {
       'balance': balance,
@@ -109,7 +111,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: COLOR_GRAY,
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(15),
             ),
             clipBehavior: Clip.antiAlias,
@@ -167,7 +169,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: COLOR_GRAY,
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(20),
             ),
             clipBehavior: Clip.antiAlias,
@@ -234,9 +236,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     color: COLOR_GREEN,
                     fontWeight: FontWeight.w700,
                   ),
-                )
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),
@@ -362,6 +364,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             final balanceData = snapshot.data![2] as Map<String, double?>;
             final balance = balanceData['balance'];
             final bonusBalance = balanceData['bonusBalance'];
+            final canPay = (payment?.amount ?? 0) <= (bonusBalance ?? 0) ||
+                (payment?.amount ?? 0) <= (balance ?? 0);
 
             return Stack(
               children: [
@@ -396,9 +400,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           height: 5,
                         ),
                         Text(
-                          'Your Equity Wallet balance \$$balance',
-                          style: const TextStyle(
-                            color: COLOR_GRAY,
+                          'Your DePlan balance \$$balance',
+                          style: TextStyle(
+                            color: canPay ? COLOR_GRAY : COLOR_RED,
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
@@ -406,7 +410,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         Visibility(
                           visible: (bonusBalance ?? 0) > 0,
                           child: Text(
-                            'Your Equity Wallet bonus balance \$$bonusBalance',
+                            'Your DePlan bonus balance \$$bonusBalance',
                             style: const TextStyle(
                               color: COLOR_LIGHT_GREEN,
                               fontSize: 16,
@@ -421,10 +425,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           child: SizedBox(
                             width: 290,
                             child: ElevatedButton(
-                              onPressed: !isLoading &&
-                                          (payment?.amount ?? 0) <=
-                                              (bonusBalance ?? 0) ||
-                                      (payment?.amount ?? 0) <= (balance ?? 0)
+                              onPressed: !isLoading && canPay
                                   ? () => handlePayPressed(account, payment)
                                   : null,
                               child: isLoading

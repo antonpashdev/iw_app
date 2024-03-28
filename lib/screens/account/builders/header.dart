@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/models/account_model.dart';
 import 'package:iw_app/screens/account/builders/wallet_section.dart';
-import 'package:iw_app/widgets/utils/app_padding.dart';
 
 buildHeader(Account account, String? balance, BuildContext context) {
   return Column(
@@ -17,11 +16,9 @@ buildHeader(Account account, String? balance, BuildContext context) {
                 ),
         ),
       ),
-      AppPadding(
-        child: buildWalletSection(
-          context,
-          account,
-        ),
+      buildWalletSection(
+        context,
+        account,
       ),
     ],
   );

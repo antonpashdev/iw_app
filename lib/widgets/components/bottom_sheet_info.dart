@@ -68,7 +68,7 @@ class _CustomBottomSheet extends StatelessWidget {
                         },
                         child: const Text('Got it'),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ],

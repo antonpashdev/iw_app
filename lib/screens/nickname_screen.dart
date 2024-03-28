@@ -110,7 +110,7 @@ class _NicknameScreen extends State<NicknameScreen> {
                             fontSize: 14,
                           ),
                           softWrap: true,
-                        ),)
+                        ),),
                       ],),),),
           SizedBox(
             width: 290,

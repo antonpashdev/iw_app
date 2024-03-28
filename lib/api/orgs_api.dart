@@ -112,6 +112,10 @@ class _OrgsApi extends BaseApi {
     return client.post('/orgs/$orgId/offers', data: body);
   }
 
+  Future<Response> revokeOffer(String orgId, String offerId) {
+    return client.delete('/orgs/$orgId/offers/$offerId');
+  }
+
   Future<Response> acceptDeclineOffer(
     String orgId,
     String offerId,
@@ -184,6 +188,15 @@ class _OrgsApi extends BaseApi {
     return client.get('/orgs/$orgId/history');
   }
 
+  Future<Response> getOrgRevenue(String orgId, String? period) {
+    return client.get(
+      '/orgs/$orgId/revenue',
+      queryParameters: {
+        'period': period,
+      },
+    );
+  }
+
   Future<Response> getMemberships(String orgId) {
     return client.get('/orgs/$orgId/memberships');
   }
@@ -213,6 +226,10 @@ class _OrgsApi extends BaseApi {
 
   Future<Response> removeLogos(List<String> imageNames) {
     return client.post('/orgs/delete-avatars', data: {'fileName': imageNames});
+  }
+
+  Future<Response> splitNow(String orgId) {
+    return client.post('/orgs/$orgId/split');
   }
 }
 

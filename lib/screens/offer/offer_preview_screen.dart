@@ -21,12 +21,16 @@ class OfferPreviewScreen extends StatefulWidget {
   final Organization organization;
   final OrganizationMember? member;
   final Offer offer;
+  final bool canEdit;
+  final Function? onRevoke;
 
   const OfferPreviewScreen({
     Key? key,
     required this.organization,
     required this.offer,
     this.member,
+    this.canEdit = false,
+    this.onRevoke,
   }) : super(key: key);
 
   @override
@@ -38,7 +42,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
   late Offer offer;
 
   String get offerUrl {
-    return 'app.equitywallet.org/offer?i=${offer.id}&oi=${widget.organization.id}';
+    return 'product.deplan.xyz/offer?i=${offer.id}&oi=${widget.organization.id}';
   }
 
   bool get isInvestor {
@@ -76,7 +80,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
           width: 90,
           height: 90,
           decoration: BoxDecoration(
-            color: COLOR_GRAY,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(20),
           ),
           clipBehavior: Clip.antiAlias,
@@ -462,6 +466,27 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
     }
   }
 
+  handleRevokePressed() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await orgsApi.revokeOffer(widget.organization.id!, offer.id!);
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+      if (widget.onRevoke != null) {
+        widget.onRevoke!();
+      }
+    } catch (err) {
+      print(err);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   callSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -586,7 +611,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                                   color: Colors.black.withOpacity(0.1),
                                   blurRadius: 10,
                                   offset: const Offset(0, 5),
-                                )
+                                ),
                               ],
                             ),
                             child: QRCodeWidget(
@@ -596,6 +621,24 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
                         ),
                       ),
                     ],
+                  ),
+                if (!isNewOffer && widget.canEdit)
+                  Align(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 30),
+                      child: SizedBox(
+                        width: 290,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: COLOR_RED,
+                          ),
+                          onPressed: isLoading ? null : handleRevokePressed,
+                          child: isLoading
+                              ? const CircularProgressIndicator.adaptive()
+                              : const Text('Revoke'),
+                        ),
+                      ),
+                    ),
                   ),
                 const SizedBox(height: 25),
               ],

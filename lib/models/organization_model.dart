@@ -45,6 +45,22 @@ class Organization {
         : null;
   }
 
+  Organization.fromOrg(Organization organization)
+      : id = organization.id,
+        username = organization.username,
+        name = organization.name,
+        link = organization.link,
+        description = organization.description,
+        logo = organization.logo,
+        wallet = organization.wallet,
+        mint = organization.mint,
+        mintStatus = organization.mintStatus,
+        mintError = organization.mintError,
+        lamportsMinted = intToDouble(organization.lamportsMinted),
+        settings = organization.settings != null
+            ? OrganizationSettings.fromOrgSettings(organization.settings!)
+            : null;
+
   @override
   String toString() {
     return '''
@@ -66,6 +82,9 @@ $settings
       'link': link,
       'description': description,
       'settings[treasury]': settings?.treasury,
+      'settings[isContent]': settings?.isContent,
+      'settings[isApp]': settings?.isApp,
+      'settings[pricePerMonth]': settings?.pricePerMonth,
       'lamportsMinted': lamportsMinted,
     };
     if (member != null) {
@@ -91,14 +110,32 @@ class OrganizationSettings {
   int treasury = 0;
   String? successUrl;
   String? cancelUrl;
+  bool? isContent;
+  bool? isApp;
+  double? pricePerMonth;
 
-  OrganizationSettings({this.treasury = 0});
+  OrganizationSettings({
+    this.treasury = 0,
+    this.isContent = false,
+    this.isApp = false,
+  });
 
   OrganizationSettings.fromJson(Map<String, dynamic> json) {
     treasury = json['treasury'];
     successUrl = json['successUrl'];
     cancelUrl = json['cancelUrl'];
+    isContent = json['isContent'];
+    isApp = json['isApp'];
+    pricePerMonth = json['pricePerMonth'];
   }
+
+  OrganizationSettings.fromOrgSettings(OrganizationSettings settings)
+      : treasury = settings.treasury,
+        successUrl = settings.successUrl,
+        cancelUrl = settings.cancelUrl,
+        isContent = settings.isContent,
+        isApp = settings.isApp,
+        pricePerMonth = settings.pricePerMonth;
 
   @override
   String toString() {

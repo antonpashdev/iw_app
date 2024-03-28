@@ -35,7 +35,7 @@ List<Story> appScreens() {
               const Option(label: 'Admin', value: MemberRole.Admin),
               const Option(label: 'Co Owner', value: MemberRole.CoOwner),
               const Option(label: 'Investor', value: MemberRole.Investor),
-              const Option(label: 'Member', value: MemberRole.Member)
+              const Option(label: 'Member', value: MemberRole.Member),
             ],
           ),
           user: User(

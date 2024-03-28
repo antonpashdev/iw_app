@@ -4,6 +4,7 @@ import 'package:iw_app/models/txn_history_item_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/utils/numbers.dart';
+import 'package:iw_app/utils/url.dart';
 import 'package:iw_app/widgets/list/generic_list_tile.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 
@@ -19,22 +20,35 @@ buildHistoryItem(
       ? COLOR_ALMOST_BLACK
       : COLOR_GREEN;
   final amount = item.amount != null
-      ? '$sign \$${trimZeros(item.amount!.abs() / LAMPORTS_PER_USDC)} USDC'
+      ? '$sign \$${trimZeros(item.amount!.abs() / LAMPORTS_PER_USDC)} Credit\$'
       : '-';
   final title = item.addressOrUsername == null
       ? ''
       : item.addressOrUsername!.length == 44
           ? item.addressOrUsername!.replaceRange(4, 40, '...')
           : item.addressOrUsername!;
+  IconData iconData = item.amount != null && item.amount! < 0
+      ? Icons.arrow_outward_rounded
+      : Icons.arrow_downward_rounded;
+  if (item.description == 'Deposited') {
+    iconData = Icons.attach_money_rounded;
+  } else if (item.description == 'Burnt') {
+    iconData = Icons.local_fire_department_rounded;
+  } else if (item.description == 'Withdrawn') {
+    iconData = Icons.arrow_forward;
+  }
   final icon = Icon(
-    item.amount != null && item.amount! < 0
-        ? Icons.arrow_outward_rounded
-        : Icons.arrow_downward_rounded,
+    iconData,
     size: 12,
     color: COLOR_WHITE,
   );
-  final primaryColor =
+  Color primaryColor =
       item.amount != null && item.amount! < 0 ? COLOR_ALMOST_BLACK : COLOR_BLUE;
+  if (item.description == 'Burnt') {
+    primaryColor = COLOR_RED2;
+  } else if (item.description == 'Withdrawn') {
+    primaryColor = COLOR_GREEN;
+  }
   final processedAt = item.processedAt != null
       ? DateTime.fromMillisecondsSinceEpoch(item.processedAt!)
       : DateTime.now();
@@ -63,20 +77,29 @@ buildHistoryItem(
             const SizedBox(height: 10),
           ],
         ),
-        GenericListTile(
+      InkWell(
+        onTap: item.transactionSignature == null
+            ? null
+            : () => launchURL(
+                  Uri.parse(
+                    'https://solscan.io/tx/${item.transactionSignature}',
+                  ),
+                ),
+        child: GenericListTile(
           title: title,
           subtitle: item.description,
-          image: item.img != null
+          image: item.img != null && item.img!.isNotEmpty
               ? NetworkImageAuth(imageUrl: '${usersApi.baseUrl}${item.img}')
               : Image.asset('assets/images/avatar_placeholder.png'),
-        trailing: Text(
-          amount,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: color,
-              ),
+          trailing: Text(
+            amount,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: color,
+                ),
+          ),
+          icon: icon,
+          primaryColor: primaryColor,
         ),
-        icon: icon,
-        primaryColor: primaryColor,
       ),
     ],
   );

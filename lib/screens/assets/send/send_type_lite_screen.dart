@@ -32,7 +32,7 @@ class SendTypeLiteScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: 'Send Impact Shares',
+      title: 'Send equity',
       child: Padding(
         padding: const EdgeInsets.only(top: 35.0),
         child: Column(
@@ -94,7 +94,7 @@ class SendTypeLiteScreen extends StatelessWidget {
                   ),
                   const Expanded(
                     flex: 2,
-                    child: Text('to Organization or Project'),
+                    child: Text('to Organization account'),
                   ),
                 ],
               ),

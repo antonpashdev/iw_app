@@ -167,7 +167,7 @@ class OrgMemberCard extends StatelessWidget {
                               height: 30,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
-                                color: COLOR_GRAY,
+                                color: Colors.transparent,
                                 border: Border.all(
                                   color: COLOR_WHITE.withAlpha(200),
                                   width: 1.5,
@@ -242,7 +242,7 @@ class OrgMemberCard extends StatelessWidget {
                   width: 65,
                   height: 65,
                   decoration: BoxDecoration(
-                    color: COLOR_LIGHT_GRAY2,
+                    color: Colors.transparent,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   clipBehavior: Clip.antiAlias,

@@ -68,7 +68,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
           width: imageSize,
           height: imageSize,
           decoration: BoxDecoration(
-            color: COLOR_GRAY,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(imageRaduis),
           ),
           clipBehavior: Clip.antiAlias,
@@ -134,7 +134,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
                 ),
-              )
+              ),
             ],
           ),
           Text(
@@ -200,7 +200,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                           color: COLOR_ALMOST_BLACK,
                           fontWeight: FontWeight.w700,
                         ),
-                      )
+                      ),
                     ],
                   ),
                   const SizedBox(height: 15),
@@ -216,9 +216,9 @@ class _PreviewScreenState extends State<PreviewScreen> {
                     color: COLOR_GREEN,
                     fontWeight: FontWeight.w700,
                   ),
-                )
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),

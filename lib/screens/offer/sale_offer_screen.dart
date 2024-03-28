@@ -13,7 +13,7 @@ import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/payment_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
-import 'package:iw_app/screens/home_screen.dart';
+import 'package:iw_app/screens/organization/org_details/org_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/components/bottom_sheet_info.dart';
@@ -31,9 +31,11 @@ class SaleOfferScreen extends StatefulWidget {
   final String offerId;
   final bool? isBonusOnboarding;
 
-  const SaleOfferScreen(
-      {Key? key, required this.offerId, this.isBonusOnboarding})
-      : super(key: key);
+  const SaleOfferScreen({
+    Key? key,
+    required this.offerId,
+    this.isBonusOnboarding,
+  }) : super(key: key);
 
   @override
   State<SaleOfferScreen> createState() => _SaleOfferScreenState();
@@ -68,10 +70,12 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
     final response = await usersApi.getBalance();
     final balance =
         TokenAmount.fromJson(response.data['balance']['balance']).uiAmount;
-    final bonusBalance = TokenAmount.fromJson(
-          response.data['balance']['bonusBalance'],
-        ).uiAmount ??
-        0;
+    final double? bonusBalance =
+        response.data['balance']['bonusBalance'] != null
+            ? TokenAmount.fromJson(
+                response.data['balance']['bonusBalance'],
+              ).uiAmount
+            : 0;
 
     return {
       'balance': balance,
@@ -105,48 +109,64 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
   }
 
   buildHeader(BuildContext context, SaleOffer saleOffer) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            color: COLOR_GRAY,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: FittedBox(
-            fit: BoxFit.cover,
-            child: NetworkImageAuth(
-              imageUrl: '${orgsApi.baseUrl}${saleOffer.org.logo!}',
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => OrgDetailsScreen(
+              orgId: saleOffer.org.id,
+              isPreviewMode: true,
             ),
           ),
-        ),
-        const SizedBox(width: 15),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${saleOffer.org.name}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                ),
+        );
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: NetworkImageAuth(
+                imageUrl: '${orgsApi.baseUrl}${saleOffer.org.logo!}',
               ),
-              Text(
-                '@${saleOffer.org.username}',
-                style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      color: COLOR_GRAY,
-                      fontWeight: FontWeight.w500,
-                    ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ],
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${saleOffer.org.name}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  '@${saleOffer.org.username}',
+                  style: Theme.of(context).textTheme.labelMedium!.copyWith(
+                        color: COLOR_GRAY,
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+              ],
+            ),
+          ),
+          const Icon(
+            Icons.chevron_right_rounded,
+            color: COLOR_ALMOST_BLACK,
+          ),
+        ],
+      ),
     );
   }
 
@@ -248,7 +268,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: COLOR_GRAY,
+                  color: COLOR_GRAY2,
                   borderRadius: BorderRadius.circular(15),
                 ),
                 clipBehavior: Clip.antiAlias,
@@ -368,21 +388,23 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
         Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
       }
     } catch (err) {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Operation failed'),
-          content: Text(err.toString()),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('Operation failed'),
+            content: Text(err.toString()),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
     } finally {
       setState(() {
         isLoading = false;
@@ -435,6 +457,8 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
           final balanceData = snapshot.data![2] as Map<String, double?>;
           final balance = balanceData['balance'];
           final bonusBalance = balanceData['bonusBalance'];
+          final canPay = (saleOffer?.price ?? 0) <= (bonusBalance ?? 0) ||
+              (saleOffer?.price ?? 0) <= (balance ?? 0);
 
           return Stack(
             children: [
@@ -483,7 +507,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                                   label: const Text('Copy'),
                                   icon: const Icon(Icons.copy, size: 12),
                                   onPressed: () => handleCopyPressed(context),
-                                )
+                                ),
                               ],
                             ),
                         ],
@@ -514,9 +538,9 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                         height: 5,
                       ),
                       Text(
-                        'Your Equity Wallet balance \$$balance',
-                        style: const TextStyle(
-                          color: COLOR_GRAY,
+                        'Your DePlan balance \$$balance',
+                        style: TextStyle(
+                          color: canPay ? COLOR_GRAY : COLOR_RED,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
@@ -524,7 +548,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                       Visibility(
                         visible: (bonusBalance ?? 0) > 0,
                         child: Text(
-                          'Your Equity Wallet bonus balance \$$bonusBalance',
+                          'Your DePlan bonus balance \$$bonusBalance',
                           style: const TextStyle(
                             color: COLOR_LIGHT_GREEN,
                             fontSize: 16,
@@ -538,10 +562,7 @@ class _SaleOfferScreenState extends State<SaleOfferScreen> {
                       SizedBox(
                         width: 290,
                         child: ElevatedButton(
-                          onPressed: !isLoading &&
-                                      (payment?.amount ?? 0) <=
-                                          (bonusBalance ?? 0) ||
-                                  (payment?.amount ?? 0) <= (balance ?? 0)
+                          onPressed: !isLoading && canPay
                               ? () => handleBuyPressed(saleOffer)
                               : null,
                           child: isLoading

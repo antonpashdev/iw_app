@@ -4,7 +4,6 @@ import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/sale_offer_model.dart';
-import 'package:iw_app/screens/home_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/components/url_qr_code.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
@@ -20,7 +19,7 @@ class SaleOfferPreviewScreen extends StatelessWidget {
   const SaleOfferPreviewScreen({Key? key, required this.saleOffer})
       : super(key: key);
 
-  String get offerUrl => 'app.equitywallet.org/saleoffer?i=${saleOffer.id}';
+  String get offerUrl => 'product.deplan.xyz/saleoffer?i=${saleOffer.id}';
 
   buildHeader(BuildContext context) {
     return Row(
@@ -30,7 +29,7 @@ class SaleOfferPreviewScreen extends StatelessWidget {
           width: 60,
           height: 60,
           decoration: BoxDecoration(
-            color: COLOR_GRAY,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(20),
           ),
           clipBehavior: Clip.antiAlias,
@@ -172,15 +171,6 @@ class SaleOfferPreviewScreen extends StatelessWidget {
       ),
     );
     callSnackBar(context);
-
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (context.mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-        (route) => false,
-      );
-    }
   }
 
   @override
@@ -231,7 +221,7 @@ class SaleOfferPreviewScreen extends StatelessWidget {
                           color: Colors.black.withOpacity(0.1),
                           blurRadius: 10,
                           offset: const Offset(0, 5),
-                        )
+                        ),
                       ],
                     ),
                     child: QRCodeWidget(

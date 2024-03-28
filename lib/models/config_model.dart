@@ -7,13 +7,16 @@ enum Mode {
 
 class Config {
   Mode? mode;
+  int? bonusWalletExpiration;
 
   Config({
     this.mode,
+    this.bonusWalletExpiration,
   });
 
   Config.fromJson(Map<String, dynamic> json)
-      : mode = CommonUtils.stringToEnum(json['mode'], Mode.values);
+      : mode = CommonUtils.stringToEnum(json['mode'], Mode.values),
+        bonusWalletExpiration = json['bonusWalletExpiration'];
 
   Map<String, dynamic> toJson() => {
         'mode': mode?.name,

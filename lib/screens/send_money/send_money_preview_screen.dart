@@ -61,7 +61,7 @@ class _SendMoneyPreviewScreenState extends State<SendMoneyPreviewScreen> {
         ),
         const SizedBox(height: 10),
         Text(
-          '\$${widget.sendMoneyData.amount!.toStringAsFixed(2)} USDC',
+          '\$${widget.sendMoneyData.amount!.toStringAsFixed(2)} Credit\$',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
       ],
@@ -95,43 +95,44 @@ class _SendMoneyPreviewScreenState extends State<SendMoneyPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-        title: 'Preview',
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: KeyboardDismissableListView(
-                children: [
-                  const SizedBox(height: 20),
-                  Center(
-                    child: buildAmount(context),
-                  ),
-                  const SizedBox(height: 50),
-                  buildAddressInfo('From your wallet', widget.senderWallet),
-                  const SizedBox(height: 10),
-                  buildAddressInfo('To', widget.sendMoneyData.recipient!),
-                ],
-              ),
+      title: 'Preview',
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: KeyboardDismissableListView(
+              children: [
+                const SizedBox(height: 20),
+                Center(
+                  child: buildAmount(context),
+                ),
+                const SizedBox(height: 50),
+                buildAddressInfo('From your wallet', widget.senderWallet),
+                const SizedBox(height: 10),
+                buildAddressInfo('To', widget.sendMoneyData.recipient!),
+              ],
             ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: SizedBox(
-                  width: 290,
-                  child: ElevatedButton(
-                    onPressed:
-                        isLoading ? null : () => handleNextPressed(context),
-                    child: isLoading
-                        ? const Center(
-                            child: CircularProgressIndicator.adaptive(),
-                          )
-                        : const Text('Send'),
-                  ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: SizedBox(
+                width: 290,
+                child: ElevatedButton(
+                  onPressed:
+                      isLoading ? null : () => handleNextPressed(context),
+                  child: isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator.adaptive(),
+                        )
+                      : const Text('Send'),
                 ),
               ),
             ),
-          ],
-        ),);
+          ),
+        ],
+      ),
+    );
   }
 }

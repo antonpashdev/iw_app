@@ -75,7 +75,7 @@ class SuccessScreen extends StatelessWidget {
                 onPressed: () => handleDone(context),
                 child: const Text('Done'),
               ),
-            )
+            ),
           ],
         ),
       ),

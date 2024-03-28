@@ -63,7 +63,7 @@ class MemberDeitailsLite extends StatelessWidget {
             width: 30,
             height: 30,
             decoration: BoxDecoration(
-              color: COLOR_LIGHT_GRAY2,
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(10),
             ),
             clipBehavior: Clip.antiAlias,
@@ -118,7 +118,7 @@ class MemberDeitailsLite extends StatelessWidget {
                             fontWeight: FontWeight.w400,
                             fontSize: 16,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -166,11 +166,11 @@ class MemberDeitailsLite extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  if (!isLast) const Divider()
+                  if (!isLast) const Divider(),
                 ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );

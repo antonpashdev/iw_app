@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/api/config_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/screens/nickname_screen.dart';
 import 'package:iw_app/screens/restore_account.dart';
 import 'package:iw_app/theme/app_theme.dart';
-import 'package:iw_app/widgets/buttons/secondary_button.dart';
 import 'package:iw_app/widgets/state/config.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
@@ -34,11 +32,10 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Config config = ConfigState.of(context).config;
     String slogan = config.mode == Mode.Lite
-        ? 'Manage your equity in projects like never before'
+        ? 'Add your product to be able to provide Pay-as-you-go model for your users'
         : AppLocalizations.of(context)!.loginScreen_slogan;
-    String logoPath = 'assets/images/logo_with_text.png';
     return Scaffold(
-      backgroundColor: APP_BODY_BG,
+      backgroundColor: const Color(0xff11243E),
       appBar: AppBar(
         toolbarHeight: 0,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
@@ -47,48 +44,33 @@ class LoginScreen extends StatelessWidget {
         child: AppPadding(
           child: Column(
             children: [
-              const SizedBox(height: 30),
-              Center(
-                child: Stack(
-                  children: [
-                    Image.asset(
-                      logoPath,
-                      width: 250,
-                    ),
-                    GestureDetector(
-                      // onTap: () => onLogoPressed(config, context),
-                      onTap: null,
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        color: Colors.transparent,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               Expanded(
                 flex: 2,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 350),
-                      child: Image.asset(
-                        'assets/images/onboarding_chart.png',
-                        width: MediaQuery.of(context).size.width * 0.5,
+                    Center(
+                      child: SizedBox(
+                        width: 210,
+                        child: Image.asset(
+                          'assets/images/logo_with_text.png',
+                          width: MediaQuery.of(context).size.width * 0.5,
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 40),
                     SizedBox(
-                      width: 180,
+                      width: 310,
                       child: Text(
                         slogan,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontFamily: 'Gilroy',
-                          fontSize: 18,
+                          fontSize: 22,
+                          color: COLOR_WHITE,
                           fontWeight: FontWeight.w500,
                           letterSpacing: -0.3,
+                          height: 1.2,
                         ),
                       ),
                     ),
@@ -103,29 +85,29 @@ class LoginScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Center(
-                        child: TextButton.icon(
-                          onPressed: () {},
-                          icon: SvgPicture.asset(
-                            'assets/icons/question_circle.svg',
-                          ),
-                          label: Text(
-                            AppLocalizations.of(context)!
-                                .loginScreen_textBtnTitle,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontFamily: 'Gilroy',
-                              letterSpacing: -0.3,
-                            ),
-                          ),
-                        ),
-                      ),
                       Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            const Text(
+                              'For developers!',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'Gilroy',
+                                fontSize: 18,
+                                color: COLOR_WHITE,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: -0.3,
+                                height: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: 15),
                             ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: const Color(0xff11243E),
+                                backgroundColor: COLOR_WHITE,
+                              ),
                               child: Text(
                                 AppLocalizations.of(context)!
                                     .loginScreen_primaryBtnTitle,
@@ -141,7 +123,11 @@ class LoginScreen extends StatelessWidget {
                               },
                             ),
                             const SizedBox(height: 10),
-                            SecondaryButton(
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: const Color(0xff11243E),
+                                backgroundColor: const Color(0xff84C1EC),
+                              ),
                               onPressed: () {
                                 Navigator.push(
                                   context,

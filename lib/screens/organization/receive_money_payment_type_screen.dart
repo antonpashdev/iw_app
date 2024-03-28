@@ -45,7 +45,7 @@ class ReceiveMoneyPaymentTypeScreen extends StatelessWidget {
               },
               icon: SvgPicture.asset('assets/icons/online-payment.svg'),
               label: const Text('On-Line Payment'),
-            )
+            ),
           ],
         ),
       ),

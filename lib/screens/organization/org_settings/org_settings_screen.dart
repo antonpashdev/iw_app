@@ -1,5 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iw_app/api/orgs_api.dart';
+import 'package:iw_app/models/config_model.dart';
 import 'package:iw_app/models/offer_model.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
@@ -10,11 +13,13 @@ import 'package:iw_app/screens/organization/org_edit/org_edit_screen.dart';
 import 'package:iw_app/screens/organization/org_settings/api.dart';
 import 'package:iw_app/screens/organization/org_settings/builders/header.dart';
 import 'package:iw_app/screens/organization/org_settings/builders/pending_offers_list.dart';
+import 'package:iw_app/screens/organization/receive_money_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/buttons/gray_button.dart';
 import 'package:iw_app/widgets/components/round_border_container.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
+import 'package:iw_app/widgets/state/config.dart';
 
 class OrgSettingsScreen extends StatefulWidget {
   final Organization organization;
@@ -32,6 +37,10 @@ class OrgSettingsScreen extends StatefulWidget {
 
 class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
   late Future<List<Offer>> futureInvestOffers;
+
+  Config get config {
+    return ConfigState.of(context).config;
+  }
 
   @override
   initState() {
@@ -68,6 +77,45 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
         ),
       ),
     );
+  }
+
+  onReceivePressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReceiveMoneyScreen(
+          organization: widget.organization,
+        ),
+      ),
+    );
+  }
+
+  onSplitNowPressed() async {
+    try {
+      await orgsApi.splitNow(widget.organization.id!);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Split successful'),
+            duration: Duration(milliseconds: 3000),
+            backgroundColor: COLOR_GREEN,
+          ),
+        );
+      }
+    } on DioError catch (e) {
+      final message = e.response!.data['message'];
+      if (message != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            duration: const Duration(milliseconds: 3000),
+            backgroundColor: COLOR_RED,
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -110,6 +158,18 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
             ),
           const SizedBox(height: 30),
           GrayButton(
+            onPressed: onReceivePressed,
+            child: const Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Receive'),
+                Icon(Icons.arrow_downward),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          GrayButton(
             onPressed: widget.member.permissions!.canRaiseMoney
                 ? onRiseMoneyPressed
                 : null,
@@ -123,20 +183,25 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          GrayButton(
-            onPressed: widget.member.permissions!.canChangeTreasury
-                ? onChangeTrasuryPressed
-                : null,
-            child: const Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          if (config.mode == Mode.Pro)
+            Column(
               children: [
-                Text('Change Treasury'),
-                Icon(Icons.percent_rounded),
+                GrayButton(
+                  onPressed: widget.member.permissions!.canChangeTreasury
+                      ? onChangeTrasuryPressed
+                      : null,
+                  child: const Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Change Treasury'),
+                      Icon(Icons.percent_rounded),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
               ],
             ),
-          ),
-          const SizedBox(height: 10),
           GrayButton(
             onPressed: widget.member.permissions!.canInviteMembers
                 ? onInviteMemberPressed
@@ -150,7 +215,31 @@ class _OrgSettingsScreenState extends State<OrgSettingsScreen> {
               ],
             ),
           ),
-          buildPendingOffers(context, futureInvestOffers, widget.organization),
+          const SizedBox(height: 10),
+          GrayButton(
+            onPressed: widget.member.permissions!.canInviteMembers
+                ? onSplitNowPressed
+                : null,
+            child: const Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Split now'),
+                Icon(CupertinoIcons.arrow_branch),
+              ],
+            ),
+          ),
+          buildPendingOffers(
+            context,
+            futureInvestOffers,
+            widget.organization,
+            canEdit: widget.member.permissions!.canEditOrg,
+            onRevoke: () {
+              setState(() {
+                futureInvestOffers = fetchInvestOffers(widget.organization);
+              });
+            },
+          ),
         ],
       ),
     );

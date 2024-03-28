@@ -127,7 +127,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                           ? const CircularProgressIndicator.adaptive()
                           : getButtonTextByPaymentType(paymentType),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

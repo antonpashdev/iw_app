@@ -80,7 +80,7 @@ class _AssetScreenState extends State<AssetScreen> {
           width: 60,
           height: 60,
           decoration: BoxDecoration(
-            color: COLOR_GRAY,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(20),
           ),
           clipBehavior: Clip.antiAlias,

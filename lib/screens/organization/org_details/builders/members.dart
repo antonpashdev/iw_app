@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/models/organization_model.dart';
-import 'package:iw_app/screens/organization/org_details/builders/member.dart';
+import 'package:iw_app/widgets/components/org_details_member.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
@@ -41,7 +41,7 @@ buildMembers(
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -107,7 +107,7 @@ buildMembers(
                       children: [
                         GestureDetector(
                           onTap: () => onViewDetailsPressed(members),
-                          child: buildMember(context, member),
+                          child: OrgDetailsMember(data: member),
                         ),
                         if (i != members.length - 1) const SizedBox(width: 10),
                         if (i == members.length - 1) const SizedBox(width: 20),

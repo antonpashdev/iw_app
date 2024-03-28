@@ -142,7 +142,7 @@ class _EditUserScreenState extends State<EditUserScreen> {
               nameController,
               onNameChanged,
               onAvatarChanged,
-            )
+            ),
           ],
         ),
       ),

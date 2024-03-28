@@ -5,19 +5,20 @@ import 'package:iw_app/api/orgs_api.dart';
 import 'package:iw_app/l10n/generated/app_localizations.dart';
 import 'package:iw_app/models/organization_member_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
-import 'package:iw_app/utils/datetime.dart';
 import 'package:iw_app/widgets/media/network_image_auth.dart';
 
 class OrgMemberCardLite extends StatelessWidget {
   final Function()? onTap;
   final OrganizationMember? member;
   final Future<Map<String, dynamic>>? futureOtherMembers;
+  final Future<String>? futureEquity;
 
   const OrgMemberCardLite({
     Key? key,
     this.onTap,
     this.member,
     this.futureOtherMembers,
+    this.futureEquity,
   }) : super(key: key);
 
   buildLogo() {
@@ -103,7 +104,7 @@ class OrgMemberCardLite extends StatelessWidget {
         height: 30,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: COLOR_LIGHT_GRAY2,
+          color: COLOR_GRAY2,
           border: Border.all(
             color: COLOR_WHITE.withAlpha(200),
             width: 1.5,
@@ -137,9 +138,7 @@ class OrgMemberCardLite extends StatelessWidget {
         ),
       );
     }
-    final createdAt = DateTime.parse(member!.createdAt!).toLocal();
-    final createdAtStr = getFormattedDate(createdAt);
-    final textStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+    final textStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.w500,
         );
     return Column(
@@ -147,9 +146,23 @@ class OrgMemberCardLite extends StatelessWidget {
         const Spacer(),
         ListTile(
           dense: true,
-          title: Text('Joined', style: textStyle),
+          title: Text('Your revenue share', style: textStyle),
           contentPadding: const EdgeInsets.all(0),
-          trailing: Text(createdAtStr, style: textStyle),
+          trailing: FutureBuilder(
+            future: futureEquity,
+            builder: (_, snapshot) {
+              if (!snapshot.hasData) {
+                return const SizedBox();
+              }
+              return Text(
+                '${snapshot.data}%',
+                style: textStyle?.copyWith(
+                  color: COLOR_GREEN,
+                  fontWeight: FontWeight.w700,
+                ),
+              );
+            },
+          ),
           visualDensity:
               const VisualDensity(vertical: VisualDensity.minimumDensity),
         ),
@@ -163,7 +176,7 @@ class OrgMemberCardLite extends StatelessWidget {
           contentPadding: const EdgeInsets.all(0),
           trailing: Text(
             '${(NumberFormat('#,###.##').format(member?.profit ?? 0))}\$',
-            style: textStyle,
+            style: textStyle?.copyWith(fontWeight: FontWeight.w700),
           ),
           visualDensity:
               const VisualDensity(vertical: VisualDensity.minimumDensity),
@@ -198,10 +211,7 @@ class OrgMemberCardLite extends StatelessWidget {
                     child: Center(
                       child: Text(
                         '${snapshot.data?['total']} members',
-                        style:
-                            Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
+                        style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
                   ),
@@ -216,42 +226,38 @@ class OrgMemberCardLite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      width: MediaQuery.of(context).size.width * 0.6,
-      child: Card(
-        margin: const EdgeInsets.all(0),
-        color: COLOR_LIGHT_GRAY,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 65,
-                  height: 65,
-                  decoration: BoxDecoration(
-                    color: COLOR_LIGHT_GRAY2,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: buildLogo(),
+    return Card(
+      margin: const EdgeInsets.all(0),
+      color: COLOR_LIGHT_GRAY,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 65,
+                height: 65,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                const SizedBox(height: 10),
-                buildOrgName(context),
-                buildOrgUsername(context),
-                Expanded(
-                  child: buildMainSection(context),
-                ),
-              ],
-            ),
+                clipBehavior: Clip.antiAlias,
+                child: buildLogo(),
+              ),
+              const SizedBox(height: 10),
+              buildOrgName(context),
+              buildOrgUsername(context),
+              Expanded(
+                child: buildMainSection(context),
+              ),
+            ],
           ),
         ),
       ),

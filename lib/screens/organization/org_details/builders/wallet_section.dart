@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/theme/app_theme.dart';
+import 'package:iw_app/utils/url.dart';
 
 buildWalletSection(BuildContext context, Organization org) {
   return Column(
@@ -45,6 +46,27 @@ buildWalletSection(BuildContext context, Organization org) {
                 ],
               ),
             ],
+          ),
+        ),
+      ),
+      TextButton(
+        onPressed: () {
+          launchURL(
+            Uri.parse(
+              'https://solscan.io/address/${org.wallet}',
+            ),
+          );
+        },
+        style: ButtonStyle(
+          overlayColor: MaterialStateProperty.all(Colors.transparent),
+        ),
+        child: const Text(
+          'View wallet on blockchain »',
+          style: TextStyle(
+            color: COLOR_GRAY,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            decoration: TextDecoration.underline,
           ),
         ),
       ),

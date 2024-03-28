@@ -105,7 +105,7 @@ class _CheckLoginLinkScreen extends State<CheckLoginLinkScreen> {
               fontWeight: FontWeight.w700,
               color: Color(0xFFBB3A79),
             ),
-          )
+          ),
         ],
       ),
     );

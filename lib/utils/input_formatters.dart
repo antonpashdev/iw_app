@@ -24,17 +24,14 @@ TextInputFormatter commaSeparatedDoubleFormatter =
     TextInputFormatter.withFunction((oldValue, newValue) {
   final text = newValue.text;
   final number = double.tryParse(text);
+  final formatter = NumberFormat('#,###.########');
+  String newString = text;
 
-  if (number == null) {
-    return const TextEditingValue(
-      text: '',
-    );
-  } else {
-    final formatter = NumberFormat('#,###.########');
-    final newString = formatter.format(number);
-    return TextEditingValue(
-      text: newString,
-      selection: TextSelection.collapsed(offset: newString.length),
-    );
+  if (number != null && !text.endsWith('.')) {
+    newString = formatter.format(number);
   }
+  return TextEditingValue(
+    text: newString,
+    selection: TextSelection.collapsed(offset: newString.length),
+  );
 });

@@ -2,7 +2,7 @@ import 'package:iw_app/models/organization_model.dart';
 import 'package:iw_app/models/user_model.dart';
 import 'package:iw_app/utils/common.dart';
 
-enum OrgHistoryItemAction { Joined, Contributed }
+enum OrgHistoryItemAction { Joined, Contributed, Received }
 
 class OrgEventsHistoryItem {
   User? user;
@@ -11,6 +11,9 @@ class OrgEventsHistoryItem {
   String? stoppedAt;
   OrgHistoryItemAction? action;
   String? date;
+  String? memo;
+  String? txnHash;
+  double? amount;
 
   OrgEventsHistoryItem({
     this.createdAt,
@@ -28,5 +31,8 @@ class OrgEventsHistoryItem {
     action =
         CommonUtils.stringToEnum(json['action'], OrgHistoryItemAction.values);
     date = json['date'];
+    memo = json['memo'];
+    amount = json['amount'];
+    txnHash = json['txnHash'];
   }
 }

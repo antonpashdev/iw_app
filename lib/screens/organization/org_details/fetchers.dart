@@ -43,3 +43,13 @@ Future<String?> fetchBalance(String orgId) async {
   final response = await orgsApi.getBalance(orgId);
   return TokenAmount.fromJson(response.data['balance']).uiAmountString;
 }
+
+Future<Map<String, dynamic>?> fetchRevenue(String orgId, String? period) async {
+  try {
+    final response = await orgsApi.getOrgRevenue(orgId, period);
+    return response.data;
+  } catch (e) {
+    print(e);
+  }
+  return null;
+}
