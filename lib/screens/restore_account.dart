@@ -19,7 +19,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
   bool isLinkValid = false;
   String? _restoreLink;
   RegExp restoreUrlRegexp =
-      RegExp(r'^https:\/\/app\.equitywallet\.org\/restore\/.*$');
+      RegExp(r'^https:\/\/product\.deplan\.xyz\/restore\/.*$');
 
   void validateSecretLink(String? value) {
     if (value != null && restoreUrlRegexp.hasMatch(value)) {
@@ -81,7 +81,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: 'Login to My Equity Wallet ',
+      title: 'Login to DePlan',
       child: Column(
         children: <Widget>[
           Expanded(
@@ -89,7 +89,7 @@ class _RestoreAccountScreenState extends State<RestoreAccountScreen> {
               children: [
                 const SizedBox(height: 35),
                 const Text(
-                  'Paste your secret link to access to your Equity Wallet',
+                  'Paste your secret link to access DePlan ',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,

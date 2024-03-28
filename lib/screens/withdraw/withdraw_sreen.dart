@@ -77,7 +77,7 @@ class WithdrawScreen extends StatelessWidget {
             onPressed: () {
               launchURL(
                 Uri.parse(
-                  'https://www.equitywallet.org/withdraw-bank-transfer',
+                  'https://deplan.xyz/withdraw-bank-transfer',
                 ),
               );
             },
@@ -120,7 +120,7 @@ class WithdrawScreen extends StatelessWidget {
             onPressed: () {
               launchURL(
                 Uri.parse(
-                  'https://www.equitywallet.org/withdraw-cash-with-moneygram',
+                  'https://deplan.xyz/withdraw-cash-with-moneygram',
                 ),
               );
             },

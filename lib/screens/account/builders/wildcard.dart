@@ -48,7 +48,7 @@ buildIWCard(BuildContext context, Future<double> futureBalance) {
                         },
                       ),
                       Text(
-                        'Equity Wallet Card',
+                        'DePlan Card',
                         style: Theme.of(context)
                             .textTheme
                             .labelSmall!

@@ -408,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 25),
               child: Text(
-                'You are 2 steps away from understanding how Equity Wallet works',
+                'You are 2 steps away from understanding how DePlan works',
                 style: TextStyle(
                   fontSize: 22,
                   color: COLOR_ALMOST_BLACK,

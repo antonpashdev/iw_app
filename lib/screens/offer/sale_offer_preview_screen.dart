@@ -19,7 +19,7 @@ class SaleOfferPreviewScreen extends StatelessWidget {
   const SaleOfferPreviewScreen({Key? key, required this.saleOffer})
       : super(key: key);
 
-  String get offerUrl => 'app.equitywallet.org/saleoffer?i=${saleOffer.id}';
+  String get offerUrl => 'product.deplan.xyz/saleoffer?i=${saleOffer.id}';
 
   buildHeader(BuildContext context) {
     return Row(

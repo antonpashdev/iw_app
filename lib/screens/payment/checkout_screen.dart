@@ -400,7 +400,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           height: 5,
                         ),
                         Text(
-                          'Your Equity Wallet balance \$$balance',
+                          'Your DePlan balance \$$balance',
                           style: TextStyle(
                             color: canPay ? COLOR_GRAY : COLOR_RED,
                             fontSize: 16,
@@ -410,7 +410,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         Visibility(
                           visible: (bonusBalance ?? 0) > 0,
                           child: Text(
-                            'Your Equity Wallet bonus balance \$$bonusBalance',
+                            'Your DePlan bonus balance \$$bonusBalance',
                             style: const TextStyle(
                               color: COLOR_LIGHT_GREEN,
                               fontSize: 16,

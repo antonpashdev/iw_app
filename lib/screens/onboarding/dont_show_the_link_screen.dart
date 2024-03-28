@@ -55,7 +55,7 @@ class DontShowTheLinkScreen extends StatelessWidget {
                   text: "Don't put this link to any\nwebsites except\n",
                 ),
                 TextSpan(
-                  text: 'app.equitywallet.org',
+                  text: 'product.deplan.xyz',
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                   ),

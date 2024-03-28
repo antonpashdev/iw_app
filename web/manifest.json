@@ -1,7 +1,7 @@
 {
-    "name": "Equity Wallet",
-    "short_name": "Equity Wallet",
-    "start_url": "https://app.equitywallet.org/",
+    "name": "DePlan Product",
+    "short_name": "DePlan Product",
+    "start_url": "https://product.deplan.xyz/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#222222",

@@ -175,7 +175,7 @@ class _OfferInvestorInvestAmountState extends State<OfferInvestorInvestAmount> {
                         height: 5,
                       ),
                       Text(
-                        'Your Equity Wallet balance \$$balance',
+                        'Your DePlan balance \$$balance',
                         style: TextStyle(
                           color: canPay ? COLOR_GRAY : COLOR_RED,
                           fontSize: 16,

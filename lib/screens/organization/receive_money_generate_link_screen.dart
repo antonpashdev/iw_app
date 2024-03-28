@@ -18,8 +18,7 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
     required this.payment,
   });
 
-  String get paymentUrl =>
-      'https://app.equitywallet.org/checkout/${payment.id}';
+  String get paymentUrl => 'https://product.deplan.xyz/checkout/${payment.id}';
 
   callSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(

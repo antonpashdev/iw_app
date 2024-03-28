@@ -42,7 +42,7 @@ class _OfferPreviewScreenState extends State<OfferPreviewScreen> {
   late Offer offer;
 
   String get offerUrl {
-    return 'app.equitywallet.org/offer?i=${offer.id}&oi=${widget.organization.id}';
+    return 'product.deplan.xyz/offer?i=${offer.id}&oi=${widget.organization.id}';
   }
 
   bool get isInvestor {
