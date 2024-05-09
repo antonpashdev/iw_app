@@ -61,7 +61,7 @@ class _SendMoneyPreviewScreenState extends State<SendMoneyPreviewScreen> {
         ),
         const SizedBox(height: 10),
         Text(
-          '\$${widget.sendMoneyData.amount!.toStringAsFixed(2)} Credit\$',
+          '${widget.sendMoneyData.amount!.toStringAsFixed(2)} DPLN',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
       ],

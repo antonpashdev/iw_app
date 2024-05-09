@@ -56,7 +56,7 @@ class _WithdrawPreviewScreenState extends State<WithdrawPreviewScreen> {
         ),
         const SizedBox(height: 10),
         Text(
-          '\$${widget.sendMoneyData.amount} Credit\$',
+          '${widget.sendMoneyData.amount} DPLN',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
       ],
@@ -101,7 +101,11 @@ class _WithdrawPreviewScreenState extends State<WithdrawPreviewScreen> {
                   child: buildAmount(context),
                 ),
                 const SizedBox(height: 50),
-                buildInfo('Withdraw method', 'USDC', shouldCut: false),
+                buildInfo(
+                  'Withdraw method',
+                  widget.sendMoneyData.token?.name ?? '',
+                  shouldCut: false,
+                ),
                 const SizedBox(height: 10),
                 buildInfo('To', widget.sendMoneyData.recipient!),
               ],

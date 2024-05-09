@@ -175,7 +175,7 @@ class OrgMemberCardLite extends StatelessWidget {
           ),
           contentPadding: const EdgeInsets.all(0),
           trailing: Text(
-            '${(NumberFormat('#,###.##').format(member?.profit ?? 0))}\$',
+            '${(NumberFormat('#,###.##').format(member?.profit ?? 0))} DPLN',
             style: textStyle?.copyWith(fontWeight: FontWeight.w700),
           ),
           visualDensity:

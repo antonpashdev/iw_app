@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/api/users_api.dart';
-import 'package:iw_app/screens/withdraw/withdraw_usdc_recipient_screen.dart';
+import 'package:iw_app/screens/withdraw/withdraw_token_recipient_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/url.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
@@ -29,7 +29,57 @@ class WithdrawScreen extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (_) => WithdrawUSDCRecipientScreen(
+                  builder: (_) => WithdrawTokenRecipientScreen(
+                    token: SendMoneyToken.DPLN,
+                    onWithdrawPressed: (SendMoneyData data) =>
+                        usersApi.withdrawCredits(data),
+                  ),
+                ),
+              );
+            },
+            icon: Image.asset(
+              'assets/icons/deplan_token_circle.png',
+              width: 25,
+              height: 25,
+            ),
+            label: Padding(
+              padding: const EdgeInsets.only(left: 15.0),
+              child: RichText(
+                text: const TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Withdraw as DPLN\n',
+                      style: TextStyle(
+                        color: COLOR_ALMOST_BLACK,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    TextSpan(
+                      text:
+                          'Withdraw your money as DPLN to external Solana Wallet',
+                      style: TextStyle(color: COLOR_GRAY, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextButton.icon(
+            style: ButtonStyle(
+              overlayColor: MaterialStateProperty.all<Color>(
+                Colors.transparent,
+              ),
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                const EdgeInsets.all(10),
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => WithdrawTokenRecipientScreen(
+                    token: SendMoneyToken.USDC,
                     onWithdrawPressed: (SendMoneyData data) =>
                         usersApi.withdrawCredits(data),
                   ),

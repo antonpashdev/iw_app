@@ -93,12 +93,12 @@ class ReceiveMoneyGenerateLinkScreen extends StatelessWidget {
                     child: Row(
                       children: [
                         Image.asset(
-                          'assets/icons/usdc-icon.png',
+                          'assets/icons/deplan_token_circle.png',
                           width: 25,
                           height: 25,
                         ),
                         const SizedBox(width: 10),
-                        const Text('Credit\$'),
+                        const Text('DPLN'),
                       ],
                     ),
                   ),

@@ -20,7 +20,7 @@ class AccountDetailsScreen extends StatefulWidget {
 
 class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   late Future<Account?> futureAccount;
-  late Future<String?> futureBalance;
+  late Future<Map?> futureBalance;
   late Future<List<TxnHistoryItem>> futureHistory;
 
   @override
@@ -41,10 +41,15 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
     return null;
   }
 
-  Future<String?> fetchBalance() async {
+  Future<Map?> fetchBalance() async {
     final response = await usersApi.getBalance();
-    return TokenAmount.fromJson(response.data['balance']['balance'])
+    final balance = TokenAmount.fromJson(response.data['balance']['balance'])
         .uiAmountString;
+    final usdcBalance = response.data['balance']['usdcBalance'];
+    return {
+      'balance': balance,
+      'usdcBalance': usdcBalance,
+    };
   }
 
   Future<List<TxnHistoryItem>> fetchHistory() async {
@@ -117,7 +122,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                       return buildHeader(account!, snapshot.data, context);
                     },
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 10),
                   FutureBuilder(
                     future: futureHistory,
                     builder: (_, snapshot) {

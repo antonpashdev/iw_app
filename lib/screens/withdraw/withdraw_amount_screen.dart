@@ -52,8 +52,7 @@ class WithdrawAmountScreen<T extends Widget> extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       AppTextFormFieldBordered(
-                        prefix: const Text('\$'),
-                        suffix: const Text('Credit\$'),
+                        suffix: const Text('DPLN'),
                         onChanged: (value) {
                           sendMoneyData.amount = double.tryParse(value);
                         },

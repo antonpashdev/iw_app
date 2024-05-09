@@ -95,14 +95,10 @@ class _UsersApi extends BaseApi {
       'recipient': data.recipient,
       'amount': data.amount,
     };
+    if (data.token != null) {
+      body['token'] = data.token!.name;
+    }
     return client.post('/users/credits/withdraw', data: body);
-  }
-
-  Future<Response> burnCredits(double amount) {
-    final body = {
-      'amount': amount,
-    };
-    return client.post('/users/credits/burn', data: body);
   }
 
   Future<User?> getUserByNickname(String nickname) async {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iw_app/api/models/send_money_data_model.dart';
 import 'package:iw_app/app_home.dart';
-import 'package:iw_app/screens/account/account_details_screen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/widgets/utils/app_padding.dart';
 
@@ -54,9 +53,9 @@ class WithdrawSuccessScreen<T extends Widget> extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
-                      builder: (_) => const AccountDetailsScreen(),
+                      builder: (_) => const AppHome(),
                     ),
-                    ModalRoute.withName(AppHome.routeName),
+                    (_) => false,
                   );
                 },
                 child: const Text('Go to your account'),

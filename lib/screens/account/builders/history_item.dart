@@ -20,7 +20,7 @@ buildHistoryItem(
       ? COLOR_ALMOST_BLACK
       : COLOR_GREEN;
   final amount = item.amount != null
-      ? '$sign \$${trimZeros(item.amount!.abs() / LAMPORTS_PER_USDC)} Credit\$'
+      ? '$sign ${trimZeros(item.amount!.abs() / LAMPORTS_PER_USDC)} DPLN'
       : '-';
   final title = item.addressOrUsername == null
       ? ''

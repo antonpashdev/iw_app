@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:iw_app/screens/burn/burn_preview_screen.dart';
+import 'package:iw_app/api/models/send_money_data_model.dart';
+import 'package:iw_app/screens/withdraw/withdraw_amount_screen.dart';
 import 'package:iw_app/utils/validation.dart';
 import 'package:iw_app/widgets/form/input_form.dart';
 import 'package:iw_app/widgets/list/keyboard_dismissable_list.dart';
 import 'package:iw_app/widgets/scaffold/screen_scaffold.dart';
 
-class BurnAmountScreen<T extends Widget> extends StatefulWidget {
-  const BurnAmountScreen({Key? key}) : super(key: key);
-
-  @override
-  State<BurnAmountScreen<T>> createState() => _BurnAmountScreenState<T>();
-}
-
-class _BurnAmountScreenState<T extends Widget>
-    extends State<BurnAmountScreen<T>> {
+class WithdrawTokenRecipientScreen<T extends Widget> extends StatelessWidget {
   final formKey = GlobalKey<FormState>();
+  late final SendMoneyData data;
+  final Future Function(SendMoneyData) onWithdrawPressed;
 
-  double? amount;
+  WithdrawTokenRecipientScreen({
+    Key? key,
+    required this.onWithdrawPressed,
+    required SendMoneyToken token,
+  }) : super(key: key) {
+    data = SendMoneyData(
+      token: token,
+    );
+  }
 
   handleNextPressed(BuildContext context) async {
     if (!formKey.currentState!.validate()) {
@@ -24,7 +27,10 @@ class _BurnAmountScreenState<T extends Widget>
     }
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => BurnPreviewScreen(amount: amount!),
+        builder: (_) => WithdrawAmountScreen(
+          sendMoneyData: data,
+          onWithdrawPressed: onWithdrawPressed,
+        ),
       ),
     );
   }
@@ -32,7 +38,7 @@ class _BurnAmountScreenState<T extends Widget>
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: 'Enter Amount',
+      title: 'Recipient',
       child: Column(
         children: [
           Expanded(
@@ -44,21 +50,18 @@ class _BurnAmountScreenState<T extends Widget>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'You Burn',
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(height: 10),
-                      AppTextFormFieldBordered(
-                        prefix: const Text('\$'),
-                        suffix: const Text('Credit\$'),
+                      AppTextFormField(
+                        labelText: 'Enter Recipient’s Solana Wallet',
+                        helperText:
+                            'Please enter an address of wallet on the Solana blockchain you are goning to send money to.',
                         onChanged: (value) {
-                          amount = double.tryParse(value);
+                          data.recipient = value;
                         },
                         validator: multiValidate([
-                          requiredField('Amount'),
-                          numberField('Amount'),
+                          requiredField('Recipient’s Solana Wallet'),
+                          walletAddres(),
                         ]),
+                        maxLines: 1,
                       ),
                     ],
                   ),

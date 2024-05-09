@@ -165,6 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final balance =
         TokenAmount.fromJson(response.data['balance']['balance']).uiAmount;
     final bonusBalanceJson = response.data['balance']['bonusBalance'];
+    final usdcBalance = response.data['balance']['usdcBalance'];
     final double? bonusBalance = bonusBalanceJson != null
         ? TokenAmount.fromJson(
             bonusBalanceJson,
@@ -174,6 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return {
       'balance': balance,
       'bonusBalance': bonusBalance,
+      'usdcBalance': usdcBalance,
     };
   }
 
@@ -389,9 +391,9 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 8),
           Text(
             bonusBalance == 5
-                ? 'You got \$${bonusBalance?.toStringAsFixed(2)} Credit\$ on your bonus wallet!'
+                ? 'You got \$${bonusBalance?.toStringAsFixed(2)} DPLN on your bonus wallet!'
                 : bonusBalance == 2
-                    ? '\$$bonusBalance Credit\$ left on your\nbonus wallet! '
+                    ? '\$$bonusBalance DPLN left on your\nbonus wallet! '
                     : '',
             textAlign: TextAlign.center,
             style: const TextStyle(
@@ -643,6 +645,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               }
                               final double balance =
                                   snapshot.data!['balance'] ?? 0;
+                              final double usdcBalance =
+                                  snapshot.data!['usdcBalance'] ?? 0;
                               final bonusBalance = snapshot
                                   .data!['bonusBalance']
                                   ?.toStringAsFixed(2);
@@ -658,18 +662,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       );
                                     },
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          '\$$balance',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headlineMedium,
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              '\$$usdcBalance',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineMedium,
+                                            ),
+                                            const SizedBox(width: 10),
+                                            const Icon(
+                                              Icons
+                                                  .keyboard_arrow_down_outlined,
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(width: 10),
-                                        const Icon(
-                                          Icons.keyboard_arrow_down_outlined,
+                                        Text(
+                                          '$balance DPLN',
+                                          style: const TextStyle(
+                                            color: COLOR_GRAY,
+                                          ),
                                         ),
                                       ],
                                     ),
