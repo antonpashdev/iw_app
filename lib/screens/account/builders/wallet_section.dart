@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:iw_app/api/models/send_money_data_model.dart';
-import 'package:iw_app/api/users_api.dart';
 import 'package:iw_app/models/account_model.dart';
-import 'package:iw_app/screens/account/account_details_screen.dart';
-import 'package:iw_app/screens/deposit/deposit_amount_screen.dart';
-import 'package:iw_app/screens/send_money/send_money_recipient_screen.dart';
 import 'package:iw_app/screens/withdraw/withdraw_sreen.dart';
 import 'package:iw_app/theme/app_theme.dart';
 import 'package:iw_app/utils/url.dart';
@@ -110,35 +105,35 @@ buildWalletSection(BuildContext context, Account account) {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          IconButtonWithText(
-            image: SvgPicture.asset('assets/icons/money_box.svg'),
-            text: 'Deposit',
-            backgroundColor: COLOR_BLUE,
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const DepositAmountScreen(),
-                ),
-              );
-            },
-          ),
-          IconButtonWithText(
-            image: SvgPicture.asset('assets/icons/arrow_up_box.svg'),
-            text: 'Send',
-            backgroundColor: COLOR_BLACK,
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => SendMoneyRecipientScreen(
-                    senderWallet: account.wallet!,
-                    onSendMoney: (SendMoneyData data) =>
-                        usersApi.sendMoney(data),
-                    originScreenFactory: () => const AccountDetailsScreen(),
-                  ),
-                ),
-              );
-            },
-          ),
+          // IconButtonWithText(
+          //   image: SvgPicture.asset('assets/icons/money_box.svg'),
+          //   text: 'Deposit',
+          //   backgroundColor: COLOR_BLUE,
+          //   onPressed: () {
+          //     Navigator.of(context).push(
+          //       MaterialPageRoute(
+          //         builder: (_) => const DepositAmountScreen(),
+          //       ),
+          //     );
+          //   },
+          // ),
+          // IconButtonWithText(
+          //   image: SvgPicture.asset('assets/icons/arrow_up_box.svg'),
+          //   text: 'Send',
+          //   backgroundColor: COLOR_BLACK,
+          //   onPressed: () {
+          //     Navigator.of(context).push(
+          //       MaterialPageRoute(
+          //         builder: (_) => SendMoneyRecipientScreen(
+          //           senderWallet: account.wallet!,
+          //           onSendMoney: (SendMoneyData data) =>
+          //               usersApi.sendMoney(data),
+          //           originScreenFactory: () => const AccountDetailsScreen(),
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // ),
           IconButtonWithText(
             image: SvgPicture.asset('assets/icons/arrow_right_box.svg'),
             text: 'Withdraw',
